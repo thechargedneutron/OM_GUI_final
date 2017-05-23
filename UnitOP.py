@@ -23,7 +23,7 @@ from kivy.graphics.instructions import InstructionGroup
 
 class UnitOP(Button):
 
-
+        size_limit = [100, 100]
         unpressed = ListProperty([0, 0])
         double_tap = NumericProperty(0)
         multi_touch = NumericProperty(0)
@@ -58,19 +58,23 @@ class UnitOP(Button):
 
         def on_touch_up(self, touch):
             if touch.grab_current is self:
-                if self.x > 382:
-                    self.pos = (0, 0)
-                    self.unpressed = (0, 0)
-                else:
-                    self.unpressed = touch.pos
+                self.unpressed = touch.pos
                 touch.ungrab(self)
             return True
 
 
         def on_touch_move(self, touch):
             if touch.grab_current is self:
-                self.x = touch.x - .1
-                self.y = touch.y - .1
+                if touch.x > UnitOP.size_limit[0]-self.size[0]:
+                    self.x = UnitOP.size_limit[0]-self.size[0]
+                    self.y = self.pos[1]
+                    self.unpressed = (0, 0)
+                elif touch.y > UnitOP.size_limit[1]-self.size[1]:
+                    self.x = self.pos[0]
+                    self.y = UnitOP.size_limit[1]-self.size[1]
+                else:
+                    self.x = touch.x - .1
+                    self.y = touch.y - .1
                 #              if self.connect != 0:
                 if self.connected == True:
                     self.line_move = self.line_move + 1

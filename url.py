@@ -29,6 +29,7 @@ import StaticUO
 import Mixer
 import MatStrm
 from OMPython import OMCSession
+import UnitOP
 
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
 
@@ -43,6 +44,7 @@ class OmWidget(GridLayout):
         self.dropdown = DropDown()
         self.Selected_thermo_model = 'No Model Selected'
         self.data.append('model Flowsheet\n')
+        UnitOP.UnitOP.size_limit = self.ids.b1.size
 
     def compile(self, instance):
         #self.data = []
@@ -78,7 +80,10 @@ class OmWidget(GridLayout):
             #             print resultval
             #             unit.PropertyVal.append(resultval)
 
-
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            UnitOP.UnitOP.size_limit = self.ids.b1.size
+        return super(OmWidget, self).on_touch_down(touch)
 
     def add_but(self,instance,value):
         a = instance.UO()
@@ -119,21 +124,21 @@ class OmWidget(GridLayout):
         ii=0
 
         for liine in instance.line_nos:
-         self.ids.b1.canvas.remove(self.lines[liine])
-         instance.Update_Conn_Pnts()
-         self.Unit_Operations[instance.connected_to[ii]].Update_Conn_Pnts()
-         destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[ii]
-         sourcepos = instance.Connecting_Points[ii]
-         horzpoint = (sourcepos[0], sourcepos[1], destpos[0], sourcepos[1])
-         vertpoint = (destpos[0], sourcepos[1], destpos[0], destpos[1])
-         line = InstructionGroup()
-         line.add(Color(0, 0, 0, 0.5))
-         line.add(Line(points=horzpoint, width=1))
-         line.add(Line(points=vertpoint, width=1))
-         self.lines.pop(liine)
-         self.lines.insert(liine,line)
-         self.ids.b1.canvas.add(line)
-         ii = ii + 1
+            self.ids.b1.canvas.remove(self.lines[liine])
+            instance.Update_Conn_Pnts()
+            self.Unit_Operations[instance.connected_to[ii]].Update_Conn_Pnts()
+            destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[ii]
+            sourcepos = instance.Connecting_Points[ii]
+            horzpoint = (sourcepos[0], sourcepos[1], destpos[0], sourcepos[1])
+            vertpoint = (destpos[0], sourcepos[1], destpos[0], destpos[1])
+            line = InstructionGroup()
+            line.add(Color(0, 0, 0, 0.5))
+            line.add(Line(points=horzpoint, width=1))
+            line.add(Line(points=vertpoint, width=1))
+            self.lines.pop(liine)
+            self.lines.insert(liine,line)
+            self.ids.b1.canvas.add(line)
+            ii = ii + 1
 
     def CompPop(self, instance):
         self.dropdown.clear_widgets()
