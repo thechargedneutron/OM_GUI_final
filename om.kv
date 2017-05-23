@@ -1,6 +1,6 @@
 #:import SMatStrm StaticUO.SMatStrm
 #:import SMixer StaticUO.SMixer
-
+#:import SFlash StaticUO.SFlash
 <OmWidget>:
     cols:1
     spacing:1
@@ -34,20 +34,30 @@
                     pos: self.pos
         BoxLayout:
             size_hint:(0.25,1)
-            SMixer:
-                on_included: root.add_but(*args)
-            SMatStrm:
-                on_included: root.add_but(*args)
-            Button:
-                text:'COM'
-                size_hint:(None, None)
-                size:(50, 50)
-                on_press: root.compile(*args)
-            Button:
-                text:'SIM'
-                size_hint:(None, None)
-                size:(50, 50)
-                on_press: root.simulate(*args)
+            orientation:'vertical'
+
+            BoxLayout:
+                padding: 10
+                spacing: 5
+                size_hint:(1,0.9)
+                SMixer:
+                    on_included: root.add_but(*args)
+                SMatStrm:
+                    on_included: root.add_but(*args)
+                SFlash:
+                    on_included: root.add_but(*args)
+            BoxLayout:
+                size_hint:(1,0.1)
+                Button:
+                    text:'COM'
+                    size_hint_x: 0.5
+                    on_press: root.compile(*args)
+                Button:
+                    text:'SIM'
+                    size_hint_x: 0.5
+                    on_press: root.simulate(*args)
+
+
 
 
 

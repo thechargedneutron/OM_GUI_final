@@ -26,8 +26,6 @@ from kivy.uix.actionbar import ActionPrevious
 from kivy.uix.dropdown import DropDown
 
 import StaticUO
-import Mixer
-import MatStrm
 from OMPython import OMCSession
 import UnitOP
 
