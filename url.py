@@ -30,22 +30,19 @@ import Mixer
 import MatStrm
 from OMPython import OMCSession
 
-
-class back_grnd(FloatLayout):
-    pass
-
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
 
 
-class Omapp(App):
+class OmWidget(GridLayout):
     lines = []
     Unit_Operations = []
     data = []
     def __init__(self,**kwargs):
-        super(Omapp,self).__init__(**kwargs)
+        super(OmWidget,self).__init__(**kwargs)
         self.addedcomp = []
         self.dropdown = DropDown()
         self.Selected_thermo_model = 'No Model Selected'
+        self.data.append('model Flowsheet\n')
 
     def compile(self, instance):
         #self.data = []
@@ -60,26 +57,26 @@ class Omapp(App):
 
 
     def simulate(self,instance):
-     with open('Flowsheet.mo', 'w') as txtfile:
-        for d in self.data:
-            txtfile.write(d)
-        txtfile.write('end Flowsheet;\n')
-
-     omc = OMCSession()
-     omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/MIxerModel/test.mo\")")
-     omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/OM_GUI/Flowsheet.mo\")")
-     chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
-     print chek
-     for unit in self.Unit_Operations:
-         if 'Mat_Stm' in unit.name:
-             print 'yes'
-             unit.PropertyVal = []
-             for prop in unit.PropertyList:
-                 resultstr = unit.name + '.' + prop
-                 print resultstr
-                 resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
-                 print resultval
-                 unit.PropertyVal.append(resultval)
+        with open('Flowsheet.mo', 'w') as txtfile:
+            for d in self.data:
+                txtfile.write(d)
+            txtfile.write('end Flowsheet;\n')
+            #
+            # omc = OMCSession()
+            # omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/MIxerModel/test.mo\")")
+            # omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/OM_GUI/Flowsheet.mo\")")
+            # chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
+            # print chek
+            # for unit in self.Unit_Operations:
+            #     if 'Mat_Stm' in unit.name:
+            #         print 'yes'
+            #         unit.PropertyVal = []
+            #         for prop in unit.PropertyList:
+            #             resultstr = unit.name + '.' + prop
+            #             print resultstr
+            #             resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
+            #             print resultval
+            #             unit.PropertyVal.append(resultval)
 
 
 
@@ -90,7 +87,7 @@ class Omapp(App):
         a.name = a.OM_Model+str(value)
         self.data.append('test.'+a.OM_Model+' '+a.OM_Model+str(value)+';\n')
 #        a.bind(multi_touch = self.MultiTouch)
-        self.b1.add_widget(a)
+        self.ids.b1.add_widget(a)
         self.Unit_Operations.append(a)
 
     def on_connect(self, instance, value):
@@ -111,7 +108,7 @@ class Omapp(App):
             self.lines.append(line)
             self.Unit_Operations[val].line_nos.append(len(self.lines)-1)
             instance.line_nos.append(len(self.lines)-1)
-            self.b1.canvas.add(line)
+            self.ids.b1.canvas.add(line)
             if 'equation\n' not in self.data:
                 self.data.append('equation\n')
             self.data.append('connect ('+instance.name+'.port'+str(p)+', '+self.Unit_Operations[val].name+'.conn);\n')
@@ -122,7 +119,7 @@ class Omapp(App):
         ii=0
 
         for liine in instance.line_nos:
-         self.b1.canvas.remove(self.lines[liine])
+         self.ids.b1.canvas.remove(self.lines[liine])
          instance.Update_Conn_Pnts()
          self.Unit_Operations[instance.connected_to[ii]].Update_Conn_Pnts()
          destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[ii]
@@ -135,7 +132,7 @@ class Omapp(App):
          line.add(Line(points=vertpoint, width=1))
          self.lines.pop(liine)
          self.lines.insert(liine,line)
-         self.b1.canvas.add(line)
+         self.ids.b1.canvas.add(line)
          ii = ii + 1
 
     def CompPop(self, instance):
@@ -217,50 +214,10 @@ class Omapp(App):
         self.showcomp.text = instance.text
         self.dropdown.dismiss()
 
+class Omapp(App):
+
     def build(self):
-        self.actionbar = ActionBar(pos_hint={'top': 1})
-        self.ap = ActionPrevious(title='', with_previous=False)
-        self.actionview = ActionView()
-        self.actionview.add_widget(self.ap)
-        self.actionbar.add_widget(self.actionview)
-        self.comp = ActionButton(text='Compounds')
-        self.thermo = ActionButton(text='Thermodynamics')
-        self.thermo.bind(on_press=self.ThermoPop)
-        self.comp.bind(on_press=self.CompPop)
-        self.actionview.add_widget(self.comp)
-        self.actionview.add_widget(self.thermo)
-        self.layout = GridLayout(cols=1, spacing=1, size_hint_y=None, size_hint=(1, 1), size=(600, 400),
-                                 pos_hint={'center_x': .5, 'center_y': .5})
-        self.f = BoxLayout(size_y_hint=None)
-        self.b1 = back_grnd(size_hint=(0.75, 1))
-        self.b2 = BoxLayout(size_hint=(0.25, 1))
-        self.s = StaticUO.SMatStrm()
-        self.r = StaticUO.SMixer()
-        self.com = Button(text='COM', size_hint=(None, None), size=(50, 50))
-        self.com.bind(on_press=self.compile)
-        self.sim = Button(text='SIM', size_hint=(None, None), size=(50, 50))
-        self.sim.bind(on_press=self.simulate)
-        self.r.bind(included=self.add_but)
-        self.s.bind(included=self.add_but)
-        self.b2.add_widget(self.s)
-        self.b2.add_widget(self.r)
-        self.b2.add_widget(self.com)
-        self.b2.add_widget(self.sim)
-        self.f.add_widget(self.b1)
-        self.f.add_widget(self.b2)
-        self.layout.add_widget(self.actionbar)
-        self.layout.add_widget(self.f)
-        self.data.append('model Flowsheet\n')
-        return self.layout
-
-
-# class back_grnd(BoxLayout):
-#
-#     def __init__(self,**kwargs):
-#         super(back_grnd,self).__init__(**kwargs)
-#         with self.canvas:
-#             Color = (1,1,1,1)
-#             Rectangle(size=self.size,pos=self.pos)
+        return OmWidget()
 
 if __name__ == "__main__" :
     Omapp().run()

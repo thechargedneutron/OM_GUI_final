@@ -1,0 +1,54 @@
+#:import SMatStrm StaticUO.SMatStrm
+#:import SMixer StaticUO.SMixer
+
+<OmWidget>:
+    cols:1
+    spacing:1
+    size_hint_y:None
+    size_hint:(1,1)
+    size:(900,400)
+    pos_hint:{'center_x': .5, 'center_y': .5}
+    ActionBar:
+        pos_hint:{'top':0}
+
+        ActionView:
+            ActionPrevious:
+                title:'Project'
+                with_previous:False
+            ActionButton:
+                text:'Compounds'
+                on_press:root.CompPop(*args)
+            ActionButton:
+                text:'Thermodynamics'
+                on_press:root.ThermoPop(*args)
+    BoxLayout:
+        size_y_hint: None
+        BoxLayout:
+            id:b1
+            size_hint:(0.75,1)
+            canvas:
+                Color:
+                    rgba: (1,1,1,1)
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+        BoxLayout:
+            size_hint:(0.25,1)
+            SMixer:
+                on_included: root.add_but(*args)
+            SMatStrm:
+                on_included: root.add_but(*args)
+            Button:
+                text:'COM'
+                size_hint:(None, None)
+                size:(50, 50)
+                on_press: root.compile(*args)
+            Button:
+                text:'SIM'
+                size_hint:(None, None)
+                size:(50, 50)
+                on_press: root.simulate(*args)
+
+
+
+
