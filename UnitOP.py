@@ -75,8 +75,8 @@ class UnitOP(Button):
                     self.x = self.pos[0]
                     self.y = UnitOP.size_limit[1]-self.size[1]
                 else:
-                    self.x = touch.x - .1
-                    self.y = touch.y - .1
+                    self.center_x = touch.x
+                    self.center_y = touch.y
                 #              if self.connect != 0:
                 if self.connected == True:
                     self.line_move = self.line_move + 1
