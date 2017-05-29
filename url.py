@@ -100,6 +100,7 @@ class OmWidget(GridLayout):
             self.Unit_Operations[val].connected_to.append(self.Unit_Operations.index(instance))
             self.Unit_Operations[val].connected = True
             self.Unit_Operations[val].Update_Conn_Pnts()
+            self.Unit_Operations[val].conn_point = p
             destpos = self.Unit_Operations[val].Connecting_Points[p]
             sourcepos = instance.Connecting_Points[p]
             horzpoint = (sourcepos[0],sourcepos[1],destpos[0],sourcepos[1])
@@ -125,8 +126,12 @@ class OmWidget(GridLayout):
             self.ids.b1.canvas.remove(self.lines[liine])
             instance.Update_Conn_Pnts()
             self.Unit_Operations[instance.connected_to[ii]].Update_Conn_Pnts()
-            destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[ii]
+            destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[instance.conn_point]
             sourcepos = instance.Connecting_Points[ii]
+            if instance.check_stm == 0:
+                t = destpos
+                destpos = sourcepos
+                sourcepos = t
             horzpoint = (sourcepos[0], sourcepos[1], destpos[0], sourcepos[1])
             vertpoint = (destpos[0], sourcepos[1], destpos[0], destpos[1])
             line = InstructionGroup()

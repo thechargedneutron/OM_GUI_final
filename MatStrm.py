@@ -11,6 +11,7 @@ class Stream(UnitOP.UnitOP):
         self.line_nos = []
         self.OM_Model = 'Mat_Stm'
         self.PropertyVal = ['50', '101.325', '100']
+        self.check_stm = 0
 
     def Update_Conn_Pnts(self):
         self.Connecting_Points = [[self.x+30, self.y+(15/2)], [self.x+30, self.y+(15/2)], [self.x+30, self.y+(15/2)], [self.x+30, self.y+(15/2)]]
