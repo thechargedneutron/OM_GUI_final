@@ -44,6 +44,8 @@ class UnitOP(Button):
             self.OM_Model = ''
             self.name = ''
             self.PropInput = [TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False)]
+            self.conn_point = 0
+            self.check_stm = 1
 
 
 
