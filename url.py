@@ -30,7 +30,18 @@ from OMPython import OMCSession
 import UnitOP
 
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
-
+File_options = ['New Steady-state Simulation','New Compound Creator Study','New Data Regression Study','New UNIFAC Parameter Regression Case','Open','Open Samples','Save','Save All','Save As','Close Active Simulation','Close All','Exit Openmodellica']
+Edit_options = ['Undo','Redo','Cut Selected Objects','Copy Selected Objects','Paste Objects','Remove selected objects','Clone selected objects','Recalculate object','Export data to Clipboard','Simulation settings','General settings']
+Insert_options = ['Flowsheet Object','Property Table','Master Property Table','Linked Spreadsheet Table','Image','Text','Rectangle']
+Tools_options = ['Petroleum Characterization (Bulk C7+)','Petroleum Characterization (Distillation Curves)','Petroleum Array Manager','Reactions Manager','Pure Compound Property Viewer/Editor','User Database Manager','CAPE-OPEN Component Registration' ]
+Utilities_options = ['Add Utility']
+Optimization_options = ['Sensitivity Analysis','Multivariate Optimizer']
+Scripts_options = ['Script Manager']
+Results_options = ['Create Report']
+Plugins_options = ['CAPE-OPEN Plugins','Natural Gas Properties']
+Windows_options = ['Cascade','Group Horizontally','Group Vertically',]
+View_options = ['Show Toolstrip','Console Output','calculation Queue','Watch panel','CAPE-OPEN Objects Reports','Flowsheet Toolstrip','Unit Systems Toolstrip',"Restore Docking Panels' Layout",'Close Opened Object Editors']
+Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','About OpenModellica']
 
 class OmWidget(GridLayout):
     lines = []
@@ -43,6 +54,66 @@ class OmWidget(GridLayout):
         self.Selected_thermo_model = 'No Model Selected'
         self.data.append('model Flowsheet\n')
         UnitOP.UnitOP.size_limit = self.ids.b1.size
+        self.filedropdown = DropDown(auto_width=False, width=300)
+        for model in File_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.filedropdown.add_widget(btn)
+
+        self.editdropdown = DropDown(auto_width=False, width=300)
+        for model in Edit_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.editdropdown.add_widget(btn)
+
+        self.insertdropdown = DropDown(auto_width=False, width=300)
+        for model in Insert_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.insertdropdown.add_widget(btn)
+
+        self.toolsdropdown = DropDown(auto_width=False, width=400)
+        for model in Tools_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.toolsdropdown.add_widget(btn)
+
+        self.utilitiesdropdown = DropDown(auto_width=False, width=300)
+        for model in Utilities_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.utilitiesdropdown.add_widget(btn)
+
+        self.optimizationdropdown = DropDown(auto_width=False, width=300)
+        for model in Optimization_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.optimizationdropdown.add_widget(btn)
+
+        self.scriptsdropdown = DropDown(auto_width=False, width=300)
+        for model in Scripts_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.scriptsdropdown.add_widget(btn)
+
+        self.resultsdropdown = DropDown(auto_width=False, width=300)
+        for model in Results_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.resultsdropdown.add_widget(btn)
+
+        self.pluginsdropdown = DropDown(auto_width=False, width=300)
+        for model in Plugins_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.pluginsdropdown.add_widget(btn)
+
+        self.windowsdropdown = DropDown(auto_width=False, width=300)
+        for model in Windows_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.windowsdropdown.add_widget(btn)
+
+        self.viewdropdown = DropDown(auto_width=False, width=300)
+        for model in View_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.viewdropdown.add_widget(btn)
+
+        self.helpdropdown = DropDown(auto_width=False, width=300)
+        for model in Help_options:
+            btn = Button(text=model, size_hint_y=None, height=40)
+            self.helpdropdown.add_widget(btn)
+        self.data.append('model Flowsheet\n')
 
     def compile(self, instance):
         #self.data = []

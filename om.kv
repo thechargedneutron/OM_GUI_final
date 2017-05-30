@@ -21,6 +21,42 @@
             ActionButton:
                 text:'Thermodynamics'
                 on_press:root.ThermoPop(*args)
+            ActionButton:
+                text:'File'
+                on_release:root.filedropdown.open(*args)
+            ActionButton:
+                text:'Edit'
+                on_release:root.editdropdown.open(*args)
+            ActionButton:
+                text:'Insert'
+                on_release:root.insertdropdown.open(*args)
+            ActionButton:
+                text:'Tools'
+                on_release:root.toolsdropdown.open(*args)
+            ActionButton:
+                text:'Utilities'
+                on_release:root.utilitiesdropdown.open(*args)
+            ActionButton:
+                text:'Optimization'
+                on_release:root.optimizationdropdown.open(*args)
+            ActionButton:
+                text:'Scripts'
+                on_release:root.scriptsdropdown.open(*args)
+            ActionButton:
+                text:'Results'
+                on_release:root.resultsdropdown.open(*args)
+            ActionButton:
+                text:'Plugins'
+                on_release:root.pluginsdropdown.open(*args)
+            ActionButton:
+                text:'Windows'
+                on_release:root.windowsdropdown.open(*args)
+            ActionButton:
+                text:'View'
+                on_release:root.viewdropdown.open(*args)
+            ActionButton:
+                text:'Help'
+                on_release:root.helpdropdown.open(*args)
     BoxLayout:
         size_y_hint: None
         FloatLayout:
