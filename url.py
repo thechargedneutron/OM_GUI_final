@@ -25,6 +25,7 @@ from kivy.uix.actionbar import ActionButton
 from kivy.uix.actionbar import ActionPrevious
 from kivy.uix.dropdown import DropDown
 
+import random
 import StaticUO
 from OMPython import OMCSession
 import UnitOP
@@ -170,6 +171,7 @@ class OmWidget(GridLayout):
 
     def add_but(self,instance,value):
         a = instance.UO()
+        a.pos=(random.random()*self.ids.b1.size[0],random.random()*self.ids.b1.size[1])
         a.bind(connect=self.on_connect)
         a.bind(line_move=self.on_line_move)
         a.name = a.OM_Model+str(value)
