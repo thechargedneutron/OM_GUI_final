@@ -18,6 +18,8 @@ class Stream(UnitOP.UnitOP):
 
     def on_submit(self, instance):
         self.PropertyVal = []
+        self.name = self.name_ob.text
+        UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
         for property in self.PropertyObj:
             self.PropertyVal.append(property.text)
         print self.PropertyVal

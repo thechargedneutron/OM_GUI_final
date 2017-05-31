@@ -60,6 +60,8 @@ class UnitOP(Button):
             self.check_stm = 1
             self.DropDowns =[]
             self.MainButton = []
+            self.name_ob = TextInput()
+            self.bef_name = ''
 
 
 
@@ -113,7 +115,9 @@ class UnitOP(Button):
             self.DropDowns = []
             self.MainButton = []
             c.ids.name_label.text_size = c.ids.name.size
-            c.ids.name.text =  self.name
+            self.bef_name = self.name
+            c.ids.name.text = self.name
+            self.name_ob = c.ids.name
             for Property in self.PropertyList:
                 PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', font_size=14)
                 PropLabel.text_size = PropLabel.size
@@ -156,6 +160,8 @@ class UnitOP(Button):
         def on_submit(self, instance):
             self.PropertyVal = []
             self.PropertyObj = self.PropInput
+            self.name = self.name_ob.text
+            UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
             for Property in self.PropertyObj:
                 self.PropertyVal.append(Property.text)
             if self.connected == False:
