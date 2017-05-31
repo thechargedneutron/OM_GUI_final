@@ -64,9 +64,12 @@ class UnitOP(Button):
 
         def on_touch_down(self, touch):
             if self.collide_point(*touch.pos):
-                if 'multitouch_sim' in touch.profile:
+                if touch.is_double_tap:
                     touch.multitouch_sim = True
                     self.multi_touch = self.multi_touch + 1
+                # if 'multitouch_sim' in touch.profile:
+                #     touch.multitouch_sim = True
+                #     self.multi_touch = self.multi_touch + 1
                 else:
                     touch.grab(self)
             return False
