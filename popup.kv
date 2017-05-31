@@ -1,0 +1,43 @@
+<cPopUp>:
+    title:"Properties"
+    size_hint:(0.3, 1)
+    auto_dismiss:True
+    pos_hint:{'right': 0.3, 'top': 1}
+    BoxLayout:
+        TabbedPanel:
+            size_hint: 0.3,1
+            pos_hint: {'top':1}
+            do_default_tab: False
+            tab_width: self.parent.width/3
+            tab_height: 30
+
+            TabbedPanelItem:
+                text: 'Tab1'
+                BoxLayout:
+                    orientation: 'vertical'
+                    GridLayout:
+                        cols:2
+                        size_hint_y:0.08
+                        Label:
+                            id:name_label
+                            text:'NAME'
+                            size_hint_y:None
+                            height:25
+                            valign:'middle'
+                            font_size:14
+                        TextInput:
+                            id:name
+                            size_hint_y:None
+                            height:25
+                            valign:'middle'
+                            font_size:12
+                            multiline:False
+                    GridLayout:
+                        cols:2
+                        id:first_tab
+
+            TabbedPanelItem:
+                text: 'Tab2'
+            TabbedPanelItem:
+                text: 'Tab3'
+

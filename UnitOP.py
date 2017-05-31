@@ -19,10 +19,21 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics.context_instructions import Color
 from kivy.graphics.instructions import InstructionGroup
+from kivy.lang import Builder
+from kivy.uix.dropdown import DropDown
+from url import OmWidget
+Builder.load_file('popup.kv')
 
+class cPopUp(Popup):
+    pass
+class dDown(DropDown):
+    DrNumber = NumericProperty(0)
+
+class butt(Button):
+    DrNumber = NumericProperty(0)
 
 class UnitOP(Button):
-
+        Operators = []
         size_limit = [100, 100]
         unpressed = ListProperty([0, 0])
         double_tap = NumericProperty(0)
@@ -46,6 +57,8 @@ class UnitOP(Button):
             self.PropInput = [TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False)]
             self.conn_point = 0
             self.check_stm = 1
+            self.DropDowns =[]
+            self.MainButton = []
 
 
 
@@ -89,36 +102,31 @@ class UnitOP(Button):
         #         self.line_move = self.line_move + 1
 
         def on_multi_touch(self, instance, value):
-            prop = Popup(title="Properties", size_hint=(0.3, 1), auto_dismiss=True, pos_hint={'right': 0.3, 'top': 1})
-            # prop.bind(on_open=self.open_prop)
-            layout1 = StackLayout(orientation='lr-tb')
-            layout4 = GridLayout(cols=1)
-            submit = Button(text='Submit')
-            submit.bind(on_press=self.on_submit)
-            scrlv = ScrollView(size_hint=(1, 0.5))
-            s = Slider(min=0, max=1, value=25, orientation='vertical', step=0.01, size_hint=(2, 0.5))
-            scrlv.bind(scroll_y=partial(self.slider_change, s))
-            s.bind(value=partial(self.scroll_change, scrlv))
-            layout2 = GridLayout(cols=2, size_hint_y=None)
-            layout2.bind(minimum_height=layout2.setter('height'))
+            c = cPopUp()
             i = 0
             self.PropertyObj = []
             self.PropInput = []
+            self.DropDowns = []
+            self.MainButton = []
+            c.ids.name_label.text_size = c.ids.name.size
+            c.ids.name.text =  self.name
             for Property in self.PropertyList:
-                PropLabel = Label(text=Property, size_hint_y=None, height=25, valign='middle', font_size=14)
-                PropLabel.text_size = (PropLabel.size)
+                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', font_size=14)
+                PropLabel.text_size = PropLabel.size
                 self.PropInput.append(TextInput(text = str(self.PropertyVal[i]),size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False))
                 self.PropertyObj.append(self.PropInput[i])
-                layout2.add_widget(PropLabel)
-                layout2.add_widget(self.PropInput[i])
+                c.ids.first_tab.add_widget(PropLabel)
+                self.MainButton.append(Button(text='Select', size_hint_y=None, height=25))
+                self.DropDowns.append(dDown(DrNumber=i))
+                for item in self.Operators:
+                    btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i)
+                    btn.bind(on_release=lambda btn: self.DropDowns[btn.DrNumber].select(btn.text))
+                    self.DropDowns[i].add_widget(btn)
+                self.MainButton[i].bind(on_release=self.DropDowns[i].open)
+                self.DropDowns[i].bind(on_select=lambda instance, x: setattr(self.MainButton[instance.DrNumber], 'text', x))
+                c.ids.first_tab.add_widget(self.MainButton[i])
                 i = i+1
-            layout4.add_widget(layout2)
-            layout4.add_widget(submit)
-            scrlv.add_widget(layout4)
-            layout1.add_widget(scrlv)
-            layout1.add_widget(s)
-            prop.content = layout1
-            prop.open()
+            c.open()
 
 
         def open_prop(self,instance):

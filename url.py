@@ -113,7 +113,6 @@ class OmWidget(GridLayout):
         for model in Help_options:
             btn = Button(text=model, size_hint_y=None, height=40)
             self.helpdropdown.add_widget(btn)
-        self.data.append('model Flowsheet\n')
 
     def compile(self, instance):
         #self.data = []
@@ -163,6 +162,7 @@ class OmWidget(GridLayout):
 #        a.bind(multi_touch = self.MultiTouch)
         self.ids.b1.add_widget(a)
         self.Unit_Operations.append(a)
+        UnitOP.UnitOP.Operators.append(a)
 
     def on_connect(self, instance, value):
         p = 0
