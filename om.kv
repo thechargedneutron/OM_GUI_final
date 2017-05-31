@@ -1,6 +1,23 @@
 #:import SMatStrm StaticUO.SMatStrm
 #:import SMixer StaticUO.SMixer
 #:import SFlash StaticUO.SFlash
+<MenuButton>
+    size_hint_y:None
+    height:20
+    background_normal:''
+    background_color:(0.4,0.4,0.4,1)
+    halign:'left'
+    size_hint_x:None
+    width:300
+    padding:[10,2]
+<MButton@Button>:
+    size_hint_x:None
+    background_normal:''
+    background_color:(0.62,0,0,1)
+<M2Button@Button>:
+    size_hint_x:None
+    background_normal:''
+    background_color:(0.4,0.4,0.4,1)
 <OmWidget>:
     cols:1
     spacing:1
@@ -8,60 +25,107 @@
     size_hint:(1,1)
     size:(900,400)
     pos_hint:{'center_x': .5, 'center_y': .5}
-    ActionBar:
-        pos_hint:{'top':0}
-
-        ActionView:
-            ActionPrevious:
-                title:'Project'
-                with_previous:False
-            ActionButton:
+    canvas:
+        Color:
+            rgb: 0,0,0
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    BoxLayout:
+        size_hint_y:None
+        size:(0,30)
+        canvas:
+            Color:
+                rgb: 0.62,0,0
+            Rectangle:
+                pos:self.pos
+                size:self.size
+        MButton:
+            width:40
+            text:'File'
+            on_release:root.filedropdown.open(*args)
+        MButton:
+            width:40
+            text:'Edit'
+            on_release:root.editdropdown.open(*args)
+        MButton:
+            width:60
+            text:'Insert'
+            on_release:root.insertdropdown.open(*args)
+        MButton:
+            width:50
+            text:'Tools'
+            on_release:root.toolsdropdown.open(*args)
+        MButton:
+            width:70
+            text:'Utilities'
+            on_release:root.utilitiesdropdown.open(*args)
+        MButton:
+            width:100
+            text:'Optimization'
+            on_release:root.optimizationdropdown.open(*args)
+        MButton:
+            width:70
+            text:'Scripts'
+            on_release:root.scriptsdropdown.open(*args)
+        MButton:
+            width:70
+            text:'Results'
+            on_release:root.resultsdropdown.open(*args)
+        MButton:
+            width:70
+            text:'Plugins'
+            on_release:root.pluginsdropdown.open(*args)
+        MButton:
+            width:70
+            text:'Windows'
+            on_release:root.windowsdropdown.open(*args)
+        MButton:
+            width:40
+            text:'View'
+            on_release:root.viewdropdown.open(*args)
+        MButton:
+            width:40
+            text:'Help'
+            on_release:root.helpdropdown.open(*args)
+    BoxLayout:
+        size_hint_y: None
+        size:(0, 30)
+        canvas:
+            Color:
+                rgb: 0.62,0,0
+            Rectangle:
+                pos:self.pos
+                size:self.size
+        BoxLayout:
+            size_hint_x:0.5
+            M2Button:
+                width:130
                 text:'Compounds'
                 on_press:root.CompPop(*args)
-            ActionButton:
+            M2Button:
+                width:150
                 text:'Thermodynamics'
                 on_press:root.ThermoPop(*args)
-            ActionButton:
-                text:'File'
-                on_release:root.filedropdown.open(*args)
-            ActionButton:
-                text:'Edit'
-                on_release:root.editdropdown.open(*args)
-            ActionButton:
-                text:'Insert'
-                on_release:root.insertdropdown.open(*args)
-            ActionButton:
-                text:'Tools'
-                on_release:root.toolsdropdown.open(*args)
-            ActionButton:
-                text:'Utilities'
-                on_release:root.utilitiesdropdown.open(*args)
-            ActionButton:
-                text:'Optimization'
-                on_release:root.optimizationdropdown.open(*args)
-            ActionButton:
-                text:'Scripts'
-                on_release:root.scriptsdropdown.open(*args)
-            ActionButton:
-                text:'Results'
-                on_release:root.resultsdropdown.open(*args)
-            ActionButton:
-                text:'Plugins'
-                on_release:root.pluginsdropdown.open(*args)
-            ActionButton:
-                text:'Windows'
-                on_release:root.windowsdropdown.open(*args)
-            ActionButton:
-                text:'View'
-                on_release:root.viewdropdown.open(*args)
-            ActionButton:
-                text:'Help'
-                on_release:root.helpdropdown.open(*args)
+        StackLayout:
+            orientation: 'rl-tb'
+            size_hint_y: None
+            size_hint_x:0.5
+            size:(0, 30)
+            M2Button:
+                text:'COM'
+                pos_hint:{'':0}
+                width:50
+                on_press: root.compile(*args)
+            M2Button:
+                text:'SIM'
+                width:50
+                on_press: root.simulate(*args)
     BoxLayout:
         size_y_hint: None
         FloatLayout:
             id:b1
-            size_hint:(0.75,1)
+            size_hint:(0.8,1)
             canvas:
                 Color:
                     rgba: (1,1,1,1)
@@ -69,9 +133,14 @@
                     size: self.size
                     pos: self.pos
         BoxLayout:
-            size_hint:(0.25,1)
+            size_hint:(0.2,1)
             orientation:'vertical'
-
+            canvas:
+                Color:
+                    rgb: 0,0,0
+                Rectangle:
+                    pos:self.pos
+                    size:self.size
             BoxLayout:
                 padding: 10
                 spacing: 5
@@ -82,16 +151,6 @@
                     on_included: root.add_but(*args)
                 SFlash:
                     on_included: root.add_but(*args)
-            BoxLayout:
-                size_hint:(1,0.1)
-                Button:
-                    text:'COM'
-                    size_hint_x: 0.5
-                    on_press: root.compile(*args)
-                Button:
-                    text:'SIM'
-                    size_hint_x: 0.5
-                    on_press: root.simulate(*args)
 
 
 

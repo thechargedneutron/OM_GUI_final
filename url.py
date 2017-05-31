@@ -43,6 +43,9 @@ Windows_options = ['Cascade','Group Horizontally','Group Vertically',]
 View_options = ['Show Toolstrip','Console Output','calculation Queue','Watch panel','CAPE-OPEN Objects Reports','Flowsheet Toolstrip','Unit Systems Toolstrip',"Restore Docking Panels' Layout",'Close Opened Object Editors']
 Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','About OpenModellica']
 
+class MenuButton(Button):
+    pass
+
 class OmWidget(GridLayout):
     lines = []
     Unit_Operations = []
@@ -56,62 +59,74 @@ class OmWidget(GridLayout):
         UnitOP.UnitOP.size_limit = self.ids.b1.size
         self.filedropdown = DropDown(auto_width=False, width=300)
         for model in File_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=300)
+            btn.text_size = btn.size
             self.filedropdown.add_widget(btn)
 
         self.editdropdown = DropDown(auto_width=False, width=300)
         for model in Edit_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=200)
+            btn.text_size = btn.size
             self.editdropdown.add_widget(btn)
 
         self.insertdropdown = DropDown(auto_width=False, width=300)
         for model in Insert_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=200)
+            btn.text_size = btn.size
             self.insertdropdown.add_widget(btn)
 
         self.toolsdropdown = DropDown(auto_width=False, width=400)
         for model in Tools_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=350)
+            btn.text_size = btn.size
             self.toolsdropdown.add_widget(btn)
 
         self.utilitiesdropdown = DropDown(auto_width=False, width=300)
         for model in Utilities_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=100)
+            btn.text_size = btn.size
             self.utilitiesdropdown.add_widget(btn)
 
         self.optimizationdropdown = DropDown(auto_width=False, width=300)
         for model in Optimization_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=200)
+            btn.text_size = btn.size
             self.optimizationdropdown.add_widget(btn)
 
         self.scriptsdropdown = DropDown(auto_width=False, width=300)
         for model in Scripts_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=150)
+            btn.text_size = btn.size
             self.scriptsdropdown.add_widget(btn)
 
         self.resultsdropdown = DropDown(auto_width=False, width=300)
         for model in Results_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=150)
+            btn.text_size = btn.size
             self.resultsdropdown.add_widget(btn)
 
         self.pluginsdropdown = DropDown(auto_width=False, width=300)
         for model in Plugins_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=200)
+            btn.text_size = btn.size
             self.pluginsdropdown.add_widget(btn)
 
         self.windowsdropdown = DropDown(auto_width=False, width=300)
         for model in Windows_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=150)
+            btn.text_size = btn.size
             self.windowsdropdown.add_widget(btn)
 
         self.viewdropdown = DropDown(auto_width=False, width=300)
         for model in View_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=250)
+            btn.text_size = btn.size
             self.viewdropdown.add_widget(btn)
 
         self.helpdropdown = DropDown(auto_width=False, width=300)
         for model in Help_options:
-            btn = Button(text=model, size_hint_y=None, height=40)
+            btn = MenuButton(text=model, width=200)
+            btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
 
     def compile(self, instance):
