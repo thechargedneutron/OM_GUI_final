@@ -177,7 +177,9 @@ class OmWidget(GridLayout):
 #        a.bind(multi_touch = self.MultiTouch)
         self.ids.b1.add_widget(a)
         self.Unit_Operations.append(a)
-        UnitOP.UnitOP.Operators.append(a)
+        if(a.check_stm == 0):
+            UnitOP.UnitOP.Operators.append(a)
+        UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations)-1
 
     def on_connect(self, instance, value):
         p = 0

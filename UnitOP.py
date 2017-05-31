@@ -34,6 +34,7 @@ class butt(Button):
 
 class UnitOP(Button):
         Operators = []
+        drop_connections = {}
         size_limit = [100, 100]
         unpressed = ListProperty([0, 0])
         double_tap = NumericProperty(0)
@@ -119,18 +120,21 @@ class UnitOP(Button):
                 self.PropInput.append(TextInput(text = str(self.PropertyVal[i]),size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False))
                 self.PropertyObj.append(self.PropInput[i])
                 c.ids.first_tab.add_widget(PropLabel)
-                self.MainButton.append(Button(text='Select', size_hint_y=None, height=25))
-                self.DropDowns.append(dDown(DrNumber=i))
-                for item in self.Operators:
-                    btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i)
-                    btn.bind(on_release=lambda btn: self.DropDowns[btn.DrNumber].select(btn.text))
-                    self.DropDowns[i].add_widget(btn)
-                self.MainButton[i].bind(on_release=self.DropDowns[i].open)
-                self.DropDowns[i].bind(on_select=lambda instance, x: setattr(self.MainButton[instance.DrNumber], 'text', x))
-                c.ids.first_tab.add_widget(self.MainButton[i])
+                if self.check_stm == 0:
+                    c.ids.first_tab.add_widget(self.PropInput[i])
+                else:
+                    self.MainButton.append(Button(text='Select', size_hint_y=None, height=25))
+                    self.DropDowns.append(dDown(DrNumber=i))
+                    for item in self.Operators:
+                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i,background_normal='',background_color=(0.4,0.4,0.4,1))
+                        btn.bind(on_release=lambda btn: self.DropDowns[btn.DrNumber].select(btn.text))
+                        self.DropDowns[i].add_widget(btn)
+                    self.MainButton[i].bind(on_release=self.DropDowns[i].open)
+                    self.DropDowns[i].bind(on_select=lambda instance, x: setattr(self.MainButton[instance.DrNumber], 'text', x))
+                    c.ids.first_tab.add_widget(self.MainButton[i])
                 i = i+1
+                c.ids.submit.bind(on_press=self.on_submit)
             c.open()
-
 
         def open_prop(self,instance):
                 self.PropInput = []

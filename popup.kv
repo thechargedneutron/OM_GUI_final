@@ -33,8 +33,15 @@
                             font_size:12
                             multiline:False
                     GridLayout:
+                        size_hint_y: 0.8
                         cols:2
                         id:first_tab
+                        spacing:10
+                        padding:10,0
+                    Button:
+                        id:submit
+                        size_hint_y:0.1
+                        text:'Submit'
 
             TabbedPanelItem:
                 text: 'Tab2'

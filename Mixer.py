@@ -5,7 +5,7 @@ class Mixer(UnitOP.UnitOP):
         super(Mixer, self).__init__(**kwargs)
         self.size = (52, 87)
         self.background_normal = 'Mixer1.png'
-        self.PropertyList = ['INPUT1','INPUT2','OUTPUT']
+        self.PropertyList = ['INPUT 1','INPUT 2','OUTPUT']
         self.connected_to = []
         self.Connecting_Points = []
         self.line_nos = []
@@ -17,9 +17,9 @@ class Mixer(UnitOP.UnitOP):
 
     def on_submit(self, instance):
         self.Connecting_Points = [[self.x, self.y + 4], [self.x, self.y + 83], [self.x + 52, self.y + (87 / 2)]]
-        for Property in self.PropertyObj:
-            self.connected_to.append(int(Property.text))
-            self.PropertyVal.append(Property.text)
+        for Property in self.MainButton:
+            self.connected_to.append(self.drop_connections[Property.text])
+            self.PropertyVal.append(self.drop_connections[Property.text])
             print self.connected_to
         if self.connected == False:
             self.connect = self.connect + 1
