@@ -22,6 +22,7 @@ from kivy.graphics.instructions import InstructionGroup
 from kivy.lang import Builder
 from kivy.uix.dropdown import DropDown
 from url import OmWidget
+from kivy.factory import Factory
 Builder.load_file('popup.kv')
 
 class cPopUp(Popup):
@@ -32,7 +33,7 @@ class dDown(DropDown):
 class butt(Button):
     DrNumber = NumericProperty(0)
 
-class UnitOP(Button):
+class UnitOP(Factory.CustButton):
         Operators = []
         drop_connections = {}
         size_limit = [100, 100]
@@ -47,9 +48,9 @@ class UnitOP(Button):
         def __init__(self, **kwargs):
             super(UnitOP, self).__init__(**kwargs)
             self.size_hint = None, None
-            self.size = (30, 15)
+            self.size = (40, 15)
             self.connected = False
-            self.background_normal = 'MatStm.png'
+            self.ids.image.source = 'MatStm.png'
             self.PropertyList = []
             self.PropertyObj = []
             self.PropertyVal = ['50','101.325','100']

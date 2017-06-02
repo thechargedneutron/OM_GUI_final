@@ -3,8 +3,8 @@ import UnitOP
 class Flash(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Flash, self).__init__(**kwargs)
-        self.size = (50, 134)
-        self.background_normal = 'Flash.png'
+        self.size = (60, 160)
+        self.ids.image.source = 'Flash.png'
         self.PropertyList = ['INPUT 1','INPUT 2','OUTPUT 1','OUTPUT 2']
         self.connected_to = []
         self.Connecting_Points = []

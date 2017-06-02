@@ -1,3 +1,23 @@
+<CustButton@Button>:
+    background_normal:''
+    background_color:(0,0,0,0)
+    BoxLayout:
+        orientation:'vertical'
+        height: self.parent.height
+        width:root.size[0]
+        padding:4
+        pos: self.parent.pos
+        Image:
+            id:image
+        Label:
+            id:label
+            size_hint_y:None
+            size:(0,10)
+            font_size:12.5
+            text:'hello'
+            color:(0,0,0,1)
+
+
 <cPopUp>:
     title:"Properties"
     size_hint:(0.3, 1)

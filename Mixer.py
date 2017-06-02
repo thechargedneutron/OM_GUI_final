@@ -3,8 +3,8 @@ import UnitOP
 class Mixer(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Mixer, self).__init__(**kwargs)
-        self.size = (52, 87)
-        self.background_normal = 'Mixer1.png'
+        self.size = (60, 115.75)
+        self.ids.image.source = 'Mixer1.png'
         self.PropertyList = ['INPUT 1','INPUT 2','OUTPUT']
         self.connected_to = []
         self.Connecting_Points = []

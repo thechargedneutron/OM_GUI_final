@@ -3,8 +3,8 @@ import UnitOP
 class Stream(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Stream, self).__init__(**kwargs)
-        self.size = (30, 15)
-        self.background_normal = 'MatStm.png'
+        self.size = (80, 40)
+        self.ids.image.source = 'MatStm.png'
         self.connected_to = []
         self.PropertyList = ['TEMPERATURE', 'PRESSURE', 'FLOWRATE']
         self.Connecting_Points = []
