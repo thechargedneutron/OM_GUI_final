@@ -5,7 +5,7 @@
     size_hint_y:None
     height:20
     background_normal:''
-    background_color:(0.4,0.4,0.4,1)
+    background_color:(0.2,0.2,0.2,1)
     halign:'left'
     size_hint_x:None
     width:300
@@ -13,21 +13,21 @@
 <MButton@Button>:
     size_hint_x:None
     background_normal:''
-    background_color:(0.62,0,0,1)
+    background_color:(0.2,0.2,0.2,0.7)
 <M2Button@Button>:
     size_hint_x:None
     background_normal:''
-    background_color:(0.4,0.4,0.4,1)
+    background_color:(0.3,0.3,0.3,0.7)
 <OmWidget>:
     cols:1
-    spacing:1
+    spacing:2.3
     size_hint_y:None
     size_hint:(1,1)
     size:(900,400)
     pos_hint:{'center_x': .5, 'center_y': .5}
     canvas:
         Color:
-            rgb: 0,0,0
+            rgb: 47 / 255., 167 / 255., 212 / 255., 1.
         Rectangle:
             pos:self.pos
             size:self.size
@@ -36,7 +36,7 @@
         size:(0,30)
         canvas:
             Color:
-                rgb: 0.62,0,0
+                rgb: 0.2,0.2,0.2
             Rectangle:
                 pos:self.pos
                 size:self.size
@@ -93,7 +93,7 @@
         size:(0, 30)
         canvas:
             Color:
-                rgb: 0.62,0,0
+                rgb: 0.3,0.3,0.3,1
             Rectangle:
                 pos:self.pos
                 size:self.size
@@ -137,7 +137,7 @@
             orientation:'vertical'
             canvas:
                 Color:
-                    rgb: 0,0,0
+                    rgb: 0.1,0.1,0.1
                 Rectangle:
                     pos:self.pos
                     size:self.size
