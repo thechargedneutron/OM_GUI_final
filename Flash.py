@@ -3,8 +3,9 @@ import UnitOP
 class Flash(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Flash, self).__init__(**kwargs)
-        self.size = (60, 160)
-        self.ids.image.source = 'Flash.png'
+        self.size2 = (60, 160)
+        self.size = (50, 134)
+        self.background_normal = 'Flash.png'
         self.PropertyList = ['INPUT 1','INPUT 2','OUTPUT 1','OUTPUT 2']
         self.connected_to = []
         self.Connecting_Points = []
@@ -18,6 +19,7 @@ class Flash(UnitOP.UnitOP):
     def on_submit(self, instance):
         self.Connecting_Points = [[self.x,self.y+14], [self.x, self.y+120], [self.x+52, self.y+14], [self.x+52, self.y+120]]
         self.name = self.name_ob.text
+        self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
         for Property in self.MainButton:
             self.connected_to.append(self.drop_connections[Property.text])

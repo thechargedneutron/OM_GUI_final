@@ -33,7 +33,36 @@ class dDown(DropDown):
 class butt(Button):
     DrNumber = NumericProperty(0)
 
-class UnitOP(Factory.CustButton):
+class UnitOPM(Factory.CustButton):
+    def __init__(self, **kwargs):
+        super(UnitOPM, self).__init__(**kwargs)
+        self.child = Button()
+
+    def on_touch_down(self, touch):
+        if self.child.collide_point(*touch.pos):
+            if touch.is_double_tap:
+                # touch.multitouch_sim = True
+                self.child.multi_touch = self.child.multi_touch + 1
+            else:
+                touch.grab(self)
+        return False
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            # self.unpressed = touch.pos
+            touch.ungrab(self)
+        return True
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            self.center_x = touch.x
+            self.center_y = touch.y
+            if self.child.connected == True:
+                self.child.line_move = self.child.line_move + 1
+            return False
+        return super(UnitOPM, self).on_touch_move(touch)
+
+class UnitOP(Button):
         Operators = []
         drop_connections = {}
         size_limit = [100, 100]
@@ -50,7 +79,6 @@ class UnitOP(Factory.CustButton):
             self.size_hint = None, None
             self.size = (40, 15)
             self.connected = False
-            self.ids.image.source = 'MatStm.png'
             self.PropertyList = []
             self.PropertyObj = []
             self.PropertyVal = ['50','101.325','100']
@@ -63,50 +91,7 @@ class UnitOP(Factory.CustButton):
             self.MainButton = []
             self.name_ob = TextInput()
             self.bef_name = ''
-
-
-
-        def on_touch_down(self, touch):
-            if self.collide_point(*touch.pos):
-                if touch.is_double_tap:
-                    touch.multitouch_sim = True
-                    self.multi_touch = self.multi_touch + 1
-                # if 'multitouch_sim' in touch.profile:
-                #     touch.multitouch_sim = True
-                #     self.multi_touch = self.multi_touch + 1
-                else:
-                    touch.grab(self)
-            return False
-
-        def on_touch_up(self, touch):
-            if touch.grab_current is self:
-                self.unpressed = touch.pos
-                touch.ungrab(self)
-            return True
-
-
-        def on_touch_move(self, touch):
-            if touch.grab_current is self:
-                if touch.x > UnitOP.size_limit[0]-self.size[0]:
-                    self.x = UnitOP.size_limit[0]-self.size[0]
-                    self.y = self.pos[1]
-                    self.unpressed = (0, 0)
-                elif touch.y > UnitOP.size_limit[1]-self.size[1]:
-                    self.x = self.pos[0]
-                    self.y = UnitOP.size_limit[1]-self.size[1]
-                else:
-                    self.center_x = touch.x
-                    self.center_y = touch.y
-                #              if self.connect != 0:
-                if self.connected == True:
-                    self.line_move = self.line_move + 1
-
-                return False
-            return super(UnitOP, self).on_touch_move(touch)
-
-        # def on_unpressed(self,instance,pos):
-        #     if self.connect != 0:
-        #         self.line_move = self.line_move + 1
+            self.text_label = Label()
 
         def on_multi_touch(self, instance, value):
             c = cPopUp()

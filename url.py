@@ -171,14 +171,21 @@ class OmWidget(GridLayout):
 
     def add_but(self,instance,value):
         a = instance.UO()
+        b = UnitOP.UnitOPM()
         # a.pos=(random.random()*self.ids.b1.size[0],random.random()*self.ids.b1.size[1])
         a.bind(connect=self.on_connect)
         a.bind(line_move=self.on_line_move)
         a.name = a.OM_Model+str(value)
+        a.pos_hint={'center_x':0.5}
         self.data.append('test.'+a.OM_Model+' '+a.OM_Model+str(value)+';\n')
-#        a.bind(multi_touch = self.MultiTouch)
-        a.ids.label.text = a.name
-        self.ids.b1.add_widget(a)
+        b.size = a.size2
+        b.ids.layout.add_widget(a)
+        b.child = a
+        label = Label(id='label',size_hint_y=None, size=(0,20),font_size=12.5,color=(0,0,0,1))
+        label.text = a.name
+        b.ids.layout.add_widget(label)
+        a.text_label = label
+        self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
         if(a.check_stm == 0):
             UnitOP.UnitOP.Operators.append(a)

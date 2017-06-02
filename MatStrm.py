@@ -3,8 +3,9 @@ import UnitOP
 class Stream(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Stream, self).__init__(**kwargs)
-        self.size = (80, 40)
-        self.ids.image.source = 'MatStm.png'
+        self.size2 = (80, 40)
+        self.size = (30, 15)
+        self.background_normal = 'MatStm.png'
         self.connected_to = []
         self.PropertyList = ['TEMPERATURE', 'PRESSURE', 'FLOWRATE']
         self.Connecting_Points = []
@@ -19,6 +20,7 @@ class Stream(UnitOP.UnitOP):
     def on_submit(self, instance):
         self.PropertyVal = []
         self.name = self.name_ob.text
+        self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
         for property in self.PropertyObj:
             self.PropertyVal.append(property.text)

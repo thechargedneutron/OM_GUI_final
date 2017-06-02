@@ -1,21 +1,14 @@
 <CustButton@Button>:
+    size_hint:None,None
     background_normal:''
     background_color:(0,0,0,0)
     BoxLayout:
+        id:layout
+        size_hint_y:None
+        size : self.parent.size
         orientation:'vertical'
-        height: self.parent.height
-        width:root.size[0]
         padding:4
         pos: self.parent.pos
-        Image:
-            id:image
-        Label:
-            id:label
-            size_hint_y:None
-            size:(0,10)
-            font_size:12.5
-            text:'hello'
-            color:(0,0,0,1)
 
 
 <cPopUp>:
