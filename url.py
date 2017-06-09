@@ -24,11 +24,16 @@ from kivy.uix.actionbar import ActionView
 from kivy.uix.actionbar import ActionButton
 from kivy.uix.actionbar import ActionPrevious
 from kivy.uix.dropdown import DropDown
+from kivy.uix.progressbar import ProgressBar
+from progressbar import NewProgressBar
+from kivy.lang import Builder
+
 
 import random
 import StaticUO
 from OMPython import OMCSession
 import UnitOP
+
 
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
 File_options = ['New Steady-state Simulation','New Compound Creator Study','New Data Regression Study','New UNIFAC Parameter Regression Case','Open','Open Samples','Save','Save All','Save As','Close Active Simulation','Close All','Exit Openmodellica']
@@ -45,6 +50,12 @@ View_options = ['Show Toolstrip','Console Output','calculation Queue','Watch pan
 Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','About OpenModellica']
 
 class MenuButton(Button):
+    pass
+
+class SPopUp(Popup):
+    pass
+
+class SSPopUp(Popup):
     pass
 
 class OmWidget(GridLayout):
@@ -143,26 +154,56 @@ class OmWidget(GridLayout):
 
 
     def simulate(self,instance):
+
+        self.SSP.dismiss()
         with open('Flowsheet.mo', 'w') as txtfile:
             for d in self.data:
                 txtfile.write(d)
             txtfile.write('end Flowsheet;\n')
-            #
-            # omc = OMCSession()
-            # omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/MIxerModel/test.mo\")")
-            # omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/OM_GUI/Flowsheet.mo\")")
-            # chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
-            # print chek
-            # for unit in self.Unit_Operations:
-            #     if 'Mat_Stm' in unit.name:
-            #         print 'yes'
-            #         unit.PropertyVal = []
-            #         for prop in unit.PropertyList:
-            #             resultstr = unit.name + '.' + prop
-            #             print resultstr
-            #             resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
-            #             print resultval
-            #             unit.PropertyVal.append(resultval)
+        SimStatus = SPopUp()
+        SimStatus.bind(on_open=self.SimProgress)
+        SimStatus.open()
+        
+
+    def SimProgress(self,instance):
+
+
+        omc = OMCSession()
+        omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/MIxerModel/test.mo\")")
+        instance.ids.ProgBar.value = 75
+        instance.ids.status.text = 'Compiling'
+        omc.sendExpression("loadFile(\"/Users/rahuljain/Documents/OM_GUI/Flowsheet.mo\")")
+        instance.ids.ProgBar.value = 85
+        instance.ids.status.text = 'Simulating'
+        chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
+        
+
+
+        print chek
+        for unit in self.Unit_Operations:
+            if 'Mat_Stm' in unit.name:
+                print 'yes'
+                unit.PropertyVal = []
+                for prop in unit.PropertyList:
+                    resultstr = unit.name + '.' + prop
+                    print resultstr
+                    resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
+                    print resultval
+                    unit.PropertyVal.append(resultval)
+        instance.ids.ProgBar.value = 100
+        instance.ids.status.text = 'Completed Successfully'
+
+        instance.dismiss()
+
+
+
+
+    def SimulationSettings(self,instance):
+        self.SSP = SSPopUp()
+        self.SSP.ids.Sim_But.bind(on_press=self.simulate)
+        self.SSP.open()
+
+    
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -204,7 +245,7 @@ class OmWidget(GridLayout):
             horzpoint = (sourcepos[0],sourcepos[1],destpos[0],sourcepos[1])
             vertpoint = (destpos[0],sourcepos[1],destpos[0],destpos[1])
             line = InstructionGroup()
-            line.add(Color(0, 0, 0, 0.5))
+            line.add(Color(0, 0, 0, 1))
             line.add(Line(points=horzpoint, width=1))
             line.add(Line(points=vertpoint,width=1))
             self.lines.append(line)

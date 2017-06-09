@@ -1,6 +1,45 @@
 #:import SMatStrm StaticUO.SMatStrm
 #:import SMixer StaticUO.SMixer
 #:import SFlash StaticUO.SFlash
+
+<SSPopUp>:
+    id:popup
+    title: "SIMULATION SETTINGS"
+    size_hint:(0.7,0.3)
+    pos_hint:{'center_x': 0.5, 'center_y': 0.5}
+    opacity: 0.8
+    auto_dismiss: True
+    GridLayout:
+        cols:2
+        Label: 
+            text: "Non-Linear Solver"
+        Label:
+            text: "Non-Linear Solver"
+        Button:
+            id: Sim_But
+            text: "SIMULATE"
+        Button:
+            text: "    "            
+
+<SPopUp>:
+    title: "SIMULATION STATUS"
+    size_hint:(0.7,0.25)
+    auto_dismiss: False
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    opacity: 0.8
+    FloatLayout:
+        ProgressBar:
+            id:ProgBar
+            size_hint: 1,0.6
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            value: 50
+            max: 100
+        Label:
+            id:status
+            text: 'Loading...'
+            size_hint: 1,0.6
+            pos_hint: {'center_x': 0.5, 'center_y': 0.12}    
+
 <MenuButton>
     size_hint_y:None
     height:20
@@ -120,7 +159,7 @@
             M2Button:
                 text:'SIM'
                 width:50
-                on_press: root.simulate(*args)
+                on_press: root.SimulationSettings(*args)
     BoxLayout:
         size_y_hint: None
         FloatLayout:
