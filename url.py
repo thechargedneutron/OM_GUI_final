@@ -7,7 +7,7 @@ from kivy.properties import ListProperty
 from kivy.properties import NumericProperty
 from kivy.graphics.vertex_instructions import Rectangle
 from kivy.graphics.vertex_instructions import Line
-from kivy.uix.bubble import Bubble
+from kivy.uix.bubble import Bubble,BubbleButton
 from kivy.uix.popup import Popup
 from functools import partial
 from kivy.uix.scrollview import ScrollView
@@ -25,9 +25,11 @@ from kivy.uix.actionbar import ActionButton
 from kivy.uix.actionbar import ActionPrevious
 from kivy.uix.dropdown import DropDown
 from kivy.uix.progressbar import ProgressBar
-from progressbar import NewProgressBar
 from kivy.lang import Builder
+from kivy.lang import Builder
+from textwrap import dedent
 
+import CORBA
 
 import random
 import StaticUO
@@ -52,16 +54,37 @@ Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','
 class MenuButton(Button):
     pass
 
+class Remove_Bubble(Bubble):
+    pass
+
 class SPopUp(Popup):
     pass
 
 class SSPopUp(Popup):
     pass
 
+class MyTextInput(TextInput):
+
+    def __init__(self, **kw):
+        self.drop_down = DropDown(dismiss_on_select=True)
+        self.drop_down.bind(on_select=self.on_select)
+        super(MyTextInput, self).__init__(**kw)
+
+    def on_select(self, *args):
+        self.text = args[1]
+
+    def on_touch_up(self, touch):
+        if touch.grab_current == self:
+            self.drop_down.open(self)
+        return super(MyTextInput, self).on_touch_up(touch)
+
 class OmWidget(GridLayout):
-    lines = []
+    lines = {}
     Unit_Operations = []
+    Unit_Operations_Labels = []
     data = []
+    word_list = (
+        'Benzene Toulene Hydrogen Oxygen Benzonium').split(' ')
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         self.addedcomp = []
@@ -207,8 +230,24 @@ class OmWidget(GridLayout):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
+            if hasattr(self, 'bubb'):
+                if not (self.bubb.collide_point(*touch.pos)):
+                    self.ids.b1.remove_widget(self.bubb)
+
             UnitOP.UnitOP.size_limit = self.ids.b1.size
+            for i in self.Unit_Operations_Labels:
+                if i.collide_point(*touch.pos):
+                    if 'multitouch_sim' in touch.profile:
+                        self.current_unit_op = i
+                        self.bubb = Remove_Bubble()
+                        self.bubb.arrow_pos = 'bottom_mid'
+                        self.bubb.pos = (touch.pos[0] - self.bubb.size[0]/2,touch.pos[1])
+                        self.bubb.add_widget(BubbleButton(text="Remove",on_press=self.remove_unit_op))
+                        self.ids.b1.add_widget(self.bubb)
         return super(OmWidget, self).on_touch_down(touch)
+
+
+
 
     def add_but(self,instance,value):
         a = instance.UO()
@@ -228,9 +267,37 @@ class OmWidget(GridLayout):
         a.text_label = label
         self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
+        self.Unit_Operations_Labels.append(b)
         if(a.check_stm == 0):
             UnitOP.UnitOP.Operators.append(a)
         UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations)-1
+
+    def remove_unit_op(self, i):
+        i = self.Unit_Operations.index(self.current_unit_op.child)
+        i = i + 1
+        while i < len(self.Unit_Operations):
+            UnitOP.UnitOP.drop_connections[self.Unit_Operations[i].name] -= 1
+            i = i + 1
+        if(self.current_unit_op.child.connected == True):
+            for i in self.current_unit_op.child.line_nos:
+                self.ids.b1.canvas.remove(self.lines[i])
+                self.lines.pop(i, 0)
+            if self.current_unit_op.child.check_stm == 1:
+                for i in self.current_unit_op.child.connected_to:
+                    self.Unit_Operations[i].connected = False
+                    self.Unit_Operations[i].connected_to = []
+                    self.Unit_Operations[i].line_nos = []
+            else:
+                for i in self.current_unit_op.child.connected_to:
+                    self.Unit_Operations[i].line_nos.pop(self.current_unit_op.child.line_nos[0])
+                    self.Unit_Operations[i].connected_to.pop(self.Unit_Operations.index(self.current_unit_op.child))
+
+        self.ids.b1.remove_widget(self.current_unit_op)
+        self.ids.b1.remove_widget(self.bubb)
+        self.Unit_Operations_Labels.remove(self.current_unit_op)
+        self.Unit_Operations.remove(self.current_unit_op.child)
+        if self.current_unit_op.child in UnitOP.UnitOP.Operators:
+            UnitOP.UnitOP.Operators.remove(self.current_unit_op.child)
 
     def on_connect(self, instance, value):
         p = 0
@@ -248,7 +315,7 @@ class OmWidget(GridLayout):
             line.add(Color(0, 0, 0, 1))
             line.add(Line(points=horzpoint, width=1))
             line.add(Line(points=vertpoint,width=1))
-            self.lines.append(line)
+            self.lines[len(self.lines)] = line
             self.Unit_Operations[val].line_nos.append(len(self.lines)-1)
             instance.line_nos.append(len(self.lines)-1)
             self.ids.b1.canvas.add(line)
@@ -277,10 +344,23 @@ class OmWidget(GridLayout):
             line.add(Color(0, 0, 0, 0.5))
             line.add(Line(points=horzpoint, width=1))
             line.add(Line(points=vertpoint, width=1))
-            self.lines.pop(liine)
-            self.lines.insert(liine,line)
+            self.lines[liine] = line
             self.ids.b1.canvas.add(line)
             ii = ii + 1
+
+    def on_text(self, instance, value):
+        """ Include all current text from textinput into the word list to
+        emulate the same kind of behavior as sublime text has.
+        """
+
+        dropdown = instance.drop_down
+        dropdown.clear_widgets()
+        for i in self.word_list:
+            if value in i:
+                btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
+                btn.bind(on_release=lambda gbtn: dropdown.select(gbtn.text))
+                btn.text_size = btn.size
+                dropdown.add_widget(btn)
 
     def CompPop(self, instance):
         self.dropdown.clear_widgets()
@@ -297,7 +377,14 @@ class OmWidget(GridLayout):
         self.add.bind(on_press=self.add_compound)
         self.remove = Button(text="Remove", size_hint=(0.3, 0.6), pos_hint={'center_x': 0, 'center_y': 0.9})
         self.remove.bind(on_press=self.remove_compound)
-        self.inp = TextInput(text='', size_hint=(0.6, 0.6), pos_hint={'center_x': 0, 'center_y': 0.7}, hint_text='Ben')
+        self.inp = Builder.load_string(dedent('''
+                        MyTextInput:
+                            size_hint:0.6,0.6
+                            pos_hint:{'center_x':0,'center_y':0.7}
+                            readonly: False
+                            multiline: False
+                    '''))
+        self.inp.bind(text=self.on_text)
         self.showcomp = Button(text='Show Compounds', size_hint=(0.6, 0.6), pos_hint={'center_x': 0, 'center_y': 0.9})
         self.showcomp.bind(on_release=self.dropdown.open)
         self.lay.add_widget(self.inp)
@@ -314,17 +401,16 @@ class OmWidget(GridLayout):
             self.addedcomp.append(str(self.inp.text))
         self.dropdown.clear_widgets()
         for c in self.addedcomp:
-            btn = Button(text=c, size_hint_y=None, height=40)
+            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)
             self.dropdown.add_widget(btn)
-        print self.addedcomp
 
     def remove_compound(self, instance):
         self.dropdown.clear_widgets()
         if self.showcomp.text in self.addedcomp:
             self.addedcomp.remove(self.showcomp.text)
         for c in self.addedcomp:
-            btn = Button(text=c, size_hint_y=None, height=40)
+            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)
             self.dropdown.add_widget(btn)
         self.showcomp.text = 'Show Compounds'

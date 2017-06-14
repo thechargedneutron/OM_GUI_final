@@ -17,17 +17,20 @@
     title:"Properties"
     size_hint:(0.3, 1)
     auto_dismiss:True
-    pos_hint:{'right': 0.3, 'top': 1}
+    pos_hint:{'top':1,'right':0.3}
+    id:popup
     BoxLayout:
         TabbedPanel:
             size_hint: 0.3,1
             pos_hint: {'top':1}
             do_default_tab: False
-            tab_width: self.parent.width/3
+
             tab_height: 30
 
             TabbedPanelItem:
-                text: 'Tab1'
+
+                text: 'Input Data'
+                font_size:12
                 BoxLayout:
                     orientation: 'vertical'
                     GridLayout:
@@ -57,9 +60,162 @@
                         id:submit
                         size_hint_y:0.1
                         text:'Submit'
+            TabbedPanelItem:
+
+                text: 'Compounds'
+                font_size:12
+                BoxLayout:
+                    size_hint_x:0.93
+                    TabbedPanel:
+                        size_hint: 0.3,1
+                        pos_hint: {'top':1}
+                        do_default_tab: False
+                        tab_width: self.parent.width/3
+                        tab_height: 30
+
+                        TabbedPanelItem:
+                            font_size:12
+                            text: 'Amounts'
+                            size_hint_y:1
+                            BoxLayout:
+                                size_hint_y:1
+                                orientation:'vertical'
+                                canvas:
+                                    Color:
+                                        rgb: 0.5,0.5,0.5,1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                BoxLayout:
+                                    padding:0,10,3,10
+                                    size_hint_y:0.1
+                                    Label:
+                                        text:'Basis'
+                                        size_hint_x:0.3
+                                        size_hint_y:0.8
+                                        font_size:12
+                                        halign:'left'
+                                    TextInput:
+                                        text : 'Mole Fractions'
+                                        size_hint_y:0.8
+                                        size_hint_x:0.5
+                                        height:25
+                                        valign:'middle'
+                                        font_size:12
+                                        multiline:False
+                                BoxLayout:
+                                    TabbedPanel:
+                                        size_hint: 0.3,1
+                                        pos_hint: {'top':1}
+                                        do_default_tab: False
+                                        tab_width: self.parent.width/3
+                                        tab_height: 20
+                                        TabbedPanelItem:
+                                            text:'Mixture'
+                                            font_size:12
+                                            BoxLayout:
+                                                size_hint_y:1
+                                                canvas:
+                                                    Color:
+                                                        rgb: 0.7,0.7,0.7,1
+                                                    Rectangle:
+                                                        pos:self.pos
+                                                        size:self.size
+                                        TabbedPanelItem:
+                                            text:'Vapor'
+                                            font_size:12
+                                            BoxLayout:
+                                                size_hint_y:1
+                                                canvas:
+                                                    Color:
+                                                        rgb: 0.7,0.7,0.7,1
+                                                    Rectangle:
+                                                        pos:self.pos
+                                                        size:self.size
+
+                        TabbedPanelItem:
+                            text: 'Properties'
+                            font_size:12
+                            size_hint_y:1
+                            BoxLayout:
+                                size_hint_y:1
+                                orientation:'vertical'
+                                canvas:
+                                    Color:
+                                        rgb: 0.5,0.5,0.5,1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                BoxLayout:
+                                    padding:0,10,3,10
+                                    size_hint_y:0.1
+                                    Label:
+                                        text:'Property'
+                                        font_size:12
+                                        size_hint_x:0.3
+                                        size_hint_y:0.8
+                                        halign:'left'
+                                    TextInput:
+                                        text : 'Fugacity Coefficient'
+                                        size_hint_y:0.8
+                                        size_hint_x:0.5
+                                        height:25
+                                        valign:'middle'
+                                        font_size:12
+                                        multiline:False
+                                BoxLayout:
+                                    TabbedPanel:
+                                        size_hint: 0.3,1
+                                        pos_hint: {'top':1}
+                                        do_default_tab: False
+                                        tab_width: self.parent.width/3
+                                        tab_height: 20
+                                        TabbedPanelItem:
+                                            font_size:12
+                                            text:'Vapour'
+                                            BoxLayout:
+                                                size_hint_y:1
+                                                canvas:
+                                                    Color:
+                                                        rgb: 0.7,0.7,0.7,1
+                                                    Rectangle:
+                                                        pos:self.pos
+                                                        size:self.size
+
 
             TabbedPanelItem:
-                text: 'Tab2'
+                text: 'Phase Properties'
+                font_size:12
+                BoxLayout:
+                    TabbedPanel:
+                        size_hint: 0.3,1
+                        pos_hint: {'top':1}
+                        do_default_tab: False
+                        tab_width: self.parent.width/3
+                        tab_height: 20
+                        TabbedPanelItem:
+                            text:'Mixture'
+                            font_size:12
+                            BoxLayout:
+                                size_hint_y:1
+                                canvas:
+                                    Color:
+                                        rgb: 0.7,0.7,0.7,1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                        TabbedPanelItem:
+                            text:'Vapor'
+                            font_size:12
+                            BoxLayout:
+                                size_hint_y:1
+                                canvas:
+                                    Color:
+                                        rgb: 0.7,0.7,0.7,1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
             TabbedPanelItem:
-                text: 'Tab3'
+                text: 'Annotations'
+                font_size:12
 
