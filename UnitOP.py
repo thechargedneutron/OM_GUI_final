@@ -72,6 +72,7 @@ class UnitOP(Button):
         current_touch = None
         line_move = NumericProperty(0)
         connect = NumericProperty(0)
+        compound_elements = []
 
 
         def __init__(self, **kwargs):
@@ -104,6 +105,9 @@ class UnitOP(Button):
             self.bef_name = self.name
             c.ids.name.text = self.name
             self.name_ob = c.ids.name
+            for comp in self.compound_elements:
+                c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1,size_hint_y=None,font_size=12,size=(0, 20)))
+                c.ids.compound_col_2.add_widget(TextInput(text="1.0000", size_hint_y=None, font_size=8, size=(0, 20)))
             for Property in self.PropertyList:
                 PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', font_size=14)
                 PropLabel.text_size = PropLabel.size

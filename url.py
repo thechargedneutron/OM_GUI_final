@@ -398,6 +398,7 @@ class OmWidget(GridLayout):
 
     def add_compound(self, instance):
         if str(self.inp.text) not in self.addedcomp:
+            UnitOP.UnitOP.compound_elements.append(str(self.inp.text))
             self.addedcomp.append(str(self.inp.text))
         self.dropdown.clear_widgets()
         for c in self.addedcomp:
@@ -409,6 +410,7 @@ class OmWidget(GridLayout):
         self.dropdown.clear_widgets()
         if self.showcomp.text in self.addedcomp:
             self.addedcomp.remove(self.showcomp.text)
+            UnitOP.UnitOP.remove(self.showcomp.text)
         for c in self.addedcomp:
             btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)

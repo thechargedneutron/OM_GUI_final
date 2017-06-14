@@ -113,7 +113,8 @@
                                         TabbedPanelItem:
                                             text:'Mixture'
                                             font_size:12
-                                            BoxLayout:
+                                            GridLayout:
+                                                cols:2
                                                 size_hint_y:1
                                                 canvas:
                                                     Color:
@@ -121,6 +122,54 @@
                                                     Rectangle:
                                                         pos:self.pos
                                                         size:self.size
+                                                StackLayout:
+                                                    id:compound_col_1
+                                                    size_hint_y:1
+                                                    orientation:'tb-lr'
+                                                    canvas:
+                                                        Color:
+                                                            rgb: 0.2,0.2,0.2,1
+                                                        Rectangle:
+                                                            pos:self.pos
+                                                            size:self.size
+                                                    Label:
+                                                        text:'Compound'
+                                                        size_hint_x:1
+                                                        size_hint_y:None
+                                                        font_size:12
+                                                        size:(0,20)
+                                                        color: 0, 0, 0, 1
+                                                        canvas.before:
+                                                            Color:
+                                                                rgb: 0.9,0.9,0.9,1
+                                                            Rectangle:
+                                                                pos:self.pos
+                                                                size:self.size
+                                                StackLayout:
+                                                    id:compound_col_2
+                                                    size_hint_y:1
+                                                    orientation:'tb-lr'
+                                                    canvas:
+                                                        Color:
+                                                            rgb: 0.7,0.7,0.7,1
+                                                        Rectangle:
+                                                            pos:self.pos
+                                                            size:self.size
+                                                    Label:
+                                                        text:'Amount'
+                                                        size_hint_x:1
+                                                        size_hint_y:None
+                                                        size:(0,20)
+                                                        color: 0, 0, 0, 1
+                                                        font_size:12
+                                                        canvas.before:
+                                                            Color:
+                                                                rgb: 0.9,0.9,0.9,1
+                                                            Rectangle:
+                                                                pos:self.pos
+                                                                size:self.size
+
+
                                         TabbedPanelItem:
                                             text:'Vapor'
                                             font_size:12
