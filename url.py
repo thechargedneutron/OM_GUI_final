@@ -1,3 +1,5 @@
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.widget import Widget
@@ -83,10 +85,12 @@ class OmWidget(GridLayout):
     Unit_Operations = []
     Unit_Operations_Labels = []
     data = []
-    word_list = (
-        'Benzene Toulene Hydrogen Oxygen Benzonium').split(' ')
+
+    word_list = []
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
+        fo = open("compounds.txt", "r+")
+        self.word_list = fo.read().splitlines()
         self.addedcomp = []
         self.dropdown = DropDown()
         self.Selected_thermo_model = 'No Model Selected'
@@ -192,10 +196,10 @@ class OmWidget(GridLayout):
 
 
         omc = OMCSession()
-        omc.sendExpression("loadFile(\"/Users/rahuljain/Desktop/MIxerModel/test.mo\")")
+        omc.sendExpression("loadFile(\"/Users/Vinesh/Desktop/MIxerModel/test.mo\")")
         instance.ids.ProgBar.value = 75
         instance.ids.status.text = 'Compiling'
-        omc.sendExpression("loadFile(\"/Users/rahuljain/Documents/OM_GUI/Flowsheet.mo\")")
+        omc.sendExpression("loadFile(\"/Users/Vinesh/Documents/OM_GUI/Flowsheet.mo\")")
         instance.ids.ProgBar.value = 85
         instance.ids.status.text = 'Simulating'
         chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
@@ -238,7 +242,7 @@ class OmWidget(GridLayout):
             for i in self.Unit_Operations_Labels:
                 if i.collide_point(*touch.pos):
                     if 'multitouch_sim' in touch.profile:
-                        self.current_unit_op = i
+                        self.unit_op = i
                         self.bubb = Remove_Bubble()
                         self.bubb.arrow_pos = 'bottom_mid'
                         self.bubb.pos = (touch.pos[0] - self.bubb.size[0]/2,touch.pos[1])
@@ -268,85 +272,172 @@ class OmWidget(GridLayout):
         self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
         self.Unit_Operations_Labels.append(b)
+        UnitOP.UnitOP.all_operators.append(a)
         if(a.check_stm == 0):
             UnitOP.UnitOP.Operators.append(a)
         UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations)-1
 
     def remove_unit_op(self, i):
-        i = self.Unit_Operations.index(self.current_unit_op.child)
+        i = self.Unit_Operations.index(self.unit_op.child)
         i = i + 1
         while i < len(self.Unit_Operations):
             UnitOP.UnitOP.drop_connections[self.Unit_Operations[i].name] -= 1
             i = i + 1
-        if(self.current_unit_op.child.connected == True):
-            for i in self.current_unit_op.child.line_nos:
-                self.ids.b1.canvas.remove(self.lines[i])
-                self.lines.pop(i, 0)
-            if self.current_unit_op.child.check_stm == 1:
-                for i in self.current_unit_op.child.connected_to:
-                    self.Unit_Operations[i].connected = False
-                    self.Unit_Operations[i].connected_to = []
-                    self.Unit_Operations[i].line_nos = []
-            else:
-                for i in self.current_unit_op.child.connected_to:
-                    self.Unit_Operations[i].line_nos.pop(self.current_unit_op.child.line_nos[0])
-                    self.Unit_Operations[i].connected_to.pop(self.Unit_Operations.index(self.current_unit_op.child))
 
-        self.ids.b1.remove_widget(self.current_unit_op)
+        child = self.unit_op.child
+        for key in child.input_streams:
+            if child.input_streams[key]:
+                if child.check_stm == 0:
+                    child.input_streams[key].output_streams[child.conn_point_input+1] = None
+                    child.input_streams[key].output_lines[child.conn_point_input + 1] = None
+                else:
+                    child.input_streams[key].output_streams[1] = None
+                    child.input_streams[key].output_lines[1] = None
+        for key in child.output_streams:
+            if child.output_streams[key]:
+                if child.check_stm == 0:
+                    child.output_streams[key].input_streams[child.conn_point_output+1] = None
+                    child.output_streams[key].input_lines[child.conn_point_output+1] = None
+                else:
+                    child.output_streams[key].input_streams[1] = None
+                    child.output_streams[key].input_lines[1] = None
+        for key in child.input_lines:
+            if child.input_lines[key]:
+                self.ids.b1.canvas.remove(child.input_lines[key])
+                child.input_lines[key] = None
+        for key in child.output_lines:
+            if child.output_lines[key]:
+                self.ids.b1.canvas.remove(child.output_lines[key])
+                child.input_lines[key] = None
+        self.ids.b1.remove_widget(self.unit_op)
         self.ids.b1.remove_widget(self.bubb)
-        self.Unit_Operations_Labels.remove(self.current_unit_op)
-        self.Unit_Operations.remove(self.current_unit_op.child)
-        if self.current_unit_op.child in UnitOP.UnitOP.Operators:
-            UnitOP.UnitOP.Operators.remove(self.current_unit_op.child)
+        self.Unit_Operations_Labels.remove(self.unit_op)
+        self.Unit_Operations.remove(self.unit_op.child)
+        UnitOP.UnitOP.all_operators.remove(self.unit_op.child)
+        if self.unit_op.child in UnitOP.UnitOP.Operators:
+            UnitOP.UnitOP.Operators.remove(self.unit_op.child)
 
     def on_connect(self, instance, value):
         p = 0
         instance.connected = True
-        for val in instance.connected_to:
-            self.Unit_Operations[val].connected_to.append(self.Unit_Operations.index(instance))
-            self.Unit_Operations[val].connected = True
-            self.Unit_Operations[val].Update_Conn_Pnts()
-            self.Unit_Operations[val].conn_point = p
-            destpos = self.Unit_Operations[val].Connecting_Points[p]
-            sourcepos = instance.Connecting_Points[p]
-            horzpoint = (sourcepos[0],sourcepos[1],destpos[0],sourcepos[1])
-            vertpoint = (destpos[0],sourcepos[1],destpos[0],destpos[1])
-            line = InstructionGroup()
-            line.add(Color(0, 0, 0, 1))
-            line.add(Line(points=horzpoint, width=1))
-            line.add(Line(points=vertpoint,width=1))
-            self.lines[len(self.lines)] = line
-            self.Unit_Operations[val].line_nos.append(len(self.lines)-1)
-            instance.line_nos.append(len(self.lines)-1)
-            self.ids.b1.canvas.add(line)
-            if 'equation\n' not in self.data:
-                self.data.append('equation\n')
-            self.data.append('connect ('+instance.name+'.port'+str(p)+', '+self.Unit_Operations[val].name+'.conn);\n')
+        for key in instance.input_lines:
+            if instance.input_lines[key]:
+                self.ids.b1.canvas.remove(instance.input_lines[key])
+                instance.input_lines[key] = None
+        for key in instance.output_lines:
+            if instance.output_lines[key]:
+                self.ids.b1.canvas.remove(instance.output_lines[key])
+                instance.input_lines[key] = None
+        for key in instance.input_streams:
+            if instance.input_streams[key]:
+                val = instance.input_streams[key]
+                val.output_streams[1] = instance
+                val.connected = True
+                val.Update_Conn_Pnts()
+                val.conn_point_output = p
+                sourcepos = val.Connecting_Points_Output
+                destpos = instance.Connecting_Points_Input[p]
+                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1])
+                vertpoint = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1],sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1])
+                horzpoint2 = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1], destpos[0], destpos[1])
+                line = InstructionGroup()
+                line.add(Color(0, 0, 0, 1))
+                line.add(Line(points=horzpoint, width=1))
+                line.add(Line(points=vertpoint, width=1))
+                line.add(Line(points=horzpoint2, width=1))
+                instance.input_lines[key] = line
+                val.output_lines[1] = line
+                self.ids.b1.canvas.add(line)
+                if 'equation\n' not in self.data:
+                    self.data.append('equation\n')
+                self.data.append('connect (' + instance.name + '.port' + str(p) + ', ' + val.name + '.conn);\n')
+            p = p + 1
+        p=0
+        for key in instance.output_streams:
+            if instance.output_streams[key]:
+                val = instance.output_streams[key]
+                val.input_streams[1] = instance
+                val.connected = True
+                val.Update_Conn_Pnts()
+                val.conn_point_input = p
+                sourcepos = instance.Connecting_Points_Output[p]
+                destpos = val.Connecting_Points_Input
+                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
+                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                line = InstructionGroup()
+                line.add(Color(0, 0, 0, 1))
+                line.add(Line(points=horzpoint, width=1))
+                line.add(Line(points=vertpoint, width=1))
+                line.add(Line(points=horzpoint2, width=1))
+                instance.output_lines[key] = line
+                val.input_lines[1] = line
+                self.ids.b1.canvas.add(line)
+                if 'equation\n' not in self.data:
+                    self.data.append('equation\n')
+                self.data.append('connect (' + instance.name + '.port' + str(p) + ', ' + val.name + '.conn);\n')
             p = p + 1
 
 
-    def on_line_move(self, instance, value):
-        ii=0
 
-        for liine in instance.line_nos:
-            self.ids.b1.canvas.remove(self.lines[liine])
-            instance.Update_Conn_Pnts()
-            self.Unit_Operations[instance.connected_to[ii]].Update_Conn_Pnts()
-            destpos = self.Unit_Operations[instance.connected_to[ii]].Connecting_Points[instance.conn_point]
-            sourcepos = instance.Connecting_Points[ii]
-            if instance.check_stm == 0:
-                t = destpos
-                destpos = sourcepos
-                sourcepos = t
-            horzpoint = (sourcepos[0], sourcepos[1], destpos[0], sourcepos[1])
-            vertpoint = (destpos[0], sourcepos[1], destpos[0], destpos[1])
-            line = InstructionGroup()
-            line.add(Color(0, 0, 0, 0.5))
-            line.add(Line(points=horzpoint, width=1))
-            line.add(Line(points=vertpoint, width=1))
-            self.lines[liine] = line
-            self.ids.b1.canvas.add(line)
-            ii = ii + 1
+    def on_line_move(self, instance, value):
+
+        for key in instance.input_lines:
+            if instance.input_lines[key]:
+                self.ids.b1.canvas.remove(instance.input_lines[key])
+                instance.Update_Conn_Pnts()
+                if (instance.check_stm == 0):
+                    instance.input_streams[1].Update_Conn_Pnts()
+                    sourcepos = instance.Connecting_Points_Input
+                    destpos = instance.input_streams[1].Connecting_Points_Output[instance.conn_point_input]
+                else:
+                    instance.input_streams[key].Update_Conn_Pnts()
+                    sourcepos = instance.input_streams[key].Connecting_Points_Output
+                    destpos = instance.Connecting_Points_Input[key-1]
+                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                line = InstructionGroup()
+                line.add(Color(0, 0, 0, 1))
+                line.add(Line(points=horzpoint, width=1))
+                line.add(Line(points=vertpoint, width=1))
+                line.add(Line(points=horzpoint2, width=1))
+                if(instance.check_stm == 0):
+                    instance.input_streams[1].output_lines[instance.conn_point_input + 1] = line
+                    instance.input_lines[1] = line
+                else:
+                    instance.input_lines[key] = line
+                    instance.input_streams[key].output_lines[1] = line
+                self.ids.b1.canvas.add(line)
+        for key in instance.output_lines:
+            if instance.output_lines[key]:
+                self.ids.b1.canvas.remove(instance.output_lines[key])
+                instance.Update_Conn_Pnts()
+                if (instance.check_stm == 0):
+                    instance.output_streams[1].Update_Conn_Pnts()
+                    sourcepos = instance.Connecting_Points_Output
+                    destpos = instance.output_streams[1].Connecting_Points_Input[instance.conn_point_output]
+                else:
+                    instance.output_streams[key].Update_Conn_Pnts()
+                    sourcepos = instance.output_streams[key].Connecting_Points_Input
+                    destpos = instance.Connecting_Points_Output[key - 1]
+                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
+                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                line = InstructionGroup()
+                line.add(Color(0, 0, 0, 1))
+                line.add(Line(points=horzpoint, width=1))
+                line.add(Line(points=vertpoint, width=1))
+                line.add(Line(points=horzpoint2, width=1))
+                if(instance.check_stm == 0):
+                    instance.output_lines[1] = line
+                    instance.output_streams[1].input_lines[instance.conn_point_output + 1] = line
+                else:
+                    instance.output_lines[key] = line
+                    instance.output_streams[key].input_lines[1] = line
+                self.ids.b1.canvas.add(line)
 
     def on_text(self, instance, value):
         """ Include all current text from textinput into the word list to
@@ -357,9 +448,9 @@ class OmWidget(GridLayout):
         dropdown.clear_widgets()
         for i in self.word_list:
             if value in i:
-                btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
+                btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1))
                 btn.bind(on_release=lambda gbtn: dropdown.select(gbtn.text))
-                btn.text_size = btn.size
+
                 dropdown.add_widget(btn)
 
     def CompPop(self, instance):

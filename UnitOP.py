@@ -64,6 +64,7 @@ class UnitOPM(Factory.CustButton):
 
 class UnitOP(Button):
         Operators = []
+        all_operators = []
         drop_connections = {}
         size_limit = [100, 100]
         unpressed = ListProperty([0, 0])
@@ -77,19 +78,25 @@ class UnitOP(Button):
 
         def __init__(self, **kwargs):
             super(UnitOP, self).__init__(**kwargs)
-            self.size_hint = None, None
-            self.size = (40, 15)
+            self.stream_count = []
+            self.input_streams = {}
+            self.output_streams = {}
+            self.input_lines = {}
+            self.output_lines = {}
             self.connected = False
-            self.PropertyList = []
+            self.PropertyListInput = []
+            self.PropertyListOutput = []
             self.PropertyObj = []
-            self.PropertyVal = ['50','101.325','100']
             self.OM_Model = ''
             self.name = ''
-            self.PropInput = [TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False),TextInput(size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False)]
-            self.conn_point = 0
+            self.PropInput = []
+            self.conn_point_input = 0
+            self.conn_point_output = 0
             self.check_stm = 1
-            self.DropDowns =[]
-            self.MainButton = []
+            self.DropDownsInput =[]
+            self.MainButtonInput = []
+            self.DropDownsOutput = []
+            self.MainButtonOutput = []
             self.name_ob = TextInput()
             self.bef_name = ''
             self.text_label = Label()
@@ -99,38 +106,74 @@ class UnitOP(Button):
             i = 0
             self.PropertyObj = []
             self.PropInput = []
-            self.DropDowns = []
-            self.MainButton = []
+            self.DropDownsInput = []
+            self.MainButtonInput = []
+            self.DropDownsOutput = []
+            self.MainButtonOutput = []
             c.ids.name_label.text_size = c.ids.name.size
             self.bef_name = self.name
             c.ids.name.text = self.name
             self.name_ob = c.ids.name
             for comp in self.compound_elements:
-                c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1,size_hint_y=None,font_size=12,size=(0, 20)))
+                c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1, size_hint_y=None, font_size=12,size=(0, 20)))
                 c.ids.compound_col_2.add_widget(TextInput(text="1.0000", size_hint_y=None, font_size=8, size=(0, 20)))
-            for Property in self.PropertyList:
+            for Property in self.PropertyListInput:
                 PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', font_size=14)
                 PropLabel.text_size = PropLabel.size
-                self.PropInput.append(TextInput(text = str(self.PropertyVal[i]),size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False))
+                c.ids.first_tab.add_widget(PropLabel)
+                if self.check_stm == 0:
+                    self.PropInput.append(TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle',font_size=12, multiline=False))
+                    self.PropertyObj.append(self.PropInput[i])
+                    c.ids.first_tab.add_widget(self.PropInput[i])
+                else:
+                    self.MainButtonInput.append(Button(text='Select', size_hint_y=None, height=25))
+                    if self.input_streams[i + 1]:
+                        self.MainButtonInput[len(self.MainButtonInput)-1].text = self.input_streams[i+1].name
+                    self.DropDownsInput.append(dDown(DrNumber=i))
+                    btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
+                    btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                    self.DropDownsInput[i].add_widget(btn)
+                    for item in self.Operators:
+                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i,background_normal='',background_color=(0.4,0.4,0.4,1))
+                        btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                        self.DropDownsInput[i].add_widget(btn)
+                    self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
+                    self.DropDownsInput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonInput[instance.DrNumber], 'text', x))
+                    c.ids.first_tab.add_widget(self.MainButtonInput[i])
+                i = i+1
+            i = 0
+            for Property in self.PropertyListOutput:
+                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',
+                                  font_size=14)
+                PropLabel.text_size = PropLabel.size
+                self.PropInput.append(
+                    TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle', font_size=12,
+                              multiline=False))
                 self.PropertyObj.append(self.PropInput[i])
                 c.ids.first_tab.add_widget(PropLabel)
                 if self.check_stm == 0:
                     c.ids.first_tab.add_widget(self.PropInput[i])
                 else:
-                    self.MainButton.append(Button(text='Select', size_hint_y=None, height=25))
-                    self.DropDowns.append(dDown(DrNumber=i))
+                    self.MainButtonOutput.append(Button(text='Select', size_hint_y=None, height=25))
+                    if self.output_streams[i + 1]:
+                        self.MainButtonOutput[len(self.MainButtonOutput) - 1].text = self.output_streams[i + 1].name
+                    self.DropDownsOutput.append(dDown(DrNumber=i))
+                    btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
+                    btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                    self.DropDownsOutput[i].add_widget(btn)
                     for item in self.Operators:
-                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i,background_normal='',background_color=(0.4,0.4,0.4,1))
-                        btn.bind(on_release=lambda btn: self.DropDowns[btn.DrNumber].select(btn.text))
-                        self.DropDowns[i].add_widget(btn)
-                    self.MainButton[i].bind(on_release=self.DropDowns[i].open)
-                    self.DropDowns[i].bind(on_select=lambda instance, x: setattr(self.MainButton[instance.DrNumber], 'text', x))
-                    c.ids.first_tab.add_widget(self.MainButton[i])
-                i = i+1
-                c.ids.submit.bind(on_press=self.on_submit)
+                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                                   background_color=(0.4, 0.4, 0.4, 1))
+                        btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                        self.DropDownsOutput[i].add_widget(btn)
+                    self.MainButtonOutput[i].bind(on_release=self.DropDownsOutput[i].open)
+                    self.DropDownsOutput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonOutput[instance.DrNumber], 'text', x))
+                    c.ids.first_tab.add_widget(self.MainButtonOutput[i])
+                i = i + 1
+            c.ids.submit.bind(on_press=self.on_submit)
             c.open()
 
-        def open_prop(self,instance):
+        def open_prop(self, instance):
                 self.PropInput = []
                 print 'yes'
                 i = 0
@@ -154,5 +197,5 @@ class UnitOP(Button):
             UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
             for Property in self.PropertyObj:
                 self.PropertyVal.append(Property.text)
-            if self.connected == False:
-                self.connect = self.connect + 1
+            # if self.connected == False:
+            self.connect = self.connect + 1
