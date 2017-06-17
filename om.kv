@@ -61,141 +61,145 @@
     background_normal:''
     background_color:(0.3,0.3,0.3,0.7)
 <OmWidget>:
-    cols:1
-    spacing:2.3
-    size_hint_y:None
-    size_hint:(1,1)
-    size:(1300,900)
-    pos_hint:{'center_x': .5, 'center_y': .5}
-    canvas:
-        Color:
-            rgb: 47 / 255., 167 / 255., 212 / 255., 1.
-        Rectangle:
-            pos:self.pos
-            size:self.size
-    BoxLayout:
+    GridLayout:
+        cols:1
+        spacing:2.3
         size_hint_y:None
-        size:(0,30)
+        size_hint:(1,1)
+        size:(1300,900)
+        pos_hint:{'center_x': .5, 'center_y': .5}
         canvas:
             Color:
-                rgb: 0.2,0.2,0.2
-            Rectangle:
-                pos:self.pos
-                size:self.size
-        MButton:
-            width:40
-            text:'File'
-            on_release:root.filedropdown.open(*args)
-        MButton:
-            width:40
-            text:'Edit'
-            on_release:root.editdropdown.open(*args)
-        MButton:
-            width:60
-            text:'Insert'
-            on_release:root.insertdropdown.open(*args)
-        MButton:
-            width:50
-            text:'Tools'
-            on_release:root.toolsdropdown.open(*args)
-        MButton:
-            width:70
-            text:'Utilities'
-            on_release:root.utilitiesdropdown.open(*args)
-        MButton:
-            width:100
-            text:'Optimization'
-            on_release:root.optimizationdropdown.open(*args)
-        MButton:
-            width:70
-            text:'Scripts'
-            on_release:root.scriptsdropdown.open(*args)
-        MButton:
-            width:70
-            text:'Results'
-            on_release:root.resultsdropdown.open(*args)
-        MButton:
-            width:70
-            text:'Plugins'
-            on_release:root.pluginsdropdown.open(*args)
-        MButton:
-            width:70
-            text:'Windows'
-            on_release:root.windowsdropdown.open(*args)
-        MButton:
-            width:40
-            text:'View'
-            on_release:root.viewdropdown.open(*args)
-        MButton:
-            width:40
-            text:'Help'
-            on_release:root.helpdropdown.open(*args)
-    BoxLayout:
-        size_hint_y: None
-        size:(0, 30)
-        canvas:
-            Color:
-                rgb: 0.3,0.3,0.3,1
+                rgb: 47 / 255., 167 / 255., 212 / 255., 1.
             Rectangle:
                 pos:self.pos
                 size:self.size
         BoxLayout:
-            size_hint_x:0.5
-            M2Button:
-                width:130
-                text:'Compounds'
-                on_press:root.CompPop(*args)
-            M2Button:
-                width:150
-                text:'Thermodynamics'
-                on_press:root.ThermoPop(*args)
-        StackLayout:
-            orientation: 'rl-tb'
-            size_hint_y: None
-            size_hint_x:0.5
-            size:(0, 30)
-            M2Button:
-                text:'COM'
-                pos_hint:{'':0}
-                width:50
-                on_press: root.compile(*args)
-            M2Button:
-                text:'SIM'
-                width:50
-                on_press: root.SimulationSettings(*args)
-    BoxLayout:
-        size_y_hint: None
-#        ScrollView:
-#            size_hint:(0.8,1)
-        FloatLayout:
-            id:b1
-            size_hint:(0.8,1)
-            size:3000,3000
+            size_hint_y:None
+            size:(0,30)
             canvas:
                 Color:
-                    rgba: (1,1,1,1)
+                    rgb: 0.2,0.2,0.2
                 Rectangle:
-                    size: self.size
-                    pos: self.pos
+                    pos:self.pos
+                    size:self.size
+            MButton:
+                width:40
+                text:'File'
+                on_release:root.filedropdown.open(*args)
+            MButton:
+                width:40
+                text:'Edit'
+                on_release:root.editdropdown.open(*args)
+            MButton:
+                width:60
+                text:'Insert'
+                on_release:root.insertdropdown.open(*args)
+            MButton:
+                width:50
+                text:'Tools'
+                on_release:root.toolsdropdown.open(*args)
+            MButton:
+                width:70
+                text:'Utilities'
+                on_release:root.utilitiesdropdown.open(*args)
+            MButton:
+                width:100
+                text:'Optimization'
+                on_release:root.optimizationdropdown.open(*args)
+            MButton:
+                width:70
+                text:'Scripts'
+                on_release:root.scriptsdropdown.open(*args)
+            MButton:
+                width:70
+                text:'Results'
+                on_release:root.resultsdropdown.open(*args)
+            MButton:
+                width:70
+                text:'Plugins'
+                on_release:root.pluginsdropdown.open(*args)
+            MButton:
+                width:70
+                text:'Windows'
+                on_release:root.windowsdropdown.open(*args)
+            MButton:
+                width:40
+                text:'View'
+                on_release:root.viewdropdown.open(*args)
+            MButton:
+                width:40
+                text:'Help'
+                on_release:root.helpdropdown.open(*args)
         BoxLayout:
-            size_hint:(0.2,1)
-            orientation:'vertical'
+            size_hint_y: None
+            size:(0, 30)
             canvas:
                 Color:
-                    rgb: 0.1,0.1,0.1
+                    rgb: 0.3,0.3,0.3,1
                 Rectangle:
                     pos:self.pos
                     size:self.size
             BoxLayout:
-                padding: 10
-                spacing: 5
-                size_hint:(1,0.9)
-                SMixer:
-                    on_included: root.add_but(*args)
-                SMatStrm:
-                    on_included: root.add_but(*args)
-                SFlash:
-                    on_included: root.add_but(*args)
+                size_hint_x:0.5
+                M2Button:
+                    width:130
+                    text:'Compounds'
+                    on_press:root.CompPop(*args)
+                M2Button:
+                    width:150
+                    text:'Thermodynamics'
+                    on_press:root.ThermoPop(*args)
+            StackLayout:
+                orientation: 'rl-tb'
+                size_hint_y: None
+                size_hint_x:0.5
+                size:(0, 30)
+                M2Button:
+                    text:'COM'
+                    pos_hint:{'':0}
+                    width:50
+                    on_press: root.compile(*args)
+                M2Button:
+                    text:'SIM'
+                    width:50
+                    on_press: root.SimulationSettings(*args)
+        BoxLayout:
+            size_y_hint: None
+    #        ScrollView:
+    #            size_hint:(0.8,1)
+            FloatLayout:
+                id:b1
+                size_hint:(0.8,1)
+                size:3000,3000
+                canvas:
+                    Color:
+                        rgba: (1,1,1,1)
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+            BoxLayout:
+                size_hint:(0.2,1)
+                orientation:'vertical'
+                canvas:
+                    Color:
+                        rgb: 0.1,0.1,0.1
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                BoxLayout:
+                    padding: 10
+                    spacing: 5
+                    size_hint:(1,0.9)
+                    SMixer:
+                        id:mixer
+                        on_included: root.add_but(*args)
+                    SMatStrm:
+                        id:mat_strm
+                        on_included: root.add_but(*args)
+                    SFlash:
+                        id:flash
+                        on_included: root.add_but(*args)
 
 
 
