@@ -90,13 +90,20 @@ class OmWidget(FloatLayout):
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         fo = open("compounds.txt", "r+")
-        self.grab_w = '';
+        self.rect= False
+        self.rect_start = []
+        self.select_rect = ''
+        self.Selected_Unit_Operations = []
+        self.grab_w = ''
+        self.select_box = InstructionGroup()
+
         self.word_list = fo.read().splitlines()
         self.addedcomp = []
         self.dropdown = DropDown()
         self.op_count = 1
         self.Selected_thermo_model = 'No Model Selected'
         self.data.append('model Flowsheet\n')
+        self.multiselect = False;
         UnitOP.UnitOP.size_limit = self.ids.b1.size
         self.filedropdown = DropDown(auto_width=False, width=300)
         for model in File_options:
@@ -236,6 +243,15 @@ class OmWidget(FloatLayout):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
+            k = True
+            if 'multitouch_sim' not in touch.profile:
+                for i in self.Unit_Operations_Labels:
+                    i.canvas.before.clear()
+            for i in self.Unit_Operations_Labels:
+                if i.collide_point(*touch.pos):
+                    k = False
+            if self.select_rect != '':
+                self.ids.b1.canvas.remove(self.select_rect)
             if self.ids.mixer.collide_point(*touch.pos):
                 self.grab_w = StaticUO.SMixer()
                 self.add_widget(self.grab_w)
@@ -251,6 +267,11 @@ class OmWidget(FloatLayout):
                 self.add_widget(self.grab_w)
                 self.grab_w.center = touch.pos
                 touch.grab(self)
+            elif self.ids.b1.collide_point(*touch.pos) and k:
+                touch.grab(self)
+                self.rect = True
+                self.rect_start = touch.pos
+
             if hasattr(self, 'bubb'):
                 if not (self.bubb.collide_point(*touch.pos)):
                     self.ids.b1.remove_widget(self.bubb)
@@ -263,72 +284,110 @@ class OmWidget(FloatLayout):
                         self.bubb = Remove_Bubble()
                         self.bubb.arrow_pos = 'bottom_mid'
                         self.bubb.pos = (touch.pos[0] - self.bubb.size[0]/2,touch.pos[1])
-                        self.bubb.add_widget(BubbleButton(text="Remove",on_press=self.remove_unit_op))
+                        self.bubb.add_widget(BubbleButton(text="Remove",on_press=self.remove_function))
                         self.ids.b1.add_widget(self.bubb)
         return super(OmWidget, self).on_touch_down(touch)
 
     def on_touch_move(self, touch, *args):
         if touch.grab_current == self:
-            self.grab_w.center = touch.pos
+            if self.grab_w != '':
+                self.grab_w.center = touch.pos
+
+            if self.rect:
+                if self.select_rect != '':
+                    self.ids.b1.canvas.remove(self.select_rect)
+                self.select_rect = InstructionGroup()
+                self.select_rect.add(Color(0.7, 0.7, 0.7,0.5))
+                self.select_rect.add(Rectangle(pos=self.rect_start,size=(touch.pos[0]-self.rect_start[0], touch.pos[1]-self.rect_start[1])))
+                self.ids.b1.canvas.add(self.select_rect)
+
+
 
         return super(OmWidget, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        for i in self.Unit_Operations_Labels:
+            if i.collide_point(*touch.pos):
+                self.select_box = InstructionGroup()
+                self.select_box.add(Color(0.3, 0.65, 1, 0.8))
+                self.select_box.add(Line(rectangle=(i.pos[0], i.pos[1], i.size[0], i.size[1])))
+                i.canvas.before.clear()
+                i.canvas.before.add(self.select_box)
+                break
         if touch.grab_current == self:
-            if self.ids.b1.collide_point(*touch.pos):
-                a = self.grab_w.UO()
-                b = UnitOP.UnitOPM()
-                # a.pos=(random.random()*self.ids.b1.size[0],random.random()*self.ids.b1.size[1])
-                a.bind(connect=self.on_connect)
-                a.bind(line_move=self.on_line_move)
-                a.name = a.OM_Model + str(self.op_count)
-                a.pos_hint = {'center_x': 0.5}
-                self.data.append('test.' + a.OM_Model + ' ' + a.OM_Model+str(self.op_count) + ';\n')
-                b.size = a.size2
-                b.ids.layout.add_widget(a)
-                b.child = a
-                label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=12.5, color=(0, 0, 0, 1))
-                label.text = a.name
-                b.ids.layout.add_widget(label)
-                a.text_label = label
-                b.center = touch.pos
-                self.ids.b1.add_widget(b)
-                self.Unit_Operations.append(a)
-                self.Unit_Operations_Labels.append(b)
-                UnitOP.UnitOP.all_operators.append(a)
-                self.op_count +=1
-                if (a.check_stm == 0):
-                    UnitOP.UnitOP.Operators.append(a)
-                UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations) - 1
+
+            if self.rect:
+                self.multiselect = False
+                if self.select_rect != '':
+                    self.ids.b1.canvas.remove(self.select_rect)
+                if touch.pos[0] > self.rect_start[0]:
+                    x_ran = range(int(self.rect_start[0]),int(touch.pos[0]))
+                else:
+                    x_ran = range(int(touch.pos[0]),int(self.rect_start[0]))
+
+                if touch.pos[1] > self.rect_start[1]:
+                    y_ran = range(int(self.rect_start[1]), int(touch.pos[1]))
+                else:
+                    y_ran = range(int(touch.pos[1]), int(self.rect_start[1]))
+
+                self.Selected_Unit_Operations = []
+                for up in self.Unit_Operations_Labels:
+                    if int(up.center[0]) in x_ran and int(up.center[1]) in y_ran:
+                        self.multiselect = True
+                        self.Selected_Unit_Operations.append(up)
+                        self.select_box = InstructionGroup()
+                        self.select_box.add(Color(0.3, 0.65, 1, 0.8))
+                        self.select_box.add(Line(rectangle=(up.pos[0], up.pos[1], up.size[0], up.size[1])))
+                        up.canvas.before.clear()
+                        up.canvas.before.add(self.select_box)
+                self.rect = False
+            if self.grab_w != '':
+                if self.ids.b1.collide_point(*touch.pos):
+                    self.add_unit_op(touch)
             touch.ungrab(self)
-            self.remove_widget(self.grab_w)
+            if self.grab_w != '':
+                self.remove_widget(self.grab_w)
+                self.grab_w = ''
+
 
         return super(OmWidget, self).on_touch_up(touch, *args)
 
 
-    def add_but(self,instance,value):
-        a = instance.UO()
+    def add_unit_op(self,touch):
+        a = self.grab_w.UO()
         b = UnitOP.UnitOPM()
-        # a.pos=(random.random()*self.ids.b1.size[0],random.random()*self.ids.b1.size[1])
         a.bind(connect=self.on_connect)
         a.bind(line_move=self.on_line_move)
-        a.name = a.OM_Model+str(value)
-        a.pos_hint={'center_x':0.5}
-        self.data.append('test.'+a.OM_Model+' '+a.OM_Model+str(value)+';\n')
+        a.name = a.OM_Model + str(self.op_count)
+        a.pos_hint = {'center_x': 0.5}
+        self.data.append('test.' + a.OM_Model + ' ' + a.OM_Model + str(self.op_count) + ';\n')
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
-        label = Label(id='label',size_hint_y=None, size=(0,20),font_size=12.5,color=(0,0,0,1))
+        label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=12.5, color=(0, 0, 0, 1))
         label.text = a.name
         b.ids.layout.add_widget(label)
         a.text_label = label
+        b.center = touch.pos
         self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
         self.Unit_Operations_Labels.append(b)
         UnitOP.UnitOP.all_operators.append(a)
-        if(a.check_stm == 0):
+        self.op_count += 1
+        if (a.check_stm == 0):
             UnitOP.UnitOP.Operators.append(a)
-        UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations)-1
+        UnitOP.UnitOP.drop_connections[a.name] = len(self.Unit_Operations) - 1
+
+    def remove_function(self, i):
+        self.ids.b1.remove_widget(self.bubb)
+        if self.multiselect:
+            for i in self.Selected_Unit_Operations:
+                self.unit_op = i
+                self.remove_unit_op(1)
+            self.multiselect =False
+        else:
+            self.remove_unit_op(1)
+
 
     def remove_unit_op(self, i):
         i = self.Unit_Operations.index(self.unit_op.child)
@@ -363,7 +422,7 @@ class OmWidget(FloatLayout):
                 self.ids.b1.canvas.remove(child.output_lines[key])
                 child.input_lines[key] = None
         self.ids.b1.remove_widget(self.unit_op)
-        self.ids.b1.remove_widget(self.bubb)
+
         self.Unit_Operations_Labels.remove(self.unit_op)
         self.Unit_Operations.remove(self.unit_op.child)
         UnitOP.UnitOP.all_operators.remove(self.unit_op.child)
