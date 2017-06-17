@@ -166,18 +166,20 @@
                     on_press: root.SimulationSettings(*args)
         BoxLayout:
             size_y_hint: None
-    #        ScrollView:
-    #            size_hint:(0.8,1)
-            FloatLayout:
-                id:b1
+            id:box_cover
+            ScrollView:
                 size_hint:(0.8,1)
-                size:3000,3000
-                canvas:
-                    Color:
-                        rgba: (1,1,1,1)
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
+                id:scroll
+                FloatLayout:
+                    id:b1
+                    size_hint:(None,None)
+                    size:1500,1500
+                    canvas:
+                        Color:
+                            rgba: (1,1,1,1)
+                        Rectangle:
+                            size: self.size
+                            pos: self.pos
             BoxLayout:
                 size_hint:(0.2,1)
                 orientation:'vertical'

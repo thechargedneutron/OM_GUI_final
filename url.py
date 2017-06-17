@@ -242,13 +242,16 @@ class OmWidget(FloatLayout):
     
 
     def on_touch_down(self, touch):
+        print self.ids.scroll.scroll_x,
+        print " - ",
+        print self.ids.scroll.scroll_y
         if self.collide_point(*touch.pos):
             k = True
             if 'multitouch_sim' not in touch.profile:
                 for i in self.Unit_Operations_Labels:
                     i.canvas.before.clear()
             for i in self.Unit_Operations_Labels:
-                if i.collide_point(*touch.pos):
+                if i.collide_point(*self.compute_relative_position(touch)):
                     k = False
             if self.select_rect != '':
                 self.ids.b1.canvas.remove(self.select_rect)
@@ -267,23 +270,24 @@ class OmWidget(FloatLayout):
                 self.add_widget(self.grab_w)
                 self.grab_w.center = touch.pos
                 touch.grab(self)
-            elif self.ids.b1.collide_point(*touch.pos) and k:
+            elif self.ids.b1.collide_point(*self.compute_relative_position(touch)) and k:
                 touch.grab(self)
                 self.rect = True
-                self.rect_start = touch.pos
+                self.rect_start = self.compute_relative_position(touch)
 
             if hasattr(self, 'bubb'):
-                if not (self.bubb.collide_point(*touch.pos)):
+                if not (self.bubb.collide_point(*self.compute_relative_position(touch))):
                     self.ids.b1.remove_widget(self.bubb)
 
             UnitOP.UnitOP.size_limit = self.ids.b1.size
+            touch_pos = self.compute_relative_position(touch)
             for i in self.Unit_Operations_Labels:
-                if i.collide_point(*touch.pos):
+                if i.collide_point(*self.compute_relative_position(touch)):
                     if 'multitouch_sim' in touch.profile:
                         self.unit_op = i
                         self.bubb = Remove_Bubble()
                         self.bubb.arrow_pos = 'bottom_mid'
-                        self.bubb.pos = (touch.pos[0] - self.bubb.size[0]/2,touch.pos[1])
+                        self.bubb.pos = (touch_pos[0] - self.bubb.size[0]/2,touch_pos[1])
                         self.bubb.add_widget(BubbleButton(text="Remove",on_press=self.remove_function))
                         self.ids.b1.add_widget(self.bubb)
         return super(OmWidget, self).on_touch_down(touch)
@@ -297,8 +301,11 @@ class OmWidget(FloatLayout):
                 if self.select_rect != '':
                     self.ids.b1.canvas.remove(self.select_rect)
                 self.select_rect = InstructionGroup()
-                self.select_rect.add(Color(0.7, 0.7, 0.7,0.5))
-                self.select_rect.add(Rectangle(pos=self.rect_start,size=(touch.pos[0]-self.rect_start[0], touch.pos[1]-self.rect_start[1])))
+                touch_pos = self.compute_relative_position(touch)
+                self.select_rect.add(Color(0, 0, 0, 0.2))
+                self.select_rect.add(Rectangle(pos=self.rect_start,size=(touch_pos[0]-self.rect_start[0], touch_pos[1]-self.rect_start[1])))
+                self.select_rect.add(Color(0, 0, 0, 0.8))
+                self.select_rect.add(Line(rectangle=(self.rect_start[0],self.rect_start[1],touch_pos[0]-self.rect_start[0], touch_pos[1]-self.rect_start[1])))
                 self.ids.b1.canvas.add(self.select_rect)
 
 
@@ -307,7 +314,7 @@ class OmWidget(FloatLayout):
 
     def on_touch_up(self, touch, *args):
         for i in self.Unit_Operations_Labels:
-            if i.collide_point(*touch.pos):
+            if i.collide_point(*self.compute_relative_position(touch)):
                 self.select_box = InstructionGroup()
                 self.select_box.add(Color(0.3, 0.65, 1, 0.8))
                 self.select_box.add(Line(rectangle=(i.pos[0], i.pos[1], i.size[0], i.size[1])))
@@ -318,17 +325,18 @@ class OmWidget(FloatLayout):
 
             if self.rect:
                 self.multiselect = False
+                touch_pos = self.compute_relative_position(touch)
                 if self.select_rect != '':
                     self.ids.b1.canvas.remove(self.select_rect)
-                if touch.pos[0] > self.rect_start[0]:
-                    x_ran = range(int(self.rect_start[0]),int(touch.pos[0]))
+                if touch_pos[0] > self.rect_start[0]:
+                    x_ran = range(int(self.rect_start[0]),int(touch_pos[0]))
                 else:
-                    x_ran = range(int(touch.pos[0]),int(self.rect_start[0]))
+                    x_ran = range(int(touch_pos[0]),int(self.rect_start[0]))
 
-                if touch.pos[1] > self.rect_start[1]:
-                    y_ran = range(int(self.rect_start[1]), int(touch.pos[1]))
+                if touch_pos[1] > self.rect_start[1]:
+                    y_ran = range(int(self.rect_start[1]), int(touch_pos[1]))
                 else:
-                    y_ran = range(int(touch.pos[1]), int(self.rect_start[1]))
+                    y_ran = range(int(touch_pos[1]), int(self.rect_start[1]))
 
                 self.Selected_Unit_Operations = []
                 for up in self.Unit_Operations_Labels:
@@ -352,6 +360,8 @@ class OmWidget(FloatLayout):
 
         return super(OmWidget, self).on_touch_up(touch, *args)
 
+    def compute_relative_position(self,touch):
+        return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x, touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
 
     def add_unit_op(self,touch):
         a = self.grab_w.UO()
@@ -368,7 +378,7 @@ class OmWidget(FloatLayout):
         label.text = a.name
         b.ids.layout.add_widget(label)
         a.text_label = label
-        b.center = touch.pos
+        b.center = self.compute_relative_position(touch)
         self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
         self.Unit_Operations_Labels.append(b)
