@@ -1,47 +1,693 @@
 #:import SMatStrm StaticUO.SMatStrm
 #:import SMixer StaticUO.SMixer
+#:import ScrollEffect kivy.effects.scroll.ScrollEffect
+#:import OpacityScrollEffect kivy.effects.opacityscroll.OpacityScrollEffect
+#:import Button kivy.uix.button.Button
 #:import SFlash StaticUO.SFlash
 <Remove_Bubble>:
     size_hint: (None, None)
     size: (100, 50)
+<BinaryEnvelope>:
+    size_hint:(0.7,0.7)
+    width:750
+    background:''
+    canvas:
+        Color:
+            rgba: 0.8, 0.8, 0.8, 1
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    BoxLayout:
+        orientation:'vertical'
+        padding:8
+        StackLayout:
+            spacing:8
+            orientation:'lr-tb'
+            size_hint:1,0.1
+            Label:
+                text_size: self.size
+                halign: 'left'
+                color:0,0,0,1
+                size_hint:0.2,None
+                size:0,25
+                text:'Name'
+            TextInput:
+                size_hint:0.8,None
+                size: 0,25
+                text_size: self.size
+                font_size: 11
+            Label:
+                text_size: self.size
+                halign: 'left'
+                color:0,0,0,1
+                size_hint:0.2,None
+                size:0,25
+                text:'Attached to'
+            TextInput:
+                size_hint:0.8,None
+                size: 0,25
+                font_size:11
+                text_size: self.size
+        BoxLayout:
+            size_hint:1,0.9
+            BoxLayout:
+            BoxLayout:
 
+
+
+
+<UtilityPopUp>:
+    size_hint:(0.7,0.5)
+    width:750
+    padding:20
+    spacing:20
+    background:''
+    canvas:
+        Color:
+            rgba: 0,0,0,1
+        Line:
+            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+        Color:
+            rgba: 0.8, 0.8, 0.8, 1
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    BoxLayout:
+        spacing:8
+        orientation:'vertical'
+        BoxLayout:
+            size_hint:(1,0.1)
+            canvas:
+                Color:
+                    rgba: 0.5, 0.5, 0.5, 1
+                Rectangle:
+                    pos:self.pos
+                    size:self.size
+            Label:
+                text:'Add an Utility and associate it with an object on the flowsheet'
+                color: 0,0,0,1
+
+        BoxLayout:
+            size_hint:(1,0.8)
+            spacing:8
+            orientation:'vertical'
+            BoxLayout:
+                spacing:8
+                size_hint:1,0.1
+                canvas:
+                    Color:
+                        rgba: 0.8, 0.8, 0.8, 1
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                Label:
+                    text_size: self.size
+                    color: 0,0,0,1
+                    halign: 'left'
+                    size_hint:(0.25,1)
+                    text:"Object Type:"
+                Label:
+                    text_size: self.size
+                    halign: 'left'
+                    color: 0,0,0,1
+                    size_hint:(0.375,1)
+                    text:"Utility Type:"
+                Label:
+                    text_size: self.size
+                    color: 0,0,0,1
+                    halign: 'left'
+                    size_hint:(0.375,1)
+                    text:"Flowsheet Object:"
+            BoxLayout:
+                spacing:8
+                size_hint:1,0.9
+                canvas:
+                    Color:
+                        rgba: 0.8, 0.8, 0.8, 1
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                StackLayout:
+                    size_hint:(0.25,1)
+                    orientation:'tb-lr'
+                    padding:7,4
+                    canvas:
+                        Color:
+                            rgba: 0,0,0,1
+                        Line:
+                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+                    Button:
+                        text:"Material Stream"
+                        font_size:12
+                        text_size: self.size
+                        halign: 'left'
+                        size_hint:(1,None)
+                        size:(0,20)
+                        background_normal:' '
+                        background_color:1,1,1,0
+                        color:0,0,0,1
+                    Button:
+                        text:"Separator Vessels"
+                        font_size:12
+                        text_size: self.size
+                        halign: 'left'
+                        size_hint:(1,None)
+                        size:(0,20)
+                        background_normal:' '
+                        background_color:1,1,1,0
+                        color:0,0,0,1
+                    Button:
+                        text:"Valves"
+                        font_size:12
+                        size_hint:(1,None)
+                        text_size: self.size
+                        halign: 'left'
+                        size:(0,20)
+                        background_normal:' '
+                        background_color:1,1,1,0
+                        color:0,0,0,1
+                StackLayout:
+                    size_hint:(0.375,1)
+                    orientation:'tb-lr'
+                    padding:7,4
+                    canvas:
+                        Color:
+                            rgba: 0,0,0,1
+                        Line:
+                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+                    Button:
+                        text:"Binary phase Envelope"
+                        font_size:12
+                        size_hint:(1,None)
+                        text_size: self.size
+                        halign: 'left'
+                        size:(0,20)
+                        background_normal:' '
+                        background_color:1,1,1,0
+                        color:0,0,0,1
+                StackLayout:
+                    size_hint:(0.375,1)
+                    canvas:
+                        Color:
+                            rgba: 0,0,0,1
+                        Line:
+                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+
+        BoxLayout:
+            size_hint:(1,0.1)
+            canvas:
+                Color:
+                    rgba: 0.8, 0.8, 0.8, 1
+                Rectangle:
+                    pos:self.pos
+                    size:self.size
+            BoxLayout:
+                size_hint:(0.7,1)
+            BoxLayout:
+                spacing:8
+                size_hint:(0.3,1)
+                Button:
+                    text:'Cancel'
+                Button:
+                    id:add_utility
+                    text:'Add utility'
+
+
+<SLabel@Label>:
+    size_hint_y:None
+    height:25
+    text_size: self.size
+    halign: 'left'
+<STextInput@TextInput>:
+    size_hint_y:None
+    height:25
+
+<SButton@Button>
+    size_hint_y:None
+    size:100,25
+    font_size:15
+    background_normal:''
+    background_color: 0.25,0.25,0.25,1
+    canvas:
+        Color:
+            rgba:0,0,0,1
+        Line:
+            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+
+<SCheckBox@CheckBox>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos:self.center_x-8, self.center_y-8
+            size:16,16
 <SSPopUp>:
     id:popup
     title: "SIMULATION SETTINGS"
-    size_hint:(0.7,0.3)
+    size_hint:(0.6,0.7)
     pos_hint:{'center_x': 0.5, 'center_y': 0.5}
     opacity: 0.8
     auto_dismiss: True
     GridLayout:
-        cols:2
-        Label: 
-            text: "Non-Linear Solver"
-        Label:
-            text: "Non-Linear Solver"
-        Button:
-            id: Sim_But
-            text: "SIMULATE"
-        Button:
-            text: "    "            
+        cols:1
+        spacing:10
+        BoxLayout:
+            size_hint: 1,1
+            TabbedPanel:
+                pos_hint: {'top':1}
+                do_default_tab: False
+                tab_width: 130
+                tab_height: 30
+                TabbedPanelItem:
+                    text: 'General'
+                    font_size:12
+                    ScrollView:
+                        size_hint:1,1
+                        BoxLayout:
+                            padding:10
+                            spacing:5
+                            size_hint:1,None
+#                            height: sum(x.height for x in self.children)
+                            size:(1000,700)
+                            orientation: 'vertical'
+                            canvas:
+                                Color:
+                                    rgba: 0.4, 0.4, 0.4, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                                Color:
+                                    rgba:0,0,0,1
+                                Line:
+                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                            SLabel:
+                                text: "Simulation Interval"
+                                size_hint_y:None
+                                height:25
+                                halign: 'center'
+                            GridLayout:
+                                padding:5
+                                spacing:5
+                                id:sim_scroll
+                                cols:2
+                                size_hint_y:None
+                                size:0,120
+                                canvas:
+                                    Color:
+                                        rgba: 0.25, 0.25, 0.25, 1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                    Color:
+                                        rgba:0,0,0,1
+                                    Line:
+                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                SLabel:
+                                    text: "Start Time: "
+                                    size_hint_y:None
+                                    height:25
+                                STextInput:
+                                    id:start_time
+                                    size_hint_y:None
+                                    height:25
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Stop Time: "
+                                STextInput:
+                                    id:stop_time
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SButton:
+                                    id: interval_type
+                                    text:"Select"
+                                STextInput:
+                                    id:interval
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                    valign:'center'
+                            SLabel:
+                                text: "Integration"
+                                halign: 'center'
+                            GridLayout:
+                                padding:5
+                                spacing:5
+                                cols:2
+                                size_hint_y:None
+                                size:0,280
+                                canvas:
+                                    Color:
+                                        rgba: 0.25, 0.25, 0.25, 1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                    Color:
+                                        rgba:0,0,0,1
+                                    Line:
+                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                SLabel:
+                                    text: "Method"
+                                SButton:
+                                    id: method
+                                    text:"Select"
+                                SLabel:
+                                    text: "Tolerance"
+                                STextInput:
+                                    id:tolerance
+                                    size_hint_y:None
 
-<SPopUp>:
-    title: "SIMULATION STATUS"
-    size_hint:(0.7,0.25)
-    auto_dismiss: False
-    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-    opacity: 0.8
-    FloatLayout:
-        ProgressBar:
-            id:ProgBar
-            size_hint: 1,0.6
-            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
-            value: 50
-            max: 100
-        Label:
-            id:status
-            text: 'Loading...'
-            size_hint: 1,0.6
-            pos_hint: {'center_x': 0.5, 'center_y': 0.12}    
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Jacobian"
+                                SButton:
+                                    id: output
+                                    text:"Select"
+                                SLabel:
+                                    text: "DASSL/IDA Options"
+                                SLabel:
+                                    text: " "
+                                SCheckBox:
+                                    size_hint_y:None
+                                    height:25
+                                    id: root_finding
+                                    active: True
+
+                                SLabel:
+                                    text: "Root Finding"
+                                SCheckBox:
+                                    size_hint_y:None
+                                    height:25
+                                    id: restart_after_event
+                                SLabel:
+                                    text: "Restart after Event"
+                                SLabel:
+                                    text: "Initial Step Size"
+                                STextInput:
+                                    id: initial_step_size
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Maximum Step Size"
+                                STextInput:
+                                    id: maximum_step_size
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Maximum Integration Order"
+                                STextInput:
+                                    id: maximum_integration_order
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                            GridLayout:
+                                cols:2
+                                padding:5
+                                spacing:5
+                                canvas:
+                                    Color:
+                                        rgba: 0.25, 0.25, 0.25, 1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                    Color:
+                                        rgba:0,0,0,1
+                                    Line:
+                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                SLabel:
+                                    text: "Compiler Flags (Optional)"
+                                STextInput:
+                                    id: compiler_flags
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "No of Processors "
+                                STextInput:
+                                    id: no_of_processors
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SCheckBox:
+                                    id: build_only
+                                    size_hint_y:None
+                                    height:25
+                                SLabel:
+                                    text: "Build Only"
+                                SCheckBox:
+                                    id: launch_transformatonal_debugger
+                                    size_hint_y:None
+                                    height:25
+                                SLabel:
+                                    text: "Launch Transformational Debugger"
+                                SCheckBox:
+                                    id: launch_algorithmic_debugger
+                                    size_hint_y:None
+                                    height:25
+                                SLabel:
+                                    text: "Launch Algorithmic Debugger"
+                                SCheckBox:
+                                    id: launch_animation
+                                    size_hint_y:None
+                                    height:25
+                                SLabel:
+                                    text: "Launch Animation"
+                TabbedPanelItem:
+                    text: 'Output'
+                    font_size:12
+                    ScrollView:
+                        size_hint:1,1
+                        BoxLayout:
+                            size_hint_y:None
+                            height:270
+                            orientation: 'vertical'
+                            padding:10
+                            spacing:5
+                            canvas:
+                                Color:
+                                    rgba: 0.4, 0.4, 0.4, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            GridLayout:
+                                spacing:5
+                                padding:5
+                                canvas:
+                                    Color:
+                                        rgba: 0.25, 0.25, 0.25, 1
+                                    Rectangle:
+                                        pos:self.pos
+                                        size:self.size
+                                    Color:
+                                        rgba:0,0,0,1
+                                    Line:
+                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                cols:2
+                                SLabel:
+                                    text: "Output Format"
+                                SButton:
+                                    id: output2
+                                    text:"Select"
+                                SLabel:
+                                    text: "File Name Prefix (Optional)"
+                                STextInput:
+                                    id:file_name_prefix
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Result File (Optional)"
+                                STextInput:
+                                    id:result_file
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Variable Filter (Optional)"
+                                STextInput:
+                                    id:variable_filter
+                                    size_hint_y:None
+
+
+                                    font_size:12
+                                    multiline:False
+                                SCheckBox:
+                                    id: protected_variables
+                                    active: False
+                                SLabel:
+                                    text: "Protected Variables"
+                                SCheckBox:
+                                    id: equidistant_time_grid
+                                    active: True
+                                SLabel:
+                                    text: "Equidistant Time Grid"
+                                SCheckBox:
+                                    id: store_variables_at_events
+                                    active: True
+                                SLabel:
+                                    text: "Store Variables at Events"
+                                SCheckBox:
+                                    id:show_generated_files
+                                SLabel:
+                                    text: "Show Generated Files"
+
+                TabbedPanelItem:
+                    text: 'Simulation Flags'
+                    font_size:12
+                    ScrollView:
+                        size_hint:1,1
+                        BoxLayout:
+                            size_hint_y:None
+                            orientation: 'vertical'
+                            GridLayout:
+                                cols:2
+                                SLabel:
+                                    text: "Output Format 1"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format 2"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format 3"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format 4"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format 5"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format 6"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                                SLabel:
+                                    text: "Output Format x"
+                                STextInput:
+                                    id:output_format
+                                    size_hint_y:None
+                                    font_size:12
+                                    multiline:False
+                TabbedPanelItem:
+                    text: 'Archived Simulations'
+                    font_size:12
+
+        BoxLayout:
+            orientation:'vertical'
+            size_hint_y:None
+            height:50
+            BoxLayout:
+                size_hint_y:0.5
+
+                SCheckBox:
+                    size_hint_y: None
+                    size_hint_x:None
+                    width:25
+                    height:25
+
+                    id: save_expt_anntn
+                    active: True
+                SLabel:
+                    size_hint_x:0.8
+                    size_hint_y: None
+                    height:25
+                    text: "Save experiment annotation inside model"
+            BoxLayout:
+                size_hint_x:1
+                size_hint_y:0.5
+                SCheckBox:
+
+                    size_hint_x:None
+                    width:25
+                    size_hint_y: None
+                    height:25
+                    id: save_om_sim_flag
+                SLabel:
+                    size_hint_x:0.8
+                    size_hint_y: None
+                    height:25
+                    text: "Save OpenModelica Simulationflag"
+        BoxLayout:
+            size_hint_y:None
+            height:35
+            padding:10
+            Label:
+                size_hint_x:None
+                width:20
+            Button:
+                size_hint_y:None
+                size_hint_x:None
+                width:150
+                height:25
+                id: Sim_But
+                text: "SIMULATE"
+                background_normal:''
+                background_color: 0.25,0.25,0.25,1
+                canvas:
+                    Color:
+                        rgba:0,0,0,1
+                    Line:
+                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+
 
 <MenuButton>
     size_hint_y:None
@@ -167,8 +813,36 @@
         BoxLayout:
             size_y_hint: None
             id:box_cover
+            StackLayout:
+                id:shelf
+                orientation:'tb-lr'
+                size_hint:(0.03,1)
+                canvas:
+                    Color:
+                        rgba: 0,0,0,1
+                    Line:
+                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+
+                canvas.before:
+                    Color:
+                        rgba: (0.3,0.3,0.3,1)
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                Button:
+                    text:"H"
+                    size_hint:1,None
+                    height:30
+                    on_press:root.select_hand()
+                Button:
+                    text:"M"
+                    size_hint:1,None
+                    height:30
+                    on_press:root.select_move()
+
             ScrollView:
-                size_hint:(0.8,1)
+                effect_cls: ScrollEffect
+                size_hint:(0.77,1)
                 id:scroll
                 FloatLayout:
                     id:b1

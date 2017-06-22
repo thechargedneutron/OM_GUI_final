@@ -11,6 +11,7 @@ from kivy.graphics.vertex_instructions import Rectangle
 from kivy.graphics.vertex_instructions import Line
 from kivy.uix.bubble import Bubble,BubbleButton
 from kivy.uix.popup import Popup
+from kivy.uix.modalview import ModalView
 from functools import partial
 from kivy.properties import ObjectProperty
 from kivy.uix.scrollview import ScrollView
@@ -66,6 +67,12 @@ class SPopUp(Popup):
 class SSPopUp(Popup):
     pass
 
+class UtilityPopUp(ModalView):
+    pass
+
+class BinaryEnvelope(ModalView):
+    pass
+
 class MyTextInput(TextInput):
 
     def __init__(self, **kw):
@@ -90,7 +97,12 @@ class OmWidget(FloatLayout):
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         fo = open("compounds.txt", "r+")
+        self.utility_pop_up = ''
+        self.binary_pop_up = ''
         self.rect= False
+        self.rect_enable = True
+        self.ids.scroll.do_scroll_x = False
+        self.ids.scroll.do_scroll_y = False
         self.rect_start = []
         self.select_rect = ''
         self.Selected_Unit_Operations = []
@@ -131,7 +143,7 @@ class OmWidget(FloatLayout):
 
         self.utilitiesdropdown = DropDown(auto_width=False, width=300)
         for model in Utilities_options:
-            btn = MenuButton(text=model, width=100)
+            btn = MenuButton(text=model, width=100, on_press=self.add_utility)
             btn.text_size = btn.size
             self.utilitiesdropdown.add_widget(btn)
 
@@ -177,6 +189,28 @@ class OmWidget(FloatLayout):
             btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
 
+    def add_utility(self,*args):
+        self.utility_pop_up = UtilityPopUp()
+        self.utility_pop_up.open()
+        self.utility_pop_up.ids.add_utility.bind(on_release = self.binary_envelope)
+
+    def binary_envelope(self,*args):
+        self.utility_pop_up.dismiss()
+        self.binary_pop_up = BinaryEnvelope()
+        self.binary_pop_up.open()
+
+    def select_move(self):
+        print "move"
+        self.rect_enable = False
+        self.ids.scroll.do_scroll_x = True
+        self.ids.scroll.do_scroll_y = True
+
+    def select_hand(self):
+        print "hand"
+        self.ids.scroll.do_scroll_x = False
+        self.ids.scroll.do_scroll_y = False
+        self.rect_enable = True
+
     def compile(self, instance):
         #self.data = []
         self.data.append('equation\n')
@@ -199,6 +233,12 @@ class OmWidget(FloatLayout):
         SimStatus = SPopUp()
         SimStatus.bind(on_open=self.SimProgress)
         SimStatus.open()
+
+    def select(self, *args):
+        try:
+            self.label.text = args[1][0]
+        except:
+            pass
         
 
     def SimProgress(self,instance):
@@ -231,20 +271,60 @@ class OmWidget(FloatLayout):
 
         instance.dismiss()
 
-
-
-
-    def SimulationSettings(self,instance):
+    def SimulationSettings(self, instance):
         self.SSP = SSPopUp()
         self.SSP.ids.Sim_But.bind(on_press=self.simulate)
+        values1 = ["Number of Intervals", "Interval"]
+        values2 = ["euler", "rungekutta", " dassl", "optimization", "radau5", "radau3", "impeuler", "trapezoid",
+                   "lobatto4", "lobatto6", "symEuler", "symEulerSsc", "heun", "ida", "rungekutta_ssc", " qss "]
+        values3 = ["coloured Num", "internationalNumerical", "colouredSymbolical", "numerical", "symbolical",
+                   "kluSparse"]
+        values4 = ["mat", "plt", "csv"]
+        interval = self.SSP.ids.interval_type
+        interval_down = DropDown()
+        for i in values1:
+            btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                         background_color=(0.4, 0.4, 0.4, 1))
+            btn.bind(on_release=lambda btn: interval_down.select(btn.text))
+            interval_down.add_widget(btn)
+        interval_down.bind(on_select=lambda instance, x: setattr(interval, 'text', x))
+        interval.bind(on_release=interval_down.open)
+
+        method = self.SSP.ids.method
+        method_down = DropDown()
+        for i in values2:
+            btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                         background_color=(0.4, 0.4, 0.4, 1))
+            btn.bind(on_release=lambda btn: method_down.select(btn.text))
+            method_down.add_widget(btn)
+        method_down.bind(on_select=lambda instance, x: setattr(method, 'text', x))
+        method.bind(on_release=method_down.open)
+
+        output = self.SSP.ids.output
+        output_down = DropDown()
+        for i in values3:
+            btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                         background_color=(0.4, 0.4, 0.4, 1))
+            btn.bind(on_release=lambda btn: output_down.select(btn.text))
+            output_down.add_widget(btn)
+        output_down.bind(on_select=lambda instance, x: setattr(output, 'text', x))
+        output.bind(on_release=output_down.open)
+
+        output2 = self.SSP.ids.output2
+        output2_down = DropDown()
+        for i in values4:
+            btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                         background_color=(0.4, 0.4, 0.4, 1))
+            btn.bind(on_release=lambda btn: output2_down.select(btn.text))
+            output2_down.add_widget(btn)
+        output2_down.bind(on_select=lambda instance, x: setattr(output2, 'text', x))
+        output2.bind(on_release=output2_down.open)
+
         self.SSP.open()
 
     
 
     def on_touch_down(self, touch):
-        print self.ids.scroll.scroll_x,
-        print " - ",
-        print self.ids.scroll.scroll_y
         if self.collide_point(*touch.pos):
             k = True
             if 'multitouch_sim' not in touch.profile:
@@ -306,7 +386,8 @@ class OmWidget(FloatLayout):
                 self.select_rect.add(Rectangle(pos=self.rect_start,size=(touch_pos[0]-self.rect_start[0], touch_pos[1]-self.rect_start[1])))
                 self.select_rect.add(Color(0, 0, 0, 0.8))
                 self.select_rect.add(Line(rectangle=(self.rect_start[0],self.rect_start[1],touch_pos[0]-self.rect_start[0], touch_pos[1]-self.rect_start[1])))
-                self.ids.b1.canvas.add(self.select_rect)
+                if self.rect_enable:
+                    self.ids.b1.canvas.add(self.select_rect)
 
 
 
@@ -339,16 +420,17 @@ class OmWidget(FloatLayout):
                     y_ran = range(int(touch_pos[1]), int(self.rect_start[1]))
 
                 self.Selected_Unit_Operations = []
-                for up in self.Unit_Operations_Labels:
-                    if int(up.center[0]) in x_ran and int(up.center[1]) in y_ran:
-                        self.multiselect = True
-                        self.Selected_Unit_Operations.append(up)
-                        self.select_box = InstructionGroup()
-                        self.select_box.add(Color(0.3, 0.65, 1, 0.8))
-                        self.select_box.add(Line(rectangle=(up.pos[0], up.pos[1], up.size[0], up.size[1])))
-                        up.canvas.before.clear()
-                        up.canvas.before.add(self.select_box)
-                self.rect = False
+                if self.rect_enable:
+                    for up in self.Unit_Operations_Labels:
+                        if int(up.center[0]) in x_ran and int(up.center[1]) in y_ran:
+                            self.multiselect = True
+                            self.Selected_Unit_Operations.append(up)
+                            self.select_box = InstructionGroup()
+                            self.select_box.add(Color(0.3, 0.65, 1, 0.8))
+                            self.select_box.add(Line(rectangle=(up.pos[0], up.pos[1], up.size[0], up.size[1])))
+                            up.canvas.before.clear()
+                            up.canvas.before.add(self.select_box)
+                    self.rect = False
             if self.grab_w != '':
                 if self.ids.b1.collide_point(*touch.pos):
                     self.add_unit_op(touch)
@@ -361,7 +443,7 @@ class OmWidget(FloatLayout):
         return super(OmWidget, self).on_touch_up(touch, *args)
 
     def compute_relative_position(self,touch):
-        return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x, touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
+        return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x - self.ids.shelf.size[0], touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
 
     def add_unit_op(self,touch):
         a = self.grab_w.UO()
