@@ -128,7 +128,7 @@ class UnitOP(Button):
                 c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1, size_hint_y=None, font_size=12,size=(0, 20)))
                 c.ids.compound_col_2.add_widget(TextInput(text="1.0000", size_hint_y=None, font_size=8, size=(0, 20)))
             for Property in self.PropertyListInput:
-                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', font_size=14)
+                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', color=(0,0,0,1))
                 PropLabel.text_size = PropLabel.size
                 c.ids.first_tab.add_widget(PropLabel)
                 if self.check_stm == 0:
@@ -154,7 +154,7 @@ class UnitOP(Button):
             i = 0
             for Property in self.PropertyListOutput:
                 PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',
-                                  font_size=14)
+                                  color=(0, 0, 0, 1))
                 PropLabel.text_size = PropLabel.size
                 self.PropInput.append(
                     TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle', font_size=12,

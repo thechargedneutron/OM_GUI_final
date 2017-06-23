@@ -7,6 +7,37 @@
 <Remove_Bubble>:
     size_hint: (None, None)
     size: (100, 50)
+<ULabel@Label>:
+    size_hint_y:None
+    height:25
+    text_size: self.size
+    halign: 'left'
+    color:0,0,0,1
+<UTextInput@TextInput>:
+    size_hint_y:None
+    height:25
+<UButton@Button>
+    size_hint_y:None
+    size:100,25
+    font_size:15
+    background_normal:''
+    background_color: 0.25,0.25,0.25,1
+    canvas:
+        Color:
+            rgba:0,0,0,1
+        Line:
+            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+
+<UCheckBox@CheckBox>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos:self.center_x-8, self.center_y-8
+            size:16,16
+    size_hint_x:None
+    width:25
+
 <BinaryEnvelope>:
     size_hint:(0.7,0.7)
     width:750
@@ -49,9 +80,189 @@
                 font_size:11
                 text_size: self.size
         BoxLayout:
-            size_hint:1,0.9
+            size_hint:1,0.5
+            spacing:5
             BoxLayout:
+                canvas:
+                    Color:
+                        rgba: 0,0,0,1
+                    Line:
+                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                    Color:
+                        rgba: 0.7, 0.7, 0.7, 1
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                size_hint_x:0.5
+                ScrollView:
+
+                    BoxLayout:
+                        size_hint_y:None
+                        size:(0,400)
+                        orientation:"vertical"
+                        BoxLayout:
+                            size_hint_y:None
+                            height:25
+                            padding:5
+                            canvas:
+                                Color:
+                                    rgba: 0,0,0,1
+                                Line:
+                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                Color:
+                                    rgba: 0.5, 0.5, 0.5, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            ULabel:
+                                text:"Diagram Settings"
+                                halign:"center"
+                        GridLayout:
+                            cols:2
+                            spacing:8
+                            padding:5,15
+                            ULabel:
+                                text:"Compound 1"
+                            UButton:
+                                text:"Select"
+                            ULabel:
+                                text:"Compound 2"
+                            UButton:
+                                text:"Select"
+                            ULabel:
+                                text:"Envelope type"
+                            BoxLayout:
+                                size_hint_y:None
+                                size:0,20
+                                spacing:5
+
+                                UCheckBox:
+                                    width:15
+                                ULabel:
+                                    text:"Txy"
+                                    size_hint_x:None
+                                    width:25
+                                    font_size:12
+                                UCheckBox:
+                                    width:15
+                                ULabel:
+                                    text:"Pxy"
+                                    size_hint_x:None
+                                    width:25
+                                    font_size:12
+                                UCheckBox:
+                                    width:15
+                                ULabel:
+                                    text:"(T)xy"
+                                    size_hint_x:None
+                                    width:30
+                                    font_size:12
+                                UCheckBox:
+                                    width:15
+                                ULabel:
+                                    text:"(P)xy"
+                                    size_hint_x:None
+                                    width:30
+                                    font_size:12
+                            ULabel:
+                                text:"Txy Diagram Options"
+                            BoxLayout:
+                                size_hint_y:None
+                                size:0,25
+                                UCheckBox:
+                                ULabel:
+                                    text:"VLE"
+                                    font_size:12
+                                UCheckBox:
+                                ULabel:
+                                    text:"LLE"
+                                    font_size:12
+                            ULabel:
+                                text:""
+                            BoxLayout:
+                                size_hint_y:None
+                                size:0,25
+                                UCheckBox:
+
+                                ULabel:
+                                    size_hint_x:None
+                                    width:30
+                                    text:"SLE"
+                                    font_size:12
+                            ULabel:
+                                text:""
+                            BoxLayout:
+                                size_hint_y:None
+                                size:0,25
+                                UCheckBox:
+
+                                ULabel:
+                                    size_hint_x:None
+                                    width:300
+                                    text:"Critical Line"
+                                    font_size:12
+                            ULabel:
+                                text:"X Axis Basis"
+                            UButton:
+                                text:"Select"
+                            ULabel:
+                                text:"Pressure"
+                            UTextInput:
+                            ULabel:
+                                text:"Temperature"
+                            UTextInput:
+                            BoxLayout:
+                                size_hint_y:None
+                                size:0,25
+                                UCheckBox:
+                                ULabel:
+                                    size_hint_x:None
+                                    width:200
+                                    text:"Compare Models"
+                                    font_size:12
+                            UButton:
+                                text:"Calculate"
+                            ULabel:
+                                text:"Property Package"
+                            UButton:
+                                text:"Select"
+
+
+
+
             BoxLayout:
+                size_hint_x:0.5
+                orientation:'vertical'
+                canvas:
+                    Color:
+                        rgba: 0,0,0,1
+                    Line:
+                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                    Color:
+                        rgba: 0.7, 0.7, 0.7, 1
+                    Rectangle:
+                        pos:self.pos
+                        size:self.size
+                BoxLayout:
+                    size_hint_y:None
+                    height:25
+                    padding:5
+                    canvas:
+                        Color:
+                            rgba: 0,0,0,1
+                        Line:
+                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                        Color:
+                            rgba: 0.5, 0.5, 0.5, 1
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+                    ULabel:
+                        text:"Results"
+                        halign:"center"
+                BoxLayout:
+                    size_hint_y:1
+
 
 
 
@@ -842,7 +1053,7 @@
 
             ScrollView:
                 effect_cls: ScrollEffect
-                size_hint:(0.77,1)
+                size_hint:(0.8,1)
                 id:scroll
                 FloatLayout:
                     id:b1
