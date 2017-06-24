@@ -32,7 +32,8 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.lang import Builder
 from kivy.lang import Builder
 from textwrap import dedent
-
+from kivy.garden.graph import Graph, MeshLinePlot
+from math import sin
 import CORBA
 
 import random
@@ -46,7 +47,7 @@ File_options = ['New Steady-state Simulation','New Compound Creator Study','New 
 Edit_options = ['Undo','Redo','Cut Selected Objects','Copy Selected Objects','Paste Objects','Remove selected objects','Clone selected objects','Recalculate object','Export data to Clipboard','Simulation settings','General settings']
 Insert_options = ['Flowsheet Object','Property Table','Master Property Table','Linked Spreadsheet Table','Image','Text','Rectangle']
 Tools_options = ['Petroleum Characterization (Bulk C7+)','Petroleum Characterization (Distillation Curves)','Petroleum Array Manager','Reactions Manager','Pure Compound Property Viewer/Editor','User Database Manager','CAPE-OPEN Component Registration' ]
-Utilities_options = ['Add Utility']
+Utilities_options = ['Binary Plotter']
 Optimization_options = ['Sensitivity Analysis','Multivariate Optimizer']
 Scripts_options = ['Script Manager']
 Results_options = ['Create Report']
@@ -97,6 +98,7 @@ class OmWidget(FloatLayout):
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         fo = open("compounds.txt", "r+")
+        self.plot = None
         self.utility_pop_up = ''
         self.binary_pop_up = ''
         self.rect= False
@@ -188,16 +190,101 @@ class OmWidget(FloatLayout):
             btn = MenuButton(text=model, width=200)
             btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
+    def add_popup(self,*args):
+        interval_down = DropDown()
+        for i in self.addedcomp:
+            btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                         background_color=(0.4, 0.4, 0.4, 1))
+            btn.bind(on_release=lambda btn: interval_down.select(btn.text))
+            interval_down.add_widget(btn)
+        interval_down.bind(on_select=lambda instance, x: setattr(args[0], 'text', x))
+        interval_down.open(args[0])
+
+    def add_popup2(self, *args):
+        interval_down = DropDown()
+        for i in self.addedcomp:
+            if i != self.binary_pop_up.ids.compound_1.text:
+                btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                             background_color=(0.4, 0.4, 0.4, 1))
+                btn.bind(on_release=lambda btn: interval_down.select(btn.text))
+                interval_down.add_widget(btn)
+        interval_down.bind(on_select=lambda instance, x: setattr(args[0], 'text', x))
+        interval_down.open(args[0])
+
+    def add_popup3(self, *args):
+        models = ['Peng-Robinson', 'SRK', 'NRTL', 'UNIQUAC']
+        interval_down = DropDown()
+        for i in models:
+            if i != args[0].text:
+                btn = Button(text=i, size_hint_y=None, height=25, background_normal='',
+                             background_color=(0.4, 0.4, 0.4, 1))
+                btn.bind(on_release=lambda btn: interval_down.select(btn.text))
+                interval_down.add_widget(btn)
+        interval_down.bind(on_select=lambda instance, x: setattr(args[0], 'text', x))
+        interval_down.open(args[0])
+
+    def PropPack(self, *args):
+        comp1 = self.binary_pop_up.ids.compound_1.text
+        comp2 = self.binary_pop_up.ids.compound_2.text
+        pressure = self.binary_pop_up.ids.Pressure.text
+        model = self.binary_pop_up.ids.property_package.text
+        with open('PropPack.mo', 'w') as txtfile:
+            txtfile.write('model PropPack\n')
+            txtfile.write('parameter Chemsep_Database.' + comp1 + ' C1;\n')
+            txtfile.write('parameter Chemsep_Database.' + comp2 + ' C2;\n')
+            txtfile.write('parameter Real Pressure = ' + pressure + ';\n')
+            txtfile.write('extends Thermodynamic_Packages.bubblepnt;\n')
+            txtfile.write('extends Thermodynamic_Packages.' + model + '(NOC = 2, Comp = {C1,C2}, P = Pressure);\n')
+            txtfile.write('end PropPack;\n')
+        omc = OMCSession()
+        omc.sendExpression("loadFile(\"Chemsep_Database.mo\")")
+        omc.sendExpression("loadFile(\"Thermodynamic_Functions.mo\")")
+        omc.sendExpression("loadFile(\"Thermodynamic_Packages.mo\")")
+        omc.sendExpression("loadFile(\"PropPack.mo\")")
+        resultval = omc.sendExpression("simulate(PropPack, stopTime=1.0, numberOfIntervals=50)")
+        if self.plot != None:
+            self.binary_pop_up.ids.graph.remove_plot(self.plot)
+            self.plot = None
+            print "Removed"
+        self.plot = MeshLinePlot(color=[1, 0, 0,1])
+        plot_points = []
+        i = 0.01
+        # print resultval
+        max = -1000000
+        min = 1000000
+        while i < 1:
+            val_r = str(omc.sendExpression("val(T," + str(i) + ")"))
+            plot_points.append((i, float(val_r)))
+            if float(val_r)>max:
+                max =float(val_r)
+            if float(val_r)<min:
+                min = float(val_r)
+            i += 0.02
+
+        self.plot.points = plot_points
+        graph = self.binary_pop_up.ids.graph
+        graph.y_ticks_major = (max-min)/10
+        graph.ymin = min-10
+        graph.ymax = max+10
+        graph.add_plot(self.plot)
+
+
 
     def add_utility(self,*args):
-        self.utility_pop_up = UtilityPopUp()
-        self.utility_pop_up.open()
-        self.utility_pop_up.ids.add_utility.bind(on_release = self.binary_envelope)
-
-    def binary_envelope(self,*args):
-        self.utility_pop_up.dismiss()
         self.binary_pop_up = BinaryEnvelope()
+
+        interval = self.binary_pop_up.ids.compound_1
+        interval.bind(on_release=self.add_popup)
+        self.binary_pop_up.ids.compound_2.bind(on_release=self.add_popup2)
+        self.binary_pop_up.ids.property_package.bind(on_release=self.add_popup3)
         self.binary_pop_up.open()
+        self.binary_pop_up.ids.calculate.bind(on_release=self.PropPack)
+
+
+    # def binary_envelope(self,*args):
+    #     self.utility_pop_up.dismiss()
+    #     self.binary_pop_up = BinaryEnvelope()
+    #     self.binary_pop_up.open()
 
     def select_move(self):
         print "move"
@@ -239,35 +326,51 @@ class OmWidget(FloatLayout):
             self.label.text = args[1][0]
         except:
             pass
-        
+
 
     def SimProgress(self,instance):
 
 
+        # omc = OMCSession()
+        # omc.sendExpression("loadFile(\"test.mo\")")
+        # # instance.ids.ProgBar.value = 75
+        # # instance.ids.status.text = 'Compiling'
+        # omc.sendExpression("loadFile(\"Flowsheet.mo\")")
+        # # instance.ids.ProgBar.value = 85
+        # # instance.ids.status.text = 'Simulating'
+        # chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
+        #
+        #
+        # # print chek
+        # for unit in self.Unit_Operations:
+        #
+        #     if 'Mat_Stm' in unit.name:
+        #         print 'yes'
+        #         unit.PropertyVal = []
+        #         for prop in unit.PropertyList:
+        #             resultstr = unit.name + '.' + prop
+        #             print resultstr
+        #             resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
+        #             print resultval
+        #             unit.PropertyVal.append(resultval)
+        # # instance.ids.ProgBar.value = 100
+        # # instance.ids.status.text = 'Completed Successfully'
+
         omc = OMCSession()
-        omc.sendExpression("loadFile(\"/Users/Vinesh/Desktop/MIxerModel/test.mo\")")
-        instance.ids.ProgBar.value = 75
-        instance.ids.status.text = 'Compiling'
-        omc.sendExpression("loadFile(\"/Users/Vinesh/Documents/OM_GUI/Flowsheet.mo\")")
-        instance.ids.ProgBar.value = 85
-        instance.ids.status.text = 'Simulating'
-        chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
-        
+        omc.sendExpression("loadFile(\"Chemsep_Database.mo\")")
+        omc.sendExpression("loadFile(\"Thermodynamic_Functions.mo\")")
+        omc.sendExpression("loadFile(\"Thermodynamic_Packages.mo\")")
+        omc.sendExpression("loadFile(\"PropPack.mo\")")
+        resultval = omc.sendExpression("simulate(PropPack, stopTime=1.0, numberOfIntervals=50)")
+        # i = 0.01
+        # while i < 1:
+        #     val_r = str(omc.sendExpression("val(T," + str(i) +")"))
+        #     print val_r
+        #     i += 0.01
+        print resultval
 
 
-        print chek
-        for unit in self.Unit_Operations:
-            if 'Mat_Stm' in unit.name:
-                print 'yes'
-                unit.PropertyVal = []
-                for prop in unit.PropertyList:
-                    resultstr = unit.name + '.' + prop
-                    print resultstr
-                    resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
-                    print resultval
-                    unit.PropertyVal.append(resultval)
-        instance.ids.ProgBar.value = 100
-        instance.ids.status.text = 'Completed Successfully'
+
 
         instance.dismiss()
 
@@ -322,7 +425,7 @@ class OmWidget(FloatLayout):
 
         self.SSP.open()
 
-    
+
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -701,6 +804,7 @@ class OmWidget(FloatLayout):
             btn.bind(on_release=self.select_remove_compound)
             self.dropdown.add_widget(btn)
 
+
     def remove_compound(self, instance):
         self.dropdown.clear_widgets()
         if self.showcomp.text in self.addedcomp:
@@ -713,9 +817,10 @@ class OmWidget(FloatLayout):
         self.showcomp.text = 'Show Compounds'
 
 
+
     def ThermoPop(self,instance):
         self.tp = Popup(title="VLE MODEL SELECTION", size_hint=(0.7, 0.3), auto_dismiss=True,
-                           pos_hint={'center_x': 0.5, 'center_y': 0.5}, opacity=0.8)
+                        pos_hint={'center_x': 0.5, 'center_y': 0.5}, opacity=0.8)
         self.Thermodropdown = DropDown()
         for model in Thermodynamic_models:
             btn = Button(text=model,size_hint_y=None,height=40)

@@ -4,6 +4,7 @@
 #:import OpacityScrollEffect kivy.effects.opacityscroll.OpacityScrollEffect
 #:import Button kivy.uix.button.Button
 #:import SFlash StaticUO.SFlash
+#:import Graph kivy.garden.graph
 <Remove_Bubble>:
     size_hint: (None, None)
     size: (100, 50)
@@ -125,10 +126,12 @@
                                 text:"Compound 1"
                             UButton:
                                 text:"Select"
+                                id:compound_1
                             ULabel:
                                 text:"Compound 2"
                             UButton:
                                 text:"Select"
+                                id:compound_2
                             ULabel:
                                 text:"Envelope type"
                             BoxLayout:
@@ -164,53 +167,54 @@
                                     size_hint_x:None
                                     width:30
                                     font_size:12
-                            ULabel:
-                                text:"Txy Diagram Options"
-                            BoxLayout:
-                                size_hint_y:None
-                                size:0,25
-                                UCheckBox:
-                                ULabel:
-                                    text:"VLE"
-                                    font_size:12
-                                UCheckBox:
-                                ULabel:
-                                    text:"LLE"
-                                    font_size:12
-                            ULabel:
-                                text:""
-                            BoxLayout:
-                                size_hint_y:None
-                                size:0,25
-                                UCheckBox:
-
-                                ULabel:
-                                    size_hint_x:None
-                                    width:30
-                                    text:"SLE"
-                                    font_size:12
-                            ULabel:
-                                text:""
-                            BoxLayout:
-                                size_hint_y:None
-                                size:0,25
-                                UCheckBox:
-
-                                ULabel:
-                                    size_hint_x:None
-                                    width:300
-                                    text:"Critical Line"
-                                    font_size:12
-                            ULabel:
-                                text:"X Axis Basis"
-                            UButton:
-                                text:"Select"
+#                            ULabel:
+#                                text:"Txy Diagram Options"
+#                            BoxLayout:
+#                                size_hint_y:None
+#                                size:0,25
+#                                UCheckBox:
+#                                ULabel:
+#                                    text:"VLE"
+#                                    font_size:12
+#                                UCheckBox:
+#                                ULabel:
+#                                    text:"LLE"
+#                                    font_size:12
+#                            ULabel:
+#                                text:""
+#                            BoxLayout:
+#                                size_hint_y:None
+#                                size:0,25
+#                                UCheckBox:
+#
+#                                ULabel:
+#                                    size_hint_x:None
+#                                    width:30
+#                                    text:"SLE"
+#                                    font_size:12
+#                            ULabel:
+#                                text:""
+#                            BoxLayout:
+#                                size_hint_y:None
+#                                size:0,25
+#                                UCheckBox:
+#
+#                                ULabel:
+#                                    size_hint_x:None
+#                                    width:300
+#                                    text:"Critical Line"
+#                                    font_size:12
+#                            ULabel:
+#                                text:"X Axis Basis"
+#                            UButton:
+#                                text:"Select"
                             ULabel:
                                 text:"Pressure"
                             UTextInput:
-                            ULabel:
-                                text:"Temperature"
-                            UTextInput:
+                                id:Pressure
+#                            ULabel:
+#                                text:"Temperature"
+#                            UTextInput:
                             BoxLayout:
                                 size_hint_y:None
                                 size:0,25
@@ -221,11 +225,13 @@
                                     text:"Compare Models"
                                     font_size:12
                             UButton:
+                                id:calculate
                                 text:"Calculate"
                             ULabel:
                                 text:"Property Package"
                             UButton:
-                                text:"Select"
+                                text:"UNIQUAC"
+                                id:property_package
 
 
 
@@ -262,6 +268,21 @@
                         halign:"center"
                 BoxLayout:
                     size_hint_y:1
+                    Graph:
+                        id:graph
+                        xlabel:'X'
+                        ylabel:'Y'
+                        x_ticks_major:0.1
+                        y_ticks_major:20
+                        y_grid_label:True
+                        x_grid_label:True
+                        padding:5
+                        x_grid:True
+                        y_grid:True
+                        xmin:0
+                        xmax:1
+                        ymin:0
+                        ymax:300
 
 
 
