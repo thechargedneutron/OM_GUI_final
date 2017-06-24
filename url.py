@@ -331,45 +331,30 @@ class OmWidget(FloatLayout):
     def SimProgress(self,instance):
 
 
-        # omc = OMCSession()
-        # omc.sendExpression("loadFile(\"test.mo\")")
-        # # instance.ids.ProgBar.value = 75
-        # # instance.ids.status.text = 'Compiling'
-        # omc.sendExpression("loadFile(\"Flowsheet.mo\")")
-        # # instance.ids.ProgBar.value = 85
-        # # instance.ids.status.text = 'Simulating'
-        # chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
-        #
-        #
-        # # print chek
-        # for unit in self.Unit_Operations:
-        #
-        #     if 'Mat_Stm' in unit.name:
-        #         print 'yes'
-        #         unit.PropertyVal = []
-        #         for prop in unit.PropertyList:
-        #             resultstr = unit.name + '.' + prop
-        #             print resultstr
-        #             resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
-        #             print resultval
-        #             unit.PropertyVal.append(resultval)
-        # # instance.ids.ProgBar.value = 100
-        # # instance.ids.status.text = 'Completed Successfully'
-
         omc = OMCSession()
-        omc.sendExpression("loadFile(\"Chemsep_Database.mo\")")
-        omc.sendExpression("loadFile(\"Thermodynamic_Functions.mo\")")
-        omc.sendExpression("loadFile(\"Thermodynamic_Packages.mo\")")
-        omc.sendExpression("loadFile(\"PropPack.mo\")")
-        resultval = omc.sendExpression("simulate(PropPack, stopTime=1.0, numberOfIntervals=50)")
-        # i = 0.01
-        # while i < 1:
-        #     val_r = str(omc.sendExpression("val(T," + str(i) +")"))
-        #     print val_r
-        #     i += 0.01
-        print resultval
+        omc.sendExpression("loadFile(\"test.mo\")")
+        # instance.ids.ProgBar.value = 75
+        # instance.ids.status.text = 'Compiling'
+        omc.sendExpression("loadFile(\"Flowsheet.mo\")")
+        # instance.ids.ProgBar.value = 85
+        # instance.ids.status.text = 'Simulating'
+        chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
 
 
+        # print chek
+        for unit in self.Unit_Operations:
+
+            if 'Mat_Stm' in unit.name:
+                print 'yes'
+                unit.PropertyVal = []
+                for prop in unit.PropertyList:
+                    resultstr = unit.name + '.' + prop
+                    print resultstr
+                    resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
+                    print resultval
+                    unit.PropertyVal.append(resultval)
+        # instance.ids.ProgBar.value = 100
+        # instance.ids.status.text = 'Completed Successfully'
 
 
         instance.dismiss()
