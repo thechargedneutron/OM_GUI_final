@@ -12,12 +12,12 @@ class Stream(UnitOP.UnitOP):
         self.size = (30, 15)
         self.background_normal = 'MatStm.png'
         self.connected_to = []
-        self.PropertyList = ['TEMPERATURE', 'PRESSURE', 'FLOWRATE']
+        self.PropertyList = ['Temperature', 'Pressure', 'Flow Rate','Mass Flow', 'Molar Flow', 'Volumetric Flow','Specific Enthalpy','Specific Entropy','Phase Mole Fraction']
         self.Connecting_Points_Input = []
         self.Connecting_Points_Output = []
         self.line_nos = []
         self.OM_Model = 'Mat_Stm'
-        self.PropertyVal = ['50', '101.325', '100']
+        self.PropertyVal = ['50', '101.325', '100','1','0','0','0','','']
         self.check_stm = 0
 
     def Update_Conn_Pnts(self):

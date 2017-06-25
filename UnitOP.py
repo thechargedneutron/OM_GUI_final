@@ -25,7 +25,9 @@ from url import OmWidget
 from kivy.factory import Factory
 Builder.load_file('popup.kv')
 
-class cPopUp(Popup):
+class c1PopUp(Popup):
+    pass
+class c2PopUp(Popup):
     pass
 class dDown(DropDown):
     DrNumber = NumericProperty(0)
@@ -102,8 +104,9 @@ class UnitOP(Button):
             self.text_label = Label()
 
         def on_multi_touch(self, instance, value):
-            c = cPopUp()
-            i = 0
+            c = c1PopUp()
+            if self.check_stm == 0:
+                c = c2PopUp()
             self.PropertyObj = []
             self.PropInput = []
             self.DropDownsInput = []
@@ -117,8 +120,8 @@ class UnitOP(Button):
             i=0
             if self.check_stm == 0:
                 for Property in self.PropertyList:
-                    PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',font_size=14)
-                    PropLabel.text_size = PropLabel.size
+                    PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',color=(0,0,0,1))
+                    # PropLabel.text_size = PropLabel.size
                     c.ids.first_tab.add_widget(PropLabel)
                     self.PropInput.append(TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle',font_size=12, multiline=False))
                     self.PropertyObj.append(self.PropInput[i])
