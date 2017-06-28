@@ -9,9 +9,11 @@ class Mixer(UnitOP.UnitOP):
         self.input_lines = {1: None, 2: None, 3: None, 4: None, 5: None, 6: None}
         self.output_lines = {1: None}
         self.size_hint = (None, None)
-        self.size2 = (60, 115.75)
-        self.size = (52, 87)
-        self.background_normal = 'Mixer1.png'
+        # self.size2 = (60, 115.75)
+        # self.size = (52, 87)
+        self.size2 = (140,150)
+        self.size = (130,130)
+        self.background_normal = 'Images/mixer_operator.png'
         self.PropertyListInput = ['INPUT 1','INPUT 2','INPUT 3','INPUT 4','INPUT 5','INPUT 6']
         self.PropertyListOutput = ['OUTPUT']
         self.Connecting_Points_Input = []
@@ -20,12 +22,13 @@ class Mixer(UnitOP.UnitOP):
         self.OM_Model = 'Mixer'
         self.PropertyVal = ['', '', '']
     def Update_Conn_Pnts(self):
-        self.Connecting_Points_Input = [[self.x, self.y + 81], [self.x, self.y + 66], [self.x, self.y + 51], [self.x, self.y + 36],[self.x, self.y + 21], [self.x, self.y + 6]]
-        self.Connecting_Points_Output = [[self.x + 52, self.y + (87 / 2)]]
+        self.Connecting_Points_Input = [[self.x+43, self.y + 101], [self.x+43, self.y + 86], [self.x+43, self.y + 71], [self.x+43, self.y + 56],[self.x+43, self.y + 41], [self.x+43, self.y + 26]]
+        self.Connecting_Points_Output = [[self.x + 95, self.y + 66]]
+
 
     def on_submit(self, instance):
-        self.Connecting_Points_Input = [[self.x, self.y + 81], [self.x, self.y + 66], [self.x, self.y + 51], [self.x, self.y + 36], [self.x, self.y + 21], [self.x, self.y + 6]]
-        self.Connecting_Points_Output = [[self.x + 52, self.y + (87 / 2)]]
+        self.Connecting_Points_Input = [[self.x+43, self.y + 101], [self.x+43, self.y + 86], [self.x+43, self.y + 71], [self.x+43, self.y + 56], [self.x+43, self.y + 41], [self.x+43, self.y + 26]]
+        self.Connecting_Points_Output = [[self.x + 95, self.y + 66]]
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]

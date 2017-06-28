@@ -111,13 +111,14 @@
                                 Line:
                                     rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                                 Color:
-                                    rgba: 0.5, 0.5, 0.5, 1
+                                    rgba: 0.6, 0, 0, 1
                                 Rectangle:
                                     pos:self.pos
                                     size:self.size
                             ULabel:
                                 text:"Diagram Settings"
                                 halign:"center"
+                                color:1,1,1,1
                         GridLayout:
                             cols:2
                             spacing:8
@@ -259,12 +260,13 @@
                         Line:
                             rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                         Color:
-                            rgba: 0.5, 0.5, 0.5, 1
+                            rgba: 0.6, 0, 0, 1
                         Rectangle:
                             pos:self.pos
                             size:self.size
                     ULabel:
                         text:"Results"
+                        color:1,1,1,1
                         halign:"center"
                 BoxLayout:
                     size_hint_y:1
@@ -1048,7 +1050,8 @@
             StackLayout:
                 id:shelf
                 orientation:'tb-lr'
-                size_hint:(0.03,1)
+                size_hint:(None,1)
+                width:35
                 canvas:
                     Color:
                         rgba: 0,0,0,1
@@ -1057,16 +1060,21 @@
 
                 canvas.before:
                     Color:
-                        rgba: (0.3,0.3,0.3,1)
+                        rgba: (0.2,0.2,0.2,1)
                     Rectangle:
                         size: self.size
                         pos: self.pos
                 Button:
+                    background_normal:""
+                    background_color:0.6,0,0,1
                     text:"H"
                     size_hint:1,None
                     height:30
+
                     on_press:root.select_hand()
                 Button:
+                    background_normal:""
+                    background_color:0.6,0,0,1
                     text:"M"
                     size_hint:1,None
                     height:30
@@ -1087,24 +1095,138 @@
                             size: self.size
                             pos: self.pos
             BoxLayout:
-                size_hint:(0.2,1)
+                size_hint:(None,1)
+                width:150
                 orientation:'vertical'
                 canvas:
                     Color:
-                        rgb: 0.1,0.1,0.1
+                        rgb: 0.2,0.2,0.2
                     Rectangle:
                         pos:self.pos
                         size:self.size
-                BoxLayout:
-                    padding: 10
-                    spacing: 5
-                    size_hint:(1,0.9)
-                    SMixer:
-                        id:mixer
-                    SMatStrm:
-                        id:mat_strm
-                    SFlash:
-                        id:flash
+                GridLayout:
+                    cols:1
+                    size_hint_x:None
+                    width:150
+                    padding:5
+                    spacing:5
+                    canvas:
+                        Color:
+                            rgba: 0,0,0,1
+                        Line:
+                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                        Color:
+                            rgba: 0.2, 0.2, 0.2, 1
+                        Rectangle:
+                            pos:self.pos
+                            size:self.size
+                    BoxLayout:
+                        size_hint_x:1
+                        size_hint_y:None
+                        height:128
+                        orientation:'vertical'
+                        canvas:
+                            Color:
+                                rgba: 0,0,0,1
+                            Line:
+                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                            Color:
+                                rgba: 0.7, 0.7, 0.7, 1
+                            Rectangle:
+                                pos:self.pos
+                                size:self.size
+                        BoxLayout:
+                            size_hint_x:1
+                            size_hint_y:None
+                            height:25
+                            canvas:
+                                Color:
+                                    rgba: 0,0,0,1
+                                Line:
+                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                Color:
+                                    rgba: 0.6, 0, 0, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            ULabel:
+                                color:1,1,1,1
+                                text:"Mixer"
+                                halign:"center"
+                        SMixer:
+                            id:mixer
+
+                    BoxLayout:
+                        size_hint_x:1
+                        size_hint_y:None
+                        height:115
+                        orientation:'vertical'
+                        canvas:
+                            Color:
+                                rgba: 0,0,0,1
+                            Line:
+                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                            Color:
+                                rgba: 0.7, 0.7, 0.7, 1
+                            Rectangle:
+                                pos:self.pos
+                                size:self.size
+                        BoxLayout:
+                            size_hint_x:1
+                            size_hint_y:None
+                            height:25
+                            canvas:
+                                Color:
+                                    rgba: 0,0,0,1
+                                Line:
+                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                Color:
+                                    rgba: 0.6, 0, 0, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            ULabel:
+                                color:1,1,1,1
+                                text:"Material Stream"
+                                halign:"center"
+                        SMatStrm:
+                            id:mat_strm
+                    BoxLayout:
+                        size_hint_x:1
+                        size_hint_y:None
+                        height:128
+                        orientation:'vertical'
+                        canvas:
+                            Color:
+                                rgba: 0,0,0,1
+                            Line:
+                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                            Color:
+                                rgba: 0.7, 0.7, 0.7, 1
+                            Rectangle:
+                                pos:self.pos
+                                size:self.size
+                        BoxLayout:
+                            size_hint_x:1
+                            size_hint_y:None
+                            height:25
+                            canvas:
+                                Color:
+                                    rgba: 0,0,0,1
+                                Line:
+                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                Color:
+                                    rgba: 0.6, 0, 0, 1
+                                Rectangle:
+                                    pos:self.pos
+                                    size:self.size
+                            ULabel:
+                                color:1,1,1,1
+                                text:"Flash"
+                                halign:"center"
+                        SFlash:
+                            id:flash
+
 
 
 

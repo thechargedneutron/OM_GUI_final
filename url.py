@@ -544,7 +544,7 @@ class OmWidget(FloatLayout):
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
-        label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=12.5, color=(0, 0, 0, 1))
+        label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=14, color=(0, 0, 0, 1))
         label.text = a.name
         b.ids.layout.add_widget(label)
         a.text_label = label
@@ -633,7 +633,7 @@ class OmWidget(FloatLayout):
                 vertpoint = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1],sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-                line.add(Color(0, 0, 0, 1))
+                line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))
@@ -659,7 +659,7 @@ class OmWidget(FloatLayout):
                              sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-                line.add(Color(0, 0, 0, 1))
+                line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))
@@ -691,7 +691,7 @@ class OmWidget(FloatLayout):
                 vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-                line.add(Color(0, 0, 0, 1))
+                line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))
@@ -719,7 +719,7 @@ class OmWidget(FloatLayout):
                              sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-                line.add(Color(0, 0, 0, 1))
+                line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))

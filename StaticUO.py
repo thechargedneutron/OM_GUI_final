@@ -11,9 +11,10 @@ class SMixer(Button):
     def __init__(self, **kwargs):
         super(SMixer, self).__init__(**kwargs)
         self.size_hint = None, None
-        self.size = (52, 87)
-        self.background_normal = 'Mixer1.png'
-        self.background_down = 'Mixer1.png'
+        self.width = 150
+        self.height = 103
+        self.background_normal = 'Images/mixer_new.png'
+        self.background_down = 'Images/mixer_new.png'
 
 class SMatStrm(Button):
     included = NumericProperty(0)
@@ -21,18 +22,21 @@ class SMatStrm(Button):
     def __init__(self, **kwargs):
         super(SMatStrm, self).__init__(**kwargs)
         self.size_hint = None, None
-        self.size = (30, 15)
-        self.background_normal = 'MatStm.png'
-        self.background_down = 'MatStm.png'
+        self.width = 150
+        self.height = 90
+
+        self.background_normal = 'Images/mat_strm_new.png'
+        self.background_down = 'Images/mat_strm_new.png'
 
 class SFlash(Button):
     included = NumericProperty(0)
     UO = Flash
     def __init__(self, **kwargs):
         super(SFlash, self).__init__(**kwargs)
+        self.width = 150
+        self.height = 103
         self.size_hint = None, None
-        self.size = (50, 134)
-        self.background_normal = 'Flash.png'
-        self.background_down = 'Flash.png'
+        self.background_normal = 'Images/flash_new.png'
+        self.background_down = 'Images/flash_new.png'
 
 

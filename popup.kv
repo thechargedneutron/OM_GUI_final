@@ -82,11 +82,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"General"
                             halign:"center"
                     GridLayout:
@@ -123,11 +124,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"Connections"
                             halign:"center"
                     GridLayout:
@@ -161,11 +163,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"Calculation Parameters"
                             halign:"center"
                     GridLayout:
@@ -200,11 +203,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"Property Package Settings"
                             halign:"center"
                     GridLayout:
@@ -265,11 +269,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"General"
                             halign:"center"
                     GridLayout:
@@ -307,11 +312,12 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.5, 0.5, 0.5, 1
+                                rgba: 0.6, 0, 0, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
                         PLabel:
+                            color:1,1,1,1
                             text:"Connections"
                             halign:"center"
                     GridLayout:
@@ -320,13 +326,17 @@
                         padding:10,5
                 BoxLayout:
                     size_hint_y:None
-                    height:500
+                    height:450
                     TabbedPanel:
                         do_default_tab: False
                         tab_height: 30
                         TabbedPanelItem:
                             text: 'Input Data'
                             font_size:12
+                            background_color:0.6,0,0,1
+                            background_normal:""
+#                            background_down:""
+                            background_image:""
                             BoxLayout:
                                 orientation: 'vertical'
                                 size_hint_y:None
@@ -350,6 +360,8 @@
                         TabbedPanelItem:
                             text: 'Compounds'
                             font_size:12
+                            background_color:0.6,0,0,1
+                            background_normal:""
                             BoxLayout:
                                 size_hint_x:0.93
                                 TabbedPanel:
@@ -522,6 +534,8 @@
                         TabbedPanelItem:
                             text: 'Phase Properties'
                             font_size:12
+                            background_color:0.6,0,0,1
+                            background_normal:""
                             BoxLayout:
                                 TabbedPanel:
                                     size_hint: 0.3,1
@@ -552,6 +566,8 @@
                                                     pos:self.pos
                                                     size:self.size
                         TabbedPanelItem:
+                            background_color:0.6,0,0,1
+                            background_normal:""
                             text: 'Annotations'
                             font_size:12
                 Button:

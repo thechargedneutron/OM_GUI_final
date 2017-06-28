@@ -9,9 +9,9 @@ class Flash(UnitOP.UnitOP):
         self.input_streams = {1: None, 2: None}
         self.output_streams = {1: None, 2: None}
         self.size_hint = (None, None)
-        self.size2 = (60, 160)
-        self.size = (50, 134)
-        self.background_normal = 'Flash.png'
+        self.size2 = (140, 175)
+        self.size = (130, 151.6)
+        self.background_normal = 'Images/flash_operator.png'
         self.PropertyListInput = ['INPUT 1','INPUT 2']
         self.PropertyListOutput = ['OUTPUT 1', 'OUTPUT 2']
         self.Connecting_Points_Input = []
@@ -21,12 +21,12 @@ class Flash(UnitOP.UnitOP):
         self.PropertyVal = ['', '', '', '']
 
     def Update_Conn_Pnts(self):
-        self.Connecting_Points_Input = [[self.x, self.y+120],[self.x,self.y+14]]
-        self.Connecting_Points_Output = [ [self.x+52, self.y+120],[self.x+52, self.y+14]]
+        self.Connecting_Points_Input = [[self.x+43, self.y+110],[self.x+43,self.y+44]]
+        self.Connecting_Points_Output = [ [self.x+87, self.y+110],[self.x+87, self.y+44]]
 
     def on_submit(self, instance):
-        self.Connecting_Points_Input = [[self.x, self.y + 120], [self.x, self.y + 14]]
-        self.Connecting_Points_Output = [[self.x + 52, self.y + 120], [self.x + 52, self.y + 14]]
+        self.Connecting_Points_Input = [[self.x+43, self.y + 110], [self.x+43, self.y + 44]]
+        self.Connecting_Points_Output = [[self.x + 87, self.y + 110], [self.x+87, self.y + 44]]
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]

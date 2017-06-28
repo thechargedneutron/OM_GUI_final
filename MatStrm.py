@@ -8,9 +8,9 @@ class Stream(UnitOP.UnitOP):
         self.input_lines = {1: None}
         self.output_lines = {1: None}
         self.size_hint = (None, None)
-        self.size2 = (80, 40)
-        self.size = (30, 15)
-        self.background_normal = 'MatStm.png'
+        self.size2 = (80, 70)
+        self.size = (70, 52.5)
+        self.background_normal = 'Images/mat_operator.png'
         self.connected_to = []
         self.PropertyList = ['Temperature', 'Pressure', 'Flow Rate','Mass Flow', 'Molar Flow', 'Volumetric Flow','Specific Enthalpy','Specific Entropy','Phase Mole Fraction']
         self.Connecting_Points_Input = []
@@ -21,8 +21,8 @@ class Stream(UnitOP.UnitOP):
         self.check_stm = 0
 
     def Update_Conn_Pnts(self):
-        self.Connecting_Points_Input = [self.x, self.y+(15/2)]
-        self.Connecting_Points_Output = [self.x+30, self.y+(15/2)]
+        self.Connecting_Points_Input = [self.x+18, self.y+26]
+        self.Connecting_Points_Output = [self.x+52, self.y+26]
 
 
     def on_submit(self, instance):
