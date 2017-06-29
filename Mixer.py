@@ -19,16 +19,17 @@ class Mixer(UnitOP.UnitOP):
         self.Connecting_Points_Input = []
         self.Connecting_Points_Output = []
         self.line_nos = []
+        self.border= 0,0,0,0
         self.OM_Model = 'Mixer'
         self.PropertyVal = ['', '', '']
     def Update_Conn_Pnts(self):
-        self.Connecting_Points_Input = [[self.x+43, self.y + 101], [self.x+43, self.y + 86], [self.x+43, self.y + 71], [self.x+43, self.y + 56],[self.x+43, self.y + 41], [self.x+43, self.y + 26]]
-        self.Connecting_Points_Output = [[self.x + 95, self.y + 66]]
+        self.Connecting_Points_Input = [[self.x+40, self.y + 101], [self.x+40, self.y + 86], [self.x+40, self.y + 71], [self.x+40, self.y + 56],[self.x+40, self.y + 41], [self.x+40, self.y + 26]]
+        self.Connecting_Points_Output = [[self.x + 100, self.y + 66]]
 
 
     def on_submit(self, instance):
-        self.Connecting_Points_Input = [[self.x+43, self.y + 101], [self.x+43, self.y + 86], [self.x+43, self.y + 71], [self.x+43, self.y + 56], [self.x+43, self.y + 41], [self.x+43, self.y + 26]]
-        self.Connecting_Points_Output = [[self.x + 95, self.y + 66]]
+        self.Connecting_Points_Input = [[self.x+40, self.y + 101], [self.x+40, self.y + 86], [self.x+40, self.y + 71], [self.x+40, self.y + 56], [self.x+40, self.y + 41], [self.x+40, self.y + 26]]
+        self.Connecting_Points_Output = [[self.x + 100, self.y + 66]]
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]

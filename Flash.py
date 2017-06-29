@@ -19,14 +19,15 @@ class Flash(UnitOP.UnitOP):
         self.line_nos = []
         self.OM_Model = 'Flash'
         self.PropertyVal = ['', '', '', '']
+        self.border = 0,0,0,0
 
     def Update_Conn_Pnts(self):
-        self.Connecting_Points_Input = [[self.x+43, self.y+110],[self.x+43,self.y+44]]
-        self.Connecting_Points_Output = [ [self.x+87, self.y+110],[self.x+87, self.y+44]]
+        self.Connecting_Points_Input = [[self.x+40, self.y+110],[self.x+40,self.y+44]]
+        self.Connecting_Points_Output = [ [self.x+90, self.y+110],[self.x+90, self.y+44]]
 
     def on_submit(self, instance):
-        self.Connecting_Points_Input = [[self.x+43, self.y + 110], [self.x+43, self.y + 44]]
-        self.Connecting_Points_Output = [[self.x + 87, self.y + 110], [self.x+87, self.y + 44]]
+        self.Connecting_Points_Input = [[self.x+40, self.y + 110], [self.x+40, self.y + 44]]
+        self.Connecting_Points_Output = [[self.x + 90, self.y + 110], [self.x+90, self.y + 44]]
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]

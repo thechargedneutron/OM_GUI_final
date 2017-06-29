@@ -23,17 +23,23 @@ from kivy.lang import Builder
 from kivy.uix.dropdown import DropDown
 from url import OmWidget
 from kivy.factory import Factory
+from kivy.uix.modalview import ModalView
 Builder.load_file('popup.kv')
 
-class c1PopUp(Popup):
+class c1PopUp(ModalView):
     pass
-class c2PopUp(Popup):
+
+class Select_Button(Button):
+    pass
+
+class c2PopUp(ModalView):
     pass
 class dDown(DropDown):
     DrNumber = NumericProperty(0)
 
 class butt(Button):
     DrNumber = NumericProperty(0)
+    border = 0,0,0,0
 
 class UnitOPM(Factory.CustButton):
     def __init__(self, **kwargs):
@@ -139,7 +145,7 @@ class UnitOP(Button):
                     self.PropertyObj.append(self.PropInput[i])
                     c.ids.first_tab.add_widget(self.PropInput[i])
                 else:
-                    self.MainButtonInput.append(Button(text='Select', size_hint_y=None, height=25))
+                    self.MainButtonInput.append(Select_Button(text='Select', size_hint_y=None, height=25))
                     if self.input_streams[i + 1]:
                         self.MainButtonInput[len(self.MainButtonInput)-1].text = self.input_streams[i+1].name
                     self.DropDownsInput.append(dDown(DrNumber=i))
@@ -167,7 +173,7 @@ class UnitOP(Button):
                 if self.check_stm == 0:
                     c.ids.first_tab.add_widget(self.PropInput[i])
                 else:
-                    self.MainButtonOutput.append(Button(text='Select', size_hint_y=None, height=25))
+                    self.MainButtonOutput.append(Select_Button(text='Select', size_hint_y=None, height=25))
                     if self.output_streams[i + 1]:
                         self.MainButtonOutput[len(self.MainButtonOutput) - 1].text = self.output_streams[i + 1].name
                     self.DropDownsOutput.append(dDown(DrNumber=i))

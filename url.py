@@ -65,7 +65,7 @@ class Remove_Bubble(Bubble):
 class SPopUp(Popup):
     pass
 
-class SSPopUp(Popup):
+class SSPopUp(ModalView):
     pass
 
 class UtilityPopUp(ModalView):
@@ -74,12 +74,19 @@ class UtilityPopUp(ModalView):
 class BinaryEnvelope(ModalView):
     pass
 
+class CompPop(ModalView):
+    pass
+
+class ThermoPop(ModalView):
+    pass
+
 class MyTextInput(TextInput):
 
     def __init__(self, **kw):
         self.drop_down = DropDown(dismiss_on_select=True)
         self.drop_down.bind(on_select=self.on_select)
         super(MyTextInput, self).__init__(**kw)
+
     def on_select(self, *args):
         self.text = args[1]
 
@@ -98,6 +105,7 @@ class OmWidget(FloatLayout):
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         fo = open("compounds.txt", "r+")
+        self.compo = ""
         self.plot = None
         self.utility_pop_up = ''
         self.binary_pop_up = ''
@@ -110,15 +118,19 @@ class OmWidget(FloatLayout):
         self.Selected_Unit_Operations = []
         self.grab_w = ''
         self.select_box = InstructionGroup()
+        self.tp = DropDown()
 
         self.word_list = fo.read().splitlines()
         self.addedcomp = []
+        self.comp_dropdown = DropDown()
         self.dropdown = DropDown()
         self.op_count = 1
         self.Selected_thermo_model = 'No Model Selected'
         self.data.append('model Flowsheet\n')
         self.multiselect = False;
         UnitOP.UnitOP.size_limit = self.ids.b1.size
+        self.ids.hand_toggle.background_color = 0.5, 0.5, 0.5, 1
+        self.ids.cursor_toggle.background_color = 1, 1, 1, 1
         self.filedropdown = DropDown(auto_width=False, width=300)
         for model in File_options:
             btn = MenuButton(text=model, width=300)
@@ -286,14 +298,16 @@ class OmWidget(FloatLayout):
     #     self.binary_pop_up = BinaryEnvelope()
     #     self.binary_pop_up.open()
 
-    def select_move(self):
-        print "move"
+    def select_hand(self):
+        self.ids.hand_toggle.background_color = 1, 1, 1, 1
+        self.ids.cursor_toggle.background_color = 0.5, 0.5, 0.5, 1
         self.rect_enable = False
         self.ids.scroll.do_scroll_x = True
         self.ids.scroll.do_scroll_y = True
 
-    def select_hand(self):
-        print "hand"
+    def select_cursor(self):
+        self.ids.hand_toggle.background_color = 0.5, 0.5, 0.5, 1
+        self.ids.cursor_toggle.background_color = 1, 1, 1, 1
         self.ids.scroll.do_scroll_x = False
         self.ids.scroll.do_scroll_y = False
         self.rect_enable = True
@@ -438,7 +452,7 @@ class OmWidget(FloatLayout):
                 self.add_widget(self.grab_w)
                 self.grab_w.center = touch.pos
                 touch.grab(self)
-            elif self.ids.b1.collide_point(*self.compute_relative_position(touch)) and k:
+            elif self.ids.b1.collide_point(*self.compute_relative_position(touch)) and k and not self.ids.unit_shelf.collide_point(*touch.pos) :
                 touch.grab(self)
                 self.rect = True
                 self.rect_start = self.compute_relative_position(touch)
@@ -450,7 +464,7 @@ class OmWidget(FloatLayout):
             UnitOP.UnitOP.size_limit = self.ids.b1.size
             touch_pos = self.compute_relative_position(touch)
             for i in self.Unit_Operations_Labels:
-                if i.collide_point(*self.compute_relative_position(touch)):
+                if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*touch.pos):
                     if 'multitouch_sim' in touch.profile:
                         self.unit_op = i
                         self.bubb = Remove_Bubble()
@@ -483,16 +497,17 @@ class OmWidget(FloatLayout):
 
     def on_touch_up(self, touch, *args):
         for i in self.Unit_Operations_Labels:
-            if i.collide_point(*self.compute_relative_position(touch)):
+            if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*touch.pos):
                 self.select_box = InstructionGroup()
-                self.select_box.add(Color(0.3, 0.65, 1, 0.8))
+                self.select_box.add(Color(0.6, 0, 0, 1))
+                #0.3, 0.65, 1, 0.8
                 self.select_box.add(Line(rectangle=(i.pos[0], i.pos[1], i.size[0], i.size[1])))
                 i.canvas.before.clear()
                 i.canvas.before.add(self.select_box)
                 break
         if touch.grab_current == self:
 
-            if self.rect:
+            if self.rect and not self.ids.unit_shelf.collide_point(*touch.pos) :
                 self.multiselect = False
                 touch_pos = self.compute_relative_position(touch)
                 if self.select_rect != '':
@@ -514,13 +529,13 @@ class OmWidget(FloatLayout):
                             self.multiselect = True
                             self.Selected_Unit_Operations.append(up)
                             self.select_box = InstructionGroup()
-                            self.select_box.add(Color(0.3, 0.65, 1, 0.8))
+                            self.select_box.add(Color(0.6, 0, 0, 1))
                             self.select_box.add(Line(rectangle=(up.pos[0], up.pos[1], up.size[0], up.size[1])))
                             up.canvas.before.clear()
                             up.canvas.before.add(self.select_box)
                     self.rect = False
             if self.grab_w != '':
-                if self.ids.b1.collide_point(*touch.pos):
+                if self.ids.b1.collide_point(*touch.pos) and not self.ids.unit_shelf.collide_point(*touch.pos):
                     self.add_unit_op(touch)
             touch.ungrab(self)
             if self.grab_w != '':
@@ -531,7 +546,7 @@ class OmWidget(FloatLayout):
         return super(OmWidget, self).on_touch_up(touch, *args)
 
     def compute_relative_position(self,touch):
-        return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x - self.ids.shelf.size[0], touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
+        return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x , touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
 
     def add_unit_op(self,touch):
         a = self.grab_w.UO()
@@ -732,107 +747,73 @@ class OmWidget(FloatLayout):
                 self.ids.b1.canvas.add(line)
 
     def on_text(self, instance, value):
-        """ Include all current text from textinput into the word list to
-        emulate the same kind of behavior as sublime text has.
-        """
-
         dropdown = instance.drop_down
         dropdown.clear_widgets()
-        for i in self.word_list:
-            if value in i:
-                btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1))
-                btn.bind(on_release=lambda gbtn: dropdown.select(gbtn.text))
-
-                dropdown.add_widget(btn)
+        if not self.compo.ids.comp_input.text == "":
+            for i in self.word_list:
+                if value in i:
+                    btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1))
+                    btn.bind(on_release=lambda gbtn: dropdown.select(gbtn.text))
+                    dropdown.add_widget(btn)
 
     def CompPop(self, instance):
-        self.dropdown.clear_widgets()
+        self.comp_dropdown.clear_widgets()
         for c in self.addedcomp:
-            btn = Button(text=c, size_hint_y=None, height=40)
+            btn = Button(text=c,color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)
-            self.dropdown.add_widget(btn)
-        self.compo = Popup(title="COMPONDS SELECTION", size_hint=(0.7, 0.3), auto_dismiss=True,
-                           pos_hint={'center_x': 0.5, 'center_y': 0.5}, opacity=0.8)
-        self.lay1 = StackLayout(pos_hint={'center_x': 0.5, 'center_y': 0.5})
-        self.lay = BoxLayout(size_hint=(1, 0.5), pos_hint={'center_x': 0.5, 'y': 0.5})
-        self.lay2 = BoxLayout(size_hint=(1, 0.5), pos_hint={'center_x': 0.5, 'y': 0.5})
-        self.add = Button(text="Add", size_hint=(0.3, 0.6), pos_hint={'center_x': 0, 'center_y': 0.7})
-        self.add.bind(on_press=self.add_compound)
-        self.remove = Button(text="Remove", size_hint=(0.3, 0.6), pos_hint={'center_x': 0, 'center_y': 0.9})
-        self.remove.bind(on_press=self.remove_compound)
-        self.inp = Builder.load_string(dedent('''
-                        MyTextInput:
-                            size_hint:0.6,0.6
-                            pos_hint:{'center_x':0,'center_y':0.7}
-                            readonly: False
-                            multiline: False
-                    '''))
-        self.inp.bind(text=self.on_text)
-        self.showcomp = Button(text='Show Compounds', size_hint=(0.6, 0.6), pos_hint={'center_x': 0, 'center_y': 0.9})
-        self.showcomp.bind(on_release=self.dropdown.open)
-        self.lay.add_widget(self.inp)
-        self.lay.add_widget(self.add)
-        self.lay1.add_widget(self.lay)
-        self.lay2.add_widget(self.showcomp)
-        self.lay2.add_widget(self.remove)
-        self.lay1.add_widget(self.lay2)
-        self.compo.content = self.lay1
+            self.comp_dropdown.add_widget(btn)
+        self.compo = CompPop()
+        self.compo.ids.add_comp.bind(on_press=self.add_compound)
+        self.compo.ids.remove_comp.bind(on_press=self.remove_compound)
+        self.compo.ids.comp_input.bind(text=self.on_text)
+        self.compo.ids.show_comp.bind(on_release=self.comp_dropdown.open)
         self.compo.open()
 
     def add_compound(self, instance):
-        if str(self.inp.text) not in self.addedcomp:
-            UnitOP.UnitOP.compound_elements.append(str(self.inp.text))
-            self.addedcomp.append(str(self.inp.text))
-        self.dropdown.clear_widgets()
+        if str(self.compo.ids.comp_input.text) not in self.addedcomp:
+            UnitOP.UnitOP.compound_elements.append(str(self.compo.ids.comp_input.text))
+            self.addedcomp.append(str(self.compo.ids.comp_input.text))
+        self.comp_dropdown.clear_widgets()
         for c in self.addedcomp:
-            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
+            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)
-            self.dropdown.add_widget(btn)
+            self.comp_dropdown.add_widget(btn)
 
 
     def remove_compound(self, instance):
-        self.dropdown.clear_widgets()
-        if self.showcomp.text in self.addedcomp:
-            self.addedcomp.remove(self.showcomp.text)
-            UnitOP.UnitOP.compound_elements.remove(self.showcomp.text)
+        self.comp_dropdown.clear_widgets()
+        if self.compo.ids.show_comp.text in self.addedcomp:
+            self.addedcomp.remove(self.compo.ids.show_comp.text)
+            UnitOP.UnitOP.compound_elements.remove(self.compo.ids.show_comp.text)
         for c in self.addedcomp:
-            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(1, 1, 1, 1), halign='left',padding=[0, 2])
+            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.select_remove_compound)
-            self.dropdown.add_widget(btn)
-        self.showcomp.text = 'Show Compounds'
+            self.comp_dropdown.add_widget(btn)
+        self.compo.ids.show_comp.text = 'Show Compounds'
 
 
 
     def ThermoPop(self,instance):
-        self.tp = Popup(title="VLE MODEL SELECTION", size_hint=(0.7, 0.3), auto_dismiss=True,
-                        pos_hint={'center_x': 0.5, 'center_y': 0.5}, opacity=0.8)
+        self.tp = ThermoPop();
         self.Thermodropdown = DropDown()
         for model in Thermodynamic_models:
-            btn = Button(text=model,size_hint_y=None,height=40)
+            btn = Button(text=model,color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
             btn.bind(on_release=self.ThermoSelect)
             self.Thermodropdown.add_widget(btn)
-        self.ShowVLEModels = Button(text='Show VLE Models', size_hint=(1, 0.7), pos_hint={'center_x': 0, 'center_y': 0.7})
-        self.ShowVLEModels.bind(on_release=self.Thermodropdown.open)
-        self.PresentModel = Label(text='Selected Model: '+self.Selected_thermo_model)
-        self.PM = BoxLayout(size_hint=(1, 0.5), pos_hint={'center_x': 0.5, 'y': 0.5})
-        self.SM = BoxLayout(size_hint=(1, 0.5), pos_hint={'center_x': 0.5, 'y': 0.5})
-        self.PM.add_widget(self.PresentModel)
-        self.SM.add_widget(self.ShowVLEModels)
-        self.thermlayout = StackLayout()
-        self.thermlayout.add_widget(self.PM)
-        self.thermlayout.add_widget(self.SM)
-        self.tp.content = self.thermlayout
+        # self.ShowVLEModels = Button(text='Show VLE Models', size_hint=(1, 0.7), pos_hint={'center_x': 0, 'center_y': 0.7})
+        self.tp.ids.show_vle.bind(on_release=self.Thermodropdown.open)
+        self.tp.ids.present_model.text='Selected Model: '+ self.Selected_thermo_model
         self.tp.open()
 
 
     def ThermoSelect(self,instance):
         self.Selected_thermo_model = instance.text
-        self.PresentModel.text = 'Selected Model: ' + instance.text
+        self.tp.ids.present_model.text = 'Selected Model: ' + instance.text
         self.Thermodropdown.dismiss()
 
     def select_remove_compound(self, instance):
-        self.showcomp.text = instance.text
-        self.dropdown.dismiss()
+        self.compo.ids.show_comp.text = instance.text
+        self.comp_dropdown.dismiss()
 
 class Omapp(App):
 
