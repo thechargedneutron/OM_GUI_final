@@ -48,11 +48,14 @@ class UnitOPM(Factory.CustButton):
 
     def on_touch_down(self, touch):
         if self.child.collide_point(*touch.pos):
+            print self.center
+            print self.child.center
             if touch.is_double_tap:
                 # touch.multitouch_sim = True
                 self.child.multi_touch = self.child.multi_touch + 1
             else:
                 touch.grab(self)
+
         return False
 
     def on_touch_up(self, touch):
@@ -86,6 +89,7 @@ class UnitOP(Button):
 
         def __init__(self, **kwargs):
             super(UnitOP, self).__init__(**kwargs)
+            self.type = -1;
             self.stream_count = []
             self.input_streams = {}
             self.output_streams = {}
@@ -124,6 +128,7 @@ class UnitOP(Button):
             c.ids.name.text = self.name
             self.name_ob = c.ids.name
             i=0
+
             if self.check_stm == 0:
                 for Property in self.PropertyList:
                     PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',color=(0,0,0,1))

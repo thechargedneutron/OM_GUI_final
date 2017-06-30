@@ -5,6 +5,57 @@
 #:import Button kivy.uix.button.Button
 #:import SFlash StaticUO.SFlash
 #:import Graph kivy.garden.graph
+
+
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Load"
+                on_release: root.load(filechooser.path, filechooser.selection)
+
+<SaveDialog>:
+    text_input: text_input
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+            on_selection: text_input.text = self.selection and self.selection[0] or ''
+
+        TextInput:
+            id: text_input
+            size_hint_y: None
+            height: 30
+            multiline: False
+
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+
+            Button:
+                text: "Save"
+                on_release: root.save(filechooser.path, text_input.text)
+
+
+
 <Remove_Bubble>:
     size_hint: (None, None)
     size: (100, 50)
@@ -42,7 +93,6 @@
 
 
 <CompPop>:
-
     size_hint:0.6,0.2
     auto_dismiss: True
     pos_hint:{'center_x':0.5,'center_y':0.5}
@@ -669,6 +719,8 @@
                     TabbedPanelItem:
                         background_color:0.6,0,0,1
                         background_normal:""
+#                        background_down:"Images/flash_new.png"
+                        border:0,0,0,0
                         background_image:""
                         text: 'General'
                         font_size:12
@@ -1032,7 +1084,8 @@
             MButton:
                 width:40
                 text:'File'
-#                on_release:root.filedropdown.open(*args)
+                color:1,1,1,1
+                on_release:root.filedropdown.open(*args)
             MButton:
                 width:40
                 text:'Edit'
@@ -1070,6 +1123,7 @@
                 width:70
                 text:'Windows'
 #                on_release:root.windowsdropdown.open(*args)
+                color:1,1,1,1
             MButton:
                 width:40
                 text:'View'
@@ -1126,7 +1180,7 @@
                     id:b1
                     size_hint:(None,None)
                     size:1500,1500
-                    canvas:
+                    canvas.before:
                         Color:
                             rgba: (0.9,0.9,0.9,1)
                         Rectangle:
@@ -1153,7 +1207,7 @@
 
                 canvas.before:
                     Color:
-                        rgba: (0.3,0.3,0.3,1)
+                        rgba: (0.2,0.2,0.2,1)
                     Rectangle:
                         size: self.size
                         pos: self.pos
@@ -1170,7 +1224,7 @@
                         Line:
                             rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                         Color:
-                            rgba: (0.7,0.7,0.7,1)
+                            rgba: (0.6,0.6,0.6,1)
                         Rectangle:
                             size: self.size
                             pos: self.pos
@@ -1188,7 +1242,7 @@
                         Line:
                             rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                         Color:
-                            rgba: (0.7,0.7,0.7,1)
+                            rgba: (0.6,0.6,0.6,1)
                         Rectangle:
                             size: self.size
                             pos: self.pos

@@ -3,6 +3,7 @@ import UnitOP
 class Stream(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Stream, self).__init__(**kwargs)
+        self.type = 0
         self.input_streams = {1: None}
         self.output_streams = {1: None}
         self.input_lines = {1: None}

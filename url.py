@@ -35,15 +35,16 @@ from textwrap import dedent
 from kivy.garden.graph import Graph, MeshLinePlot
 from math import sin
 import CORBA
-
+import os
 import random
 import StaticUO
 from OMPython import OMCSession
 import UnitOP
-
+from Error import Error
 
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
-File_options = ['New Steady-state Simulation','New Compound Creator Study','New Data Regression Study','New UNIFAC Parameter Regression Case','Open','Open Samples','Save','Save All','Save As','Close Active Simulation','Close All','Exit Openmodellica']
+# File_options = ['New Steady-state Simulation','Open','Save','Save As','Close Active Simulation','Exit Openmodellica']
+File_options = ['open','save']
 Edit_options = ['Undo','Redo','Cut Selected Objects','Copy Selected Objects','Paste Objects','Remove selected objects','Clone selected objects','Recalculate object','Export data to Clipboard','Simulation settings','General settings']
 Insert_options = ['Flowsheet Object','Property Table','Master Property Table','Linked Spreadsheet Table','Image','Text','Rectangle']
 Tools_options = ['Petroleum Characterization (Bulk C7+)','Petroleum Characterization (Distillation Curves)','Petroleum Array Manager','Reactions Manager','Pure Compound Property Viewer/Editor','User Database Manager','CAPE-OPEN Component Registration' ]
@@ -80,6 +81,17 @@ class CompPop(ModalView):
 class ThermoPop(ModalView):
     pass
 
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
+class SaveDialog(FloatLayout):
+    save = ObjectProperty(None)
+    text_input = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
 class MyTextInput(TextInput):
 
     def __init__(self, **kw):
@@ -100,11 +112,16 @@ class OmWidget(FloatLayout):
     Unit_Operations = []
     Unit_Operations_Labels = []
     data = []
+    loadfile = ObjectProperty(None)
+    savefile = ObjectProperty(None)
+    text_input = ObjectProperty(None)
 
     word_list = []
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
         fo = open("compounds.txt", "r+")
+        self.error_popup = Error()
+        self.error = self.error_popup.ids.error_message
         self.compo = ""
         self.plot = None
         self.utility_pop_up = ''
@@ -132,10 +149,18 @@ class OmWidget(FloatLayout):
         self.ids.hand_toggle.background_color = 0.5, 0.5, 0.5, 1
         self.ids.cursor_toggle.background_color = 1, 1, 1, 1
         self.filedropdown = DropDown(auto_width=False, width=300)
-        for model in File_options:
-            btn = MenuButton(text=model, width=300)
-            btn.text_size = btn.size
-            self.filedropdown.add_widget(btn)
+        # for model in File_options:
+        #     btn = MenuButton(text=model, width=300)
+        #     btn.text_size = btn.size
+        #     self.filedropdown.add_widget(btn)
+        btn = MenuButton(text="Open", width=300, on_press=self.show_load)
+        btn.text_size = btn.size
+        self.filedropdown.add_widget(btn)
+
+
+        btn2 = MenuButton(text="Save as",width=300, on_press=self.show_save)
+        btn2.text_size = btn2.size
+        self.filedropdown.add_widget(btn2)
 
         self.editdropdown = DropDown(auto_width=False, width=300)
         for model in Edit_options:
@@ -202,6 +227,108 @@ class OmWidget(FloatLayout):
             btn = MenuButton(text=model, width=200)
             btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
+
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def show_load(self,*args):
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def show_save(self,*args):
+        content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Save file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def load(self, path, filename):
+        fo = open(os.path.join(path, filename[0]), "r+")
+        k = []
+        for i in self.Unit_Operations_Labels:
+            k.append(i)
+
+        for i in k:
+            self.unit_op = i
+            self.remove_unit_op()
+
+        self.unit_op = ''
+        self.ids.b1.clear_widgets()
+        self.ids.b1.canvas.clear()
+        # ins = InstructionGroup()
+        # ins.add(Color(0.9, 0.9, 0.9, 1))
+        # ins.add(Rectangle(size=self.size,pos=self.pos))
+        # self.ids.b1.canvas.add(ins)
+        saved_unit_op = fo.read().splitlines()
+        for i in saved_unit_op:
+            up = i.split("^")
+
+            pos = (float(up[2]), float(up[3]));
+            if up[1] == '0':
+                self.add_unit_op(pos, StaticUO.SMatStrm.UO(), 0, up[6])
+            elif up[1] == '1':
+                self.add_unit_op(pos, StaticUO.SMixer.UO(), 0, up[11])
+            elif up[1] == '2':
+                self.add_unit_op(pos, StaticUO.SFlash.UO(), 0, up[8])
+        print "UOL - ",
+        print self.Unit_Operations_Labels
+        print "UO - ",
+        print self.Unit_Operations
+        for i in saved_unit_op:
+            up = i.split("^")
+            if up[1] == '0':
+                pass
+            elif up[1] == '1':
+                for i in range(4, 10):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = None
+                if up[10] != '-1':
+                    self.Unit_Operations[up[0]].output_streams[1] = self.Unit_Operations[int(up[10])]
+                else:
+                    self.Unit_Operations[up[0]].output_streams[1] = None
+
+                self.Unit_Operations_Labels[up[0]].child.Update_Conn_Pnts()
+                self.Unit_Operations_Labels[up[0]].child.connect += 1
+
+            elif up[1] == '2':
+                pass
+
+        self.dismiss_popup()
+
+    def save(self, path, filename):
+        fo = open(os.path.join(path, filename), "wb")
+
+        v = 0
+        for i in self.Unit_Operations:
+            fo.write(str(v) + "^")
+            fo.write(str(i.type) + "^")
+            fo.write(str(i.center[0]) + "^")
+            fo.write(str(i.center[1]) + "^")
+            for j in i.input_streams:
+                if i.input_streams[j]:
+                    fo.write(str(self.Unit_Operations.index(i.input_streams[j])) + "^")
+                else:
+                    fo.write("-1" + "^")
+            for j in i.output_streams:
+                if i.output_streams[j]:
+                    fo.write(str(self.Unit_Operations.index(i.output_streams[j])) + "^")
+                else:
+                    fo.write("-1" + "^")
+            fo.write(i.name)
+            fo.write("\n")
+            v = v + 1
+
+        fo.close()
+
+        self.dismiss_popup()
+
+
+
+
     def add_popup(self,*args):
         interval_down = DropDown()
         for i in self.addedcomp:
@@ -536,7 +663,7 @@ class OmWidget(FloatLayout):
                     self.rect = False
             if self.grab_w != '':
                 if self.ids.b1.collide_point(*touch.pos) and not self.ids.unit_shelf.collide_point(*touch.pos):
-                    self.add_unit_op(touch)
+                    self.add_unit_op(touch.pos,self.grab_w.UO(),1,"name")
             touch.ungrab(self)
             if self.grab_w != '':
                 self.remove_widget(self.grab_w)
@@ -548,22 +675,34 @@ class OmWidget(FloatLayout):
     def compute_relative_position(self,touch):
         return (touch.pos[0] + (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x , touch.pos[1]+(self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y)
 
-    def add_unit_op(self,touch):
-        a = self.grab_w.UO()
+    def compute_relative_position2(self, touch):
+        return (touch[0] + (self.ids.b1.size[0] - self.ids.scroll.size[0]) * self.ids.scroll.scroll_x,
+                touch[1] + (self.ids.b1.size[1] - self.ids.scroll.size[1]) * self.ids.scroll.scroll_y)
+
+    def add_unit_op(self,touch,UO,c,name):
+        print touch
+        a = UO;
         b = UnitOP.UnitOPM()
         a.bind(connect=self.on_connect)
         a.bind(line_move=self.on_line_move)
         a.name = a.OM_Model + str(self.op_count)
+        if(c==0):
+            a.name = name
         a.pos_hint = {'center_x': 0.5}
         self.data.append('test.' + a.OM_Model + ' ' + a.OM_Model + str(self.op_count) + ';\n')
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
+        print a.center
         label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=14, color=(0, 0, 0, 1))
         label.text = a.name
         b.ids.layout.add_widget(label)
         a.text_label = label
-        b.center = self.compute_relative_position(touch)
+        if c==1:
+            b.center = self.compute_relative_position2(touch)
+        else:
+            b.center = touch
+            a.center = (touch[0],touch[1]+14)
         self.ids.b1.add_widget(b)
         self.Unit_Operations.append(a)
         self.Unit_Operations_Labels.append(b)
@@ -584,7 +723,7 @@ class OmWidget(FloatLayout):
             self.remove_unit_op(1)
 
 
-    def remove_unit_op(self, i):
+    def remove_unit_op(self,*args):
         i = self.Unit_Operations.index(self.unit_op.child)
         i = i + 1
         while i < len(self.Unit_Operations):
@@ -623,7 +762,8 @@ class OmWidget(FloatLayout):
         UnitOP.UnitOP.all_operators.remove(self.unit_op.child)
         if self.unit_op.child in UnitOP.UnitOP.Operators:
             UnitOP.UnitOP.Operators.remove(self.unit_op.child)
-
+        print "shishishis",
+        print self.Unit_Operations
     def on_connect(self, instance, value):
         p = 0
         instance.connected = True
@@ -641,6 +781,7 @@ class OmWidget(FloatLayout):
                 val.output_streams[1] = instance
                 val.connected = True
                 val.Update_Conn_Pnts()
+                print val.Connecting_Points_Input
                 val.conn_point_output = p
                 sourcepos = val.Connecting_Points_Output
                 destpos = instance.Connecting_Points_Input[p]
@@ -648,12 +789,14 @@ class OmWidget(FloatLayout):
                 vertpoint = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1],sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
+                print horzpoint,vertpoint
                 line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))
                 instance.input_lines[key] = line
                 val.output_lines[1] = line
+                print "hi"
                 self.ids.b1.canvas.add(line)
                 if 'equation\n' not in self.data:
                     self.data.append('equation\n')
@@ -770,14 +913,19 @@ class OmWidget(FloatLayout):
         self.compo.open()
 
     def add_compound(self, instance):
-        if str(self.compo.ids.comp_input.text) not in self.addedcomp:
-            UnitOP.UnitOP.compound_elements.append(str(self.compo.ids.comp_input.text))
-            self.addedcomp.append(str(self.compo.ids.comp_input.text))
-        self.comp_dropdown.clear_widgets()
-        for c in self.addedcomp:
-            btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
-            btn.bind(on_release=self.select_remove_compound)
-            self.comp_dropdown.add_widget(btn)
+        comp = str(self.compo.ids.comp_input.text)
+        if comp not in self.word_list:
+            self.error.text = "Invalid Compound!"
+            self.error_popup.open()
+        else:
+            if comp not in self.addedcomp:
+                UnitOP.UnitOP.compound_elements.append(str(self.compo.ids.comp_input.text))
+                self.addedcomp.append(str(self.compo.ids.comp_input.text))
+            self.comp_dropdown.clear_widgets()
+            for c in self.addedcomp:
+                btn = Button(text=c, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])
+                btn.bind(on_release=self.select_remove_compound)
+                self.comp_dropdown.add_widget(btn)
 
 
     def remove_compound(self, instance):

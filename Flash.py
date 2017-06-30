@@ -3,6 +3,7 @@ import UnitOP
 class Flash(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Flash, self).__init__(**kwargs)
+        self.type = 2
         self.stream_count = [2, 2]
         self.input_lines = {1: None, 2: None}
         self.output_lines = {1: None, 2: None}

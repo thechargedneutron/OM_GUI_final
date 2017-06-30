@@ -3,6 +3,7 @@ import UnitOP
 class Mixer(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Mixer, self).__init__(**kwargs)
+        self.type = 1
         self.stream_count = [6, 1]
         self.input_streams = {1: None, 2: None, 3: None, 4: None, 5: None, 6:None}
         self.output_streams = {1: None}
