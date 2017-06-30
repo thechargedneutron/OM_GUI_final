@@ -48,8 +48,7 @@ class UnitOPM(Factory.CustButton):
 
     def on_touch_down(self, touch):
         if self.child.collide_point(*touch.pos):
-            print self.center
-            print self.child.center
+
             if touch.is_double_tap:
                 # touch.multitouch_sim = True
                 self.child.multi_touch = self.child.multi_touch + 1
@@ -112,6 +111,8 @@ class UnitOP(Button):
             self.name_ob = TextInput()
             self.bef_name = ''
             self.text_label = Label()
+            self.updated_input_operators = []
+            self.updated_output_operators = []
 
         def on_multi_touch(self, instance, value):
             c = c1PopUp()
@@ -128,6 +129,8 @@ class UnitOP(Button):
             c.ids.name.text = self.name
             self.name_ob = c.ids.name
             i=0
+            self.updated_input_operators = []
+            self.updated_output_operators = []
 
             if self.check_stm == 0:
                 for Property in self.PropertyList:
@@ -150,18 +153,19 @@ class UnitOP(Button):
                     self.PropertyObj.append(self.PropInput[i])
                     c.ids.first_tab.add_widget(self.PropInput[i])
                 else:
-                    self.MainButtonInput.append(Select_Button(text='Select', size_hint_y=None, height=25))
+                    self.MainButtonInput.append(Select_Button(text='None', size_hint_y=None, height=25))
                     if self.input_streams[i + 1]:
                         self.MainButtonInput[len(self.MainButtonInput)-1].text = self.input_streams[i+1].name
                     self.DropDownsInput.append(dDown(DrNumber=i))
-                    btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
-                    btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
-                    self.DropDownsInput[i].add_widget(btn)
-                    for item in self.Operators:
-                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i,background_normal='',background_color=(0.4,0.4,0.4,1))
-                        btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
-                        self.DropDownsInput[i].add_widget(btn)
-                    self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
+                    # btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
+                    # btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                    # self.DropDownsInput[i].add_widget(btn)
+                    # for item in self.Operators:
+                    #     btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i,background_normal='',background_color=(0.4,0.4,0.4,1))
+                    #     btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                    #     self.DropDownsInput[i].add_widget(btn)
+                    # self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
+                    self.MainButtonInput[i].bind(on_release=self.generate_dp_input)
                     self.DropDownsInput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonInput[instance.DrNumber], 'text', x))
                     c.ids.first_tab.add_widget(self.MainButtonInput[i])
                 i = i+1
@@ -178,32 +182,97 @@ class UnitOP(Button):
                 if self.check_stm == 0:
                     c.ids.first_tab.add_widget(self.PropInput[i])
                 else:
-                    self.MainButtonOutput.append(Select_Button(text='Select', size_hint_y=None, height=25))
+                    self.MainButtonOutput.append(Select_Button(text='None', size_hint_y=None, height=25))
                     if self.output_streams[i + 1]:
                         self.MainButtonOutput[len(self.MainButtonOutput) - 1].text = self.output_streams[i + 1].name
-                    self.DropDownsOutput.append(dDown(DrNumber=i))
-                    btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
-                    btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
-                    self.DropDownsOutput[i].add_widget(btn)
-                    for item in self.Operators:
-                        btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i, background_normal='',
-                                   background_color=(0.4, 0.4, 0.4, 1))
-                        btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
-                        self.DropDownsOutput[i].add_widget(btn)
-                    self.MainButtonOutput[i].bind(on_release=self.DropDownsOutput[i].open)
+                    self.DropDownsOutput.append(dDown(DrNumber=i,auto_dismiss=True))
+                    # btn = butt(text='Select', size_hint_y=None, height=25, DrNumber=i, background_normal='',background_color=(0.4, 0.4, 0.4, 1))
+                    # btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                    # self.DropDownsOutput[i].add_widget(btn)
+                    # for item in self.Operators:
+                    #     btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                    #                background_color=(0.4, 0.4, 0.4, 1))
+                    #     btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                    #     self.DropDownsOutput[i].add_widget(btn)
+                    self.MainButtonOutput[i].bind(on_release=self.generate_dp_output)
                     self.DropDownsOutput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonOutput[instance.DrNumber], 'text', x))
                     c.ids.first_tab.add_widget(self.MainButtonOutput[i])
                 i = i + 1
             c.ids.submit.bind(on_press=self.on_submit)
+            for operator in self.Operators:
+                if not operator.output_streams[1]:
+                    self.updated_input_operators.append(operator)
+                else:
+                    for k in self.MainButtonInput:
+                        if operator.name == k.text:
+                            self.updated_input_operators.append(operator)
+
+            for operator in self.Operators:
+                if not operator.input_streams[1]:
+                    self.updated_output_operators.append(operator)
+                else:
+                    for k in self.MainButtonOutput:
+                        if operator.name == k.text:
+                            self.updated_output_operators.append(operator)
+
             c.open()
+
+        def generate_dp_input(self,instance):
+
+            i = self.MainButtonInput.index(instance)
+            self.DropDownsInput[i].clear_widgets()
+            if instance.text != 'None':
+                btn = butt(text='None', size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                           background_color=(0.4, 0.4, 0.4, 1))
+                btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                self.DropDownsInput[i].add_widget(btn)
+            for item in self.updated_input_operators:
+                insert = True
+                for button in self.MainButtonInput:
+                    if item.name == button.text:
+                        insert = False
+                if insert:
+                    btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                               background_color=(0.4, 0.4, 0.4, 1))
+                    btn.bind(on_release=lambda btn: self.DropDownsInput[btn.DrNumber].select(btn.text))
+                    self.DropDownsInput[i].add_widget(btn)
+            # self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
+            self.DropDownsInput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonInput[instance.DrNumber],
+
+                                                                               'text', x))
+            self.DropDownsInput[i].open(instance)
+
+        def generate_dp_output(self, instance):
+
+            i = self.MainButtonOutput.index(instance)
+            self.DropDownsOutput[i].clear_widgets()
+            if instance.text != 'None':
+                btn = butt(text='None', size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                       background_color=(0.4, 0.4, 0.4, 1))
+                btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                self.DropDownsOutput[i].add_widget(btn)
+            for item in self.updated_output_operators:
+                insert = True
+                for button in self.MainButtonOutput:
+                    if item.name == button.text:
+                        insert = False
+                if insert:
+                    btn = butt(text=item.name, size_hint_y=None, height=25, DrNumber=i, background_normal='',
+                               background_color=(0.4, 0.4, 0.4, 1))
+                    btn.bind(on_release=lambda btn: self.DropDownsOutput[btn.DrNumber].select(btn.text))
+                    self.DropDownsOutput[i].add_widget(btn)
+            # self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
+            self.DropDownsOutput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonOutput[instance.DrNumber],
+                                                                              'text', x))
+            self.DropDownsOutput[i].open(instance)
 
         def open_prop(self, instance):
                 self.PropInput = []
-                print 'yes'
+
                 i = 0
                 for p in self.PropertyVal:
                     self.PropInput.append(TextInput(text = str(p),size_hint_y=None, height=25, valign='middle', font_size=12, multiline=False))
-                    print p
+
                     i = i + 1
 
         def scroll_change(self, scrlv, instance, value):

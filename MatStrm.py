@@ -35,7 +35,7 @@ class Stream(UnitOP.UnitOP):
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
         for property in self.PropertyObj:
             self.PropertyVal.append(property.text)
-        print self.PropertyVal
+
 
 
 

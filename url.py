@@ -271,10 +271,7 @@ class OmWidget(FloatLayout):
                 self.add_unit_op(pos, StaticUO.SMixer.UO(), 0, up[11])
             elif up[1] == '2':
                 self.add_unit_op(pos, StaticUO.SFlash.UO(), 0, up[8])
-        print "UOL - ",
-        print self.Unit_Operations_Labels
-        print "UO - ",
-        print self.Unit_Operations
+
         for i in saved_unit_op:
             up = i.split("^")
             if up[1] == '0':
@@ -295,7 +292,21 @@ class OmWidget(FloatLayout):
                 self.Unit_Operations_Labels[up[0]].child.connect += 1
 
             elif up[1] == '2':
-                pass
+                for i in range(4, 6):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = None
+                for i in range(6, 8):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].output_streams[i - 5] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].output_streams[i - 5] = None
+
+                self.Unit_Operations_Labels[up[0]].child.Update_Conn_Pnts()
+                self.Unit_Operations_Labels[up[0]].child.connect += 1
 
         self.dismiss_popup()
 
@@ -384,11 +395,11 @@ class OmWidget(FloatLayout):
         if self.plot != None:
             self.binary_pop_up.ids.graph.remove_plot(self.plot)
             self.plot = None
-            print "Removed"
+
         self.plot = MeshLinePlot(color=[1, 0, 0,1])
         plot_points = []
         i = 0.01
-        # print resultval
+
         max = -1000000
         min = 1000000
         while i < 1:
@@ -680,7 +691,7 @@ class OmWidget(FloatLayout):
                 touch[1] + (self.ids.b1.size[1] - self.ids.scroll.size[1]) * self.ids.scroll.scroll_y)
 
     def add_unit_op(self,touch,UO,c,name):
-        print touch
+
         a = UO;
         b = UnitOP.UnitOPM()
         a.bind(connect=self.on_connect)
@@ -693,7 +704,7 @@ class OmWidget(FloatLayout):
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
-        print a.center
+
         label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=14, color=(0, 0, 0, 1))
         label.text = a.name
         b.ids.layout.add_widget(label)
@@ -762,8 +773,6 @@ class OmWidget(FloatLayout):
         UnitOP.UnitOP.all_operators.remove(self.unit_op.child)
         if self.unit_op.child in UnitOP.UnitOP.Operators:
             UnitOP.UnitOP.Operators.remove(self.unit_op.child)
-        print "shishishis",
-        print self.Unit_Operations
     def on_connect(self, instance, value):
         p = 0
         instance.connected = True
@@ -781,7 +790,7 @@ class OmWidget(FloatLayout):
                 val.output_streams[1] = instance
                 val.connected = True
                 val.Update_Conn_Pnts()
-                print val.Connecting_Points_Input
+
                 val.conn_point_output = p
                 sourcepos = val.Connecting_Points_Output
                 destpos = instance.Connecting_Points_Input[p]
@@ -789,14 +798,14 @@ class OmWidget(FloatLayout):
                 vertpoint = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1],sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1])
                 horzpoint2 = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-                print horzpoint,vertpoint
+
                 line.add(Color(0.6, 0.4, 0.2, 1))
                 line.add(Line(points=horzpoint, width=1))
                 line.add(Line(points=vertpoint, width=1))
                 line.add(Line(points=horzpoint2, width=1))
                 instance.input_lines[key] = line
                 val.output_lines[1] = line
-                print "hi"
+
                 self.ids.b1.canvas.add(line)
                 if 'equation\n' not in self.data:
                     self.data.append('equation\n')

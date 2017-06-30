@@ -44,13 +44,13 @@ class Flash(UnitOP.UnitOP):
                 self.output_streams[key] = None
         val = 1;
         for Property in self.MainButtonInput:
-            if Property.text != "Select":
+            if Property.text != 'None':
                 self.input_streams[val] = self.all_operators[self.drop_connections[Property.text]]
             val += 1
-        print self.input_streams
+
         val = 1;
         for Property in self.MainButtonOutput:
-            if Property.text != "Select":
+            if Property.text != 'None':
                 self.output_streams[val] = self.all_operators[self.drop_connections[Property.text]]
             val += 1
         self.connect = self.connect + 1
