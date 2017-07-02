@@ -21,6 +21,16 @@
             rgba:0,0,0,1
         Line:
             rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+<PropInputLabel@Label>:
+    size_hint_y:None
+    height:25
+    text_size: self.size
+    halign: 'left'
+    color:0,0,0,1
+<PropInputTextInput@TextInput>:
+    size_hint_y:None
+    height:25
+    font_size:12
 <PLabel@Label>:
     size_hint_y:None
     height:25
@@ -73,7 +83,7 @@
                 Line:
                     rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                 Color:
-                    rgba: 0.7, 0.7, 0.7, 1
+                    rgba: 0.5, 0.5, 0.5, 1
                 Rectangle:
                     pos:self.pos
                     size:self.size
@@ -102,7 +112,7 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.7, 0.7, 0.7, 1
+                                rgba: 0.5, 0.5, 0.5, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
@@ -129,7 +139,7 @@
                             padding:5
                             PLabel:
                                 id:name_label
-                                text:'Object'
+                                text:'Name'
                             PTextInput:
                                 id:name
                                 font_size:12
@@ -144,7 +154,7 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.7, 0.7, 0.7, 1
+                                rgba: 0.5, 0.5, 0.5, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
@@ -183,7 +193,7 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.7, 0.7, 0.7, 1
+                                rgba: 0.5, 0.5, 0.5, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
@@ -223,7 +233,7 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.7, 0.7, 0.7, 1
+                                rgba: 0.5, 0.5, 0.5, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
@@ -265,9 +275,9 @@
 
 
 <c2PopUp>:
-    size_hint:(0.3, 1)
+    size_hint:(0.35, 1)
     auto_dismiss:True
-    pos_hint:{'top':1,'right':0.3}
+    pos_hint:{'top':1,'right':0.35}
     id:popup
     GridLayout:
         size_hint:1,1
@@ -283,7 +293,7 @@
                 Line:
                     rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                 Color:
-                    rgba: 0.7, 0.7, 0.7, 1
+                    rgba: 0.5, 0.5, 0.5, 1
                 Rectangle:
                     pos:self.pos
                     size:self.size
@@ -312,7 +322,7 @@
                             Line:
                                 rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                             Color:
-                                rgba: 0.7, 0.7, 0.7, 1
+                                rgba: 0.5, 0.5, 0.5, 1
                             Rectangle:
                                 pos:self.pos
                                 size:self.size
@@ -339,7 +349,7 @@
                             padding:5
                             PLabel:
                                 id:name_label
-                                text:'Object'
+                                text:'Name'
                             PTextInput:
                                 id:name
                                 font_size:12
@@ -347,82 +357,219 @@
 
                     BoxLayout:
                         size_hint_y:None
-                        height:450
+                        height:600
                         TabbedPanel:
                             do_default_tab: False
                             tab_height: 30
+                            tab_width:115
                             TabbedPanelItem:
                                 text: 'Input Data'
                                 font_size:12
                                 background_color:0.6,0,0,1
                                 background_normal:""
-    #                            background_down:""
                                 background_image:""
                                 BoxLayout:
                                     orientation: 'vertical'
                                     size_hint_y:None
-                                    height:400
-                                    id:connections
+                                    height:550
+                                    padding:10
                                     canvas:
                                         Color:
                                             rgba: 0,0,0,1
                                         Line:
                                             rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                                         Color:
-                                            rgba: 0.7, 0.7, 0.7, 1
+                                            rgba: 0.5, 0.5, 0.5, 1
                                         Rectangle:
                                             pos:self.pos
                                             size:self.size
                                     GridLayout:
+                                        height:25
+                                        size_hint_y:None
+                                        cols:2
+                                        PLabel:
+                                            text:"Flash Spec"
+                                        PButton:
+                                            text:"T and P"
+                                            id:flash_spec
+                                            font_size:11
+                                    GridLayout:
+                                        height:300
                                         cols:2
                                         id:first_tab
                                         spacing:5
                                         padding:10,5
+                                    StackLayout:
+                                        size_hint_y:None
+                                        height:250
+                                        orientation: 'tb-lr'
+                                        padding:5
+                                        spacing:10
+                                        canvas:
+                                            Color:
+                                                rgba: 0,0,0,1
+                                            Line:
+                                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                            Color:
+                                                rgba: 0.7, 0.7, 0.7, 1
+                                            Rectangle:
+                                                pos:self.pos
+                                                size:self.size
+                                        BoxLayout:
+                                            size_hint_y:None
+                                            height:25
+                                            padding:5
+                                            canvas:
+                                                Color:
+                                                    rgba: 0,0,0,1
+                                                Line:
+                                                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                Color:
+                                                    rgba: 0.3, 0, 0, 1
+                                                Rectangle:
+                                                    pos:self.pos
+                                                    size:self.size
+                                            PLabel:
+                                                color:1,1,1,1
+                                                text:"Composition"
+                                                halign:"center"
+                                        BoxLayout:
+                                            orientation:'vertical'
+                                            padding:4,0
+                                            spacing:10
+                                            size_hint_y:None
+                                            height:195
+                                            GridLayout:
+                                                size_hint_y:None
+                                                height:25
+                                                cols:2
+                                                PLabel:
+                                                    text:"Basis"
+                                                PButton:
+                                                    text:"Molar Fractions"
+                                                    id:compound_spec
+                                            BoxLayout:
+                                                size_hint_y:None
+                                                height:150
+                                                orientation: 'vertical'
+                                                canvas:
+                                                    Color:
+                                                        rgba: 0,0,0,1
+                                                    Line:
+                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                    Color:
+                                                        rgba: 0.9, 0.9, 0.9, 1
+                                                    Rectangle:
+                                                        pos:self.pos
+                                                        size:self.size
+                                                BoxLayout:
+                                                    size_hint_y:None
+                                                    height:20
+                                                    canvas:
+                                                        Color:
+                                                            rgba: 0,0,0,1
+                                                        Line:
+                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                        Color:
+                                                            rgba: 0.8, 0.8, 0.8, 1
+                                                        Rectangle:
+                                                            pos:self.pos
+                                                            size:self.size
+                                                    GridLayout:
+                                                        size_hint_y:None
+                                                        height:20
+                                                        cols:2
+                                                        PLabel:
+                                                            height:20
+                                                            spacing:5
+                                                            color:0,0,0,1
+                                                            text:" Compound"
+                                                            halign:'center'
+                                                            canvas.before:
+                                                                Color:
+                                                                    rgba: 0.6, 0.6, 0.6, 1
+                                                                Rectangle:
+                                                                    pos:self.pos
+                                                                    size:self.size
+                                                        PLabel:
+                                                            height:20
+                                                            halign:'center'
+                                                            spacing:5
+                                                            color:0,0,0,1
+                                                            text:"Amount"
+                                                BoxLayout:
+                                                    ScrollView:
+                                                        BoxLayout:
+                                                            size_hint_y:None
+                                                            height:500
+                                                            StackLayout:
+                                                                padding:8,0,0,0
+                                                                size_hint_x:0.5
+                                                                id:composition_compound
+                                                            StackLayout:
+                                                                size_hint_x:0.5
+                                                                id:composition_amount
+
+
                             TabbedPanelItem:
                                 text: 'Compounds'
                                 font_size:12
                                 background_color:0.6,0,0,1
                                 background_normal:""
                                 BoxLayout:
-                                    size_hint_x:0.93
+                                    size_hint_x:1
+                                    padding:6
+                                    canvas:
+                                        Color:
+                                            rgba: 0,0,0,1
+                                        Line:
+                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                        Color:
+                                            rgba: 0.5, 0.5, 0.5, 1
+                                        Rectangle:
+                                            pos:self.pos
+                                            size:self.size
                                     TabbedPanel:
                                         size_hint: 0.3,1
                                         pos_hint: {'top':1}
                                         do_default_tab: False
                                         tab_width: self.parent.width/3
-                                        tab_height: 30
+                                        tab_height: 20
 
                                         TabbedPanelItem:
+                                            background_color:0.6,0,0,1
+                                            background_normal:""
+                                            background_image:""
                                             font_size:12
                                             text: 'Amounts'
                                             size_hint_y:1
                                             BoxLayout:
+                                                padding:5,6
+                                                spacing:5
                                                 size_hint_y:1
                                                 orientation:'vertical'
                                                 canvas:
                                                     Color:
-                                                        rgb: 0.5,0.5,0.5,1
+                                                        rgba: 0,0,0,1
+                                                    Line:
+                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                    Color:
+                                                        rgb: 0.7,0.7,0.7,1
                                                     Rectangle:
                                                         pos:self.pos
                                                         size:self.size
+                                                GridLayout:
+                                                    size_hint_y:None
+                                                    height:25
+                                                    cols:2
+                                                    padding:9,0,30,0
+                                                    PLabel:
+                                                        text:"Basis"
+                                                        halign:'center'
+                                                    PButton:
+                                                        text:"Molar Fractions"
                                                 BoxLayout:
-                                                    padding:0,10,3,10
-                                                    size_hint_y:0.1
-                                                    Label:
-                                                        text:'Basis'
-                                                        size_hint_x:0.3
-                                                        size_hint_y:0.8
-                                                        font_size:12
-                                                        halign:'left'
-                                                    TextInput:
-                                                        text : 'Mole Fractions'
-                                                        size_hint_y:0.8
-                                                        size_hint_x:0.5
-                                                        height:25
-                                                        valign:'middle'
-                                                        font_size:12
-                                                        multiline:False
-                                                BoxLayout:
+                                                    padding:10
                                                     TabbedPanel:
                                                         size_hint: 0.3,1
                                                         pos_hint: {'top':1}
@@ -432,107 +579,175 @@
                                                         TabbedPanelItem:
                                                             text:'Mixture'
                                                             font_size:12
-                                                            GridLayout:
-                                                                cols:2
-                                                                size_hint_y:1
+                                                            background_color:0.6,0,0,1
+                                                            background_normal:""
+                                                            background_image:""
+                                                            BoxLayout:
+                                                                orientation: 'vertical'
                                                                 canvas:
                                                                     Color:
-                                                                        rgb: 0.7,0.7,0.7,1
+                                                                        rgba: 0,0,0,1
+                                                                    Line:
+                                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                    Color:
+                                                                        rgba: 0.9, 0.9, 0.9, 1
                                                                     Rectangle:
                                                                         pos:self.pos
                                                                         size:self.size
-                                                                StackLayout:
-                                                                    id:compound_col_1
-                                                                    size_hint_y:1
-                                                                    orientation:'tb-lr'
+                                                                BoxLayout:
+                                                                    size_hint_y:None
+                                                                    height:20
                                                                     canvas:
                                                                         Color:
-                                                                            rgb: 0.2,0.2,0.2,1
+                                                                            rgba: 0,0,0,1
+                                                                        Line:
+                                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                        Color:
+                                                                            rgba: 0.8, 0.8, 0.8, 1
                                                                         Rectangle:
                                                                             pos:self.pos
                                                                             size:self.size
-                                                                    Label:
-                                                                        text:'Compound'
-                                                                        size_hint_x:1
+                                                                    GridLayout:
                                                                         size_hint_y:None
-                                                                        font_size:12
-                                                                        size:(0,20)
-                                                                        color: 0, 0, 0, 1
-                                                                        canvas.before:
-                                                                            Color:
-                                                                                rgb: 0.9,0.9,0.9,1
-                                                                            Rectangle:
-                                                                                pos:self.pos
-                                                                                size:self.size
-                                                                StackLayout:
-                                                                    id:compound_col_2
-                                                                    size_hint_y:1
-                                                                    orientation:'tb-lr'
-                                                                    canvas:
-                                                                        Color:
-                                                                            rgb: 0.7,0.7,0.7,1
-                                                                        Rectangle:
-                                                                            pos:self.pos
-                                                                            size:self.size
-                                                                    Label:
-                                                                        text:'Amount'
-                                                                        size_hint_x:1
-                                                                        size_hint_y:None
-                                                                        size:(0,20)
-                                                                        color: 0, 0, 0, 1
-                                                                        font_size:12
-                                                                        canvas.before:
-                                                                            Color:
-                                                                                rgb: 0.9,0.9,0.9,1
-                                                                            Rectangle:
-                                                                                pos:self.pos
-                                                                                size:self.size
+                                                                        height:20
+                                                                        cols:2
+                                                                        PLabel:
+                                                                            height:20
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:" Compound"
+                                                                            halign:'center'
+                                                                            canvas.before:
+                                                                                Color:
+                                                                                    rgba: 0.6, 0.6, 0.6, 1
+                                                                                Rectangle:
+                                                                                    pos:self.pos
+                                                                                    size:self.size
+                                                                        PLabel:
+                                                                            height:20
+                                                                            halign:'center'
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:"Amount"
+                                                                BoxLayout:
+                                                                    ScrollView:
+                                                                        BoxLayout:
+                                                                            size_hint_y:None
+                                                                            height:800
+                                                                            StackLayout:
+                                                                                padding:8,0,0,0
+                                                                                size_hint_x:0.4
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                                canvas:
+
 
 
                                                         TabbedPanelItem:
                                                             text:'Vapor'
                                                             font_size:12
+                                                            background_color:0.6,0,0,1
+                                                            background_normal:""
+                                                            background_image:""
                                                             BoxLayout:
+                                                                orientation:'vertical'
                                                                 size_hint_y:1
                                                                 canvas:
                                                                     Color:
-                                                                        rgb: 0.7,0.7,0.7,1
+                                                                        rgba: 0,0,0,1
+                                                                    Line:
+                                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                    Color:
+                                                                        rgb: 0.9,0.9,0.9,1
                                                                     Rectangle:
                                                                         pos:self.pos
                                                                         size:self.size
+                                                                BoxLayout:
+                                                                    size_hint_y:None
+                                                                    height:20
+                                                                    canvas:
+                                                                        Color:
+                                                                            rgba: 0,0,0,1
+                                                                        Line:
+                                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                        Color:
+                                                                            rgba: 0.8, 0.8, 0.8, 1
+                                                                        Rectangle:
+                                                                            pos:self.pos
+                                                                            size:self.size
+                                                                    GridLayout:
+                                                                        size_hint_y:None
+                                                                        height:20
+                                                                        cols:2
+                                                                        PLabel:
+                                                                            height:20
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:" Compound"
+                                                                            halign:'center'
+                                                                            canvas.before:
+                                                                                Color:
+                                                                                    rgba: 0.6, 0.6, 0.6, 1
+                                                                                Rectangle:
+                                                                                    pos:self.pos
+                                                                                    size:self.size
+                                                                        PLabel:
+                                                                            height:20
+                                                                            halign:'center'
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:"Amount"
+                                                                BoxLayout:
+                                                                    ScrollView:
+                                                                        BoxLayout:
+                                                                            size_hint_y:None
+                                                                            height:800
+                                                                            StackLayout:
+                                                                                padding:8,0,0,0
+                                                                                size_hint_x:0.4
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                                canvas:
 
 
                                         TabbedPanelItem:
                                             text: 'Properties'
+                                            background_color:0.6,0,0,1
+                                            background_normal:""
+                                            background_image:""
                                             font_size:12
                                             size_hint_y:1
                                             BoxLayout:
+                                                padding:5,6
+                                                spacing:5
                                                 size_hint_y:1
                                                 orientation:'vertical'
                                                 canvas:
                                                     Color:
-                                                        rgb: 0.5,0.5,0.5,1
+                                                        rgba: 0,0,0,1
+                                                    Line:
+                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                    Color:
+                                                        rgb: 0.7,0.7,0.7,1
                                                     Rectangle:
                                                         pos:self.pos
                                                         size:self.size
+                                                GridLayout:
+                                                    size_hint_y:None
+                                                    height:25
+                                                    cols:2
+                                                    padding:9,0,15,0
+                                                    PLabel:
+                                                        text:"Property"
+                                                        halign:'center'
+                                                    PButton:
+                                                        text:"Fugacity Coefficient"
                                                 BoxLayout:
-                                                    padding:0,10,3,10
-                                                    size_hint_y:0.1
-                                                    Label:
-                                                        text:'Property'
-                                                        font_size:12
-                                                        size_hint_x:0.3
-                                                        size_hint_y:0.8
-                                                        halign:'left'
-                                                    TextInput:
-                                                        text : 'Fugacity Coefficient'
-                                                        size_hint_y:0.8
-                                                        size_hint_x:0.5
-                                                        height:25
-                                                        valign:'middle'
-                                                        font_size:12
-                                                        multiline:False
-                                                BoxLayout:
+                                                    padding:10
                                                     TabbedPanel:
                                                         size_hint: 0.3,1
                                                         pos_hint: {'top':1}
@@ -540,16 +755,71 @@
                                                         tab_width: self.parent.width/3
                                                         tab_height: 20
                                                         TabbedPanelItem:
-                                                            font_size:12
                                                             text:'Vapour'
+                                                            font_size:12
+                                                            background_color:0.6,0,0,1
+                                                            background_normal:""
+                                                            background_image:""
                                                             BoxLayout:
-                                                                size_hint_y:1
+                                                                orientation: 'vertical'
                                                                 canvas:
                                                                     Color:
-                                                                        rgb: 0.7,0.7,0.7,1
+                                                                        rgba: 0,0,0,1
+                                                                    Line:
+                                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                    Color:
+                                                                        rgba: 0.9, 0.9, 0.9, 1
                                                                     Rectangle:
                                                                         pos:self.pos
                                                                         size:self.size
+                                                                BoxLayout:
+                                                                    size_hint_y:None
+                                                                    height:20
+                                                                    canvas:
+                                                                        Color:
+                                                                            rgba: 0,0,0,1
+                                                                        Line:
+                                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                                        Color:
+                                                                            rgba: 0.8, 0.8, 0.8, 1
+                                                                        Rectangle:
+                                                                            pos:self.pos
+                                                                            size:self.size
+                                                                    GridLayout:
+                                                                        size_hint_y:None
+                                                                        height:20
+                                                                        cols:2
+                                                                        PLabel:
+                                                                            height:20
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:" Compound"
+                                                                            halign:'center'
+                                                                            canvas.before:
+                                                                                Color:
+                                                                                    rgba: 0.6, 0.6, 0.6, 1
+                                                                                Rectangle:
+                                                                                    pos:self.pos
+                                                                                    size:self.size
+                                                                        PLabel:
+                                                                            height:20
+                                                                            halign:'center'
+                                                                            spacing:5
+                                                                            color:0,0,0,1
+                                                                            text:"Amount"
+                                                                BoxLayout:
+                                                                    ScrollView:
+                                                                        BoxLayout:
+                                                                            size_hint_y:None
+                                                                            height:800
+                                                                            StackLayout:
+                                                                                padding:8,0,0,0
+                                                                                size_hint_x:0.4
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                            StackLayout:
+                                                                                size_hint_x:0.3
+                                                                                canvas:
 
 
                             TabbedPanelItem:
@@ -558,39 +828,220 @@
                                 background_color:0.6,0,0,1
                                 background_normal:""
                                 BoxLayout:
+                                    size_hint_x:1
+                                    padding:6
+                                    canvas:
+                                        Color:
+                                            rgba: 0,0,0,1
+                                        Line:
+                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                        Color:
+                                            rgba: 0.5, 0.5, 0.5, 1
+                                        Rectangle:
+                                            pos:self.pos
+                                            size:self.size
                                     TabbedPanel:
                                         size_hint: 0.3,1
                                         pos_hint: {'top':1}
                                         do_default_tab: False
                                         tab_width: self.parent.width/3
                                         tab_height: 20
+
                                         TabbedPanelItem:
-                                            text:'Mixture'
+                                            background_color:0.6,0,0,1
+                                            background_normal:""
+                                            background_image:""
                                             font_size:12
+                                            text: 'Mixture'
+                                            size_hint_y:1
                                             BoxLayout:
+                                                padding:5,6
+                                                spacing:5
                                                 size_hint_y:1
+                                                orientation:'vertical'
                                                 canvas:
+                                                    Color:
+                                                        rgba: 0,0,0,1
+                                                    Line:
+                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                                                     Color:
                                                         rgb: 0.7,0.7,0.7,1
                                                     Rectangle:
                                                         pos:self.pos
                                                         size:self.size
+                                                BoxLayout:
+                                                    orientation: 'vertical'
+                                                    canvas:
+                                                        Color:
+                                                            rgba:0,0,0,1
+                                                        Line:
+                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                        Color:
+                                                            rgba: 0.9, 0.9, 0.9, 1
+                                                        Rectangle:
+                                                            pos:self.pos
+                                                            size:self.size
+                                                    BoxLayout:
+                                                        size_hint_y:None
+                                                        height:20
+                                                        canvas:
+                                                            Color:
+                                                                rgba: 0,0,0,1
+                                                            Line:
+                                                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                            Color:
+                                                                rgba: 0.8, 0.8, 0.8, 1
+                                                            Rectangle:
+                                                                pos:self.pos
+                                                                size:self.size
+                                                        BoxLayout:
+                                                            size_hint_y:None
+                                                            height:20
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.4
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Property"
+                                                                halign:'center'
+                                                                canvas.before:
+                                                                    Color:
+                                                                        rgba: 0.4, 0.4, 0.4, 1
+                                                                    Rectangle:
+                                                                        pos:self.pos
+                                                                        size:self.size
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.3
+                                                                halign:'center'
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Value"
+                                                                canvas.before:
+                                                                    Color:
+                                                                        rgba: 0.6, 0.6, 0.6, 1
+                                                                    Rectangle:
+                                                                        pos:self.pos
+                                                                        size:self.size
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.3
+                                                                halign:'center'
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Units"
+                                                    BoxLayout:
+                                                        ScrollView:
+                                                            BoxLayout:
+                                                                size_hint_y:None
+                                                                height:800
+                                                                StackLayout:
+                                                                    padding:8,0,0,0
+                                                                    size_hint_x:0.4
+                                                                StackLayout:
+                                                                    size_hint_x:0.3
+                                                                StackLayout:
+                                                                    size_hint_x:0.3
+                                                                    canvas:
+
+
                                         TabbedPanelItem:
-                                            text:'Vapor'
+                                            background_color:0.6,0,0,1
+                                            background_normal:""
+                                            background_image:""
                                             font_size:12
+                                            text: 'Vapour'
+                                            size_hint_y:1
                                             BoxLayout:
+                                                padding:5,6
+                                                spacing:5
                                                 size_hint_y:1
+                                                orientation:'vertical'
                                                 canvas:
+                                                    Color:
+                                                        rgba: 0,0,0,1
+                                                    Line:
+                                                        rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
                                                     Color:
                                                         rgb: 0.7,0.7,0.7,1
                                                     Rectangle:
                                                         pos:self.pos
                                                         size:self.size
-                            TabbedPanelItem:
-                                background_color:0.6,0,0,1
-                                background_normal:""
-                                text: 'Annotations'
-                                font_size:12
+                                                BoxLayout:
+                                                    orientation: 'vertical'
+                                                    canvas:
+                                                        Color:
+                                                            rgba:0,0,0,1
+                                                        Line:
+                                                            rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                        Color:
+                                                            rgba: 0.9, 0.9, 0.9, 1
+                                                        Rectangle:
+                                                            pos:self.pos
+                                                            size:self.size
+                                                    BoxLayout:
+                                                        size_hint_y:None
+                                                        height:20
+                                                        canvas:
+                                                            Color:
+                                                                rgba: 0,0,0,1
+                                                            Line:
+                                                                rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                                                            Color:
+                                                                rgba: 0.8, 0.8, 0.8, 1
+                                                            Rectangle:
+                                                                pos:self.pos
+                                                                size:self.size
+                                                        BoxLayout:
+                                                            size_hint_y:None
+                                                            height:20
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.4
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Property"
+                                                                halign:'center'
+                                                                canvas.before:
+                                                                    Color:
+                                                                        rgba: 0.4, 0.4, 0.4, 1
+                                                                    Rectangle:
+                                                                        pos:self.pos
+                                                                        size:self.size
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.3
+                                                                halign:'center'
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Value"
+                                                                canvas.before:
+                                                                    Color:
+                                                                        rgba: 0.6, 0.6, 0.6, 1
+                                                                    Rectangle:
+                                                                        pos:self.pos
+                                                                        size:self.size
+                                                            PLabel:
+                                                                height:20
+                                                                size_hint_x:0.3
+                                                                halign:'center'
+                                                                spacing:5
+                                                                color:0,0,0,1
+                                                                text:"Units"
+                                                    BoxLayout:
+                                                        ScrollView:
+                                                            BoxLayout:
+                                                                size_hint_y:None
+                                                                height:800
+                                                                StackLayout:
+                                                                    padding:8,0,0,0
+                                                                    size_hint_x:0.4
+                                                                StackLayout:
+                                                                    size_hint_x:0.3
+                                                                StackLayout:
+                                                                    size_hint_x:0.3
+                                                                    canvas:
+
                     Button:
                         id:submit
                         size_hint_y:None

@@ -26,6 +26,12 @@ from kivy.factory import Factory
 from kivy.uix.modalview import ModalView
 Builder.load_file('popup.kv')
 
+class PropInputLabel(Label):
+    pass
+
+class PropInputTextInput(TextInput):
+    pass
+
 class c1PopUp(ModalView):
     pass
 
@@ -46,31 +52,31 @@ class UnitOPM(Factory.CustButton):
         super(UnitOPM, self).__init__(**kwargs)
         self.child = Button()
 
-    def on_touch_down(self, touch):
-        if self.child.collide_point(*touch.pos):
-
-            if touch.is_double_tap:
-                # touch.multitouch_sim = True
-                self.child.multi_touch = self.child.multi_touch + 1
-            else:
-                touch.grab(self)
-
-        return False
-
-    def on_touch_up(self, touch):
-        if touch.grab_current is self:
-            # self.unpressed = touch.pos
-            touch.ungrab(self)
-        return True
-
-    def on_touch_move(self, touch):
-        if touch.grab_current is self:
-            self.center_x = touch.x
-            self.center_y = touch.y
-            if self.child.connected == True:
-                self.child.line_move = self.child.line_move + 1
-            return False
-        return super(UnitOPM, self).on_touch_move(touch)
+    # def on_touch_down(self, touch):
+    #     if self.child.collide_point(*touch.pos):
+    #
+    #         if touch.is_double_tap:
+    #             # touch.multitouch_sim = True
+    #             self.child.multi_touch = self.child.multi_touch + 1
+    #         else:
+    #             touch.grab(self)
+    #
+    #     return False
+    #
+    # def on_touch_up(self, touch):
+    #     if touch.grab_current is self:
+    #         # self.unpressed = touch.pos
+    #         touch.ungrab(self)
+    #     return True
+    #
+    # def on_touch_move(self, touch):
+    #     if touch.grab_current is self:
+    #         self.center_x = touch.x
+    #         self.center_y = touch.y
+    #         if self.child.connected == True:
+    #             self.child.line_move = self.child.line_move + 1
+    #         return False
+    #     return super(UnitOPM, self).on_touch_move(touch)
 
 class UnitOP(Button):
         Operators = []
@@ -101,6 +107,7 @@ class UnitOP(Button):
             self.OM_Model = ''
             self.name = ''
             self.PropInput = []
+            self.PropLabelStreams = []
             self.conn_point_input = 0
             self.conn_point_output = 0
             self.check_stm = 1
@@ -113,46 +120,66 @@ class UnitOP(Button):
             self.text_label = Label()
             self.updated_input_operators = []
             self.updated_output_operators = []
+            self.flash_spec = []
+            self.c = []
+            self.upward_connector_input = []
+            self.downward_connector_input = []
+            self.upward_connector_output = []
+            self.downward_connector_output = []
+            self.compound_amounts = []
+            self.compound_input_molar = []
+            self.compound_input_mass = []
 
         def on_multi_touch(self, instance, value):
-            c = c1PopUp()
+            self.c = c1PopUp()
             if self.check_stm == 0:
-                c = c2PopUp()
+                self.c = c2PopUp()
             self.PropertyObj = []
             self.PropInput = []
             self.DropDownsInput = []
             self.MainButtonInput = []
             self.DropDownsOutput = []
             self.MainButtonOutput = []
-            c.ids.name_label.text_size = c.ids.name.size
+            self.c.ids.name_label.text_size = self.c.ids.name.size
             self.bef_name = self.name
-            c.ids.name.text = self.name
-            self.name_ob = c.ids.name
+            self.c.ids.name.text = self.name
+            self.name_ob = self.c.ids.name
             i=0
             self.updated_input_operators = []
             self.updated_output_operators = []
 
             if self.check_stm == 0:
+                self.PropLabelStreams = []
+                self.compound_amounts.append([])
+                self.compound_amounts.append([])
                 for Property in self.PropertyList:
-                    PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',color=(0,0,0,1))
-                    # PropLabel.text_size = PropLabel.size
-                    c.ids.first_tab.add_widget(PropLabel)
+                    self.PropLabelStreams.append(PropInputLabel(text=Property))
+                    self.c.ids.first_tab.add_widget(self.PropLabelStreams[i])
                     self.PropInput.append(TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle',font_size=12, multiline=False))
                     self.PropertyObj.append(self.PropInput[i])
-                    c.ids.first_tab.add_widget(self.PropInput[i])
+                    self.c.ids.first_tab.add_widget(self.PropInput[i])
                     i=i+1
-            for comp in self.compound_elements:
-                c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1, size_hint_y=None, font_size=12,size=(0, 20)))
-                c.ids.compound_col_2.add_widget(TextInput(text="1.0000", size_hint_y=None, font_size=8, size=(0, 20)))
+                i=0
+                for comp in self.compound_elements:
+
+                    # self.c.ids.compound_col_1.add_widget(Label(text=comp,size_hint_x=1, size_hint_y=None, font_size=12,size=(0, 20)))
+                    # self.c.ids.compound_col_2.add_widget(TextInput(text="1.0000", size_hint_y=None, font_size=8, size=(0, 20)))
+                    self.c.ids.composition_compound.add_widget(PropInputLabel(text=comp))
+                    self.compound_amounts[0].append('0')
+                    self.compound_amounts[1].append('0')
+                    self.compound_input_molar.append(PropInputTextInput(text=self.compound_amounts[0][i]))
+                    self.compound_input_mass.append(PropInputTextInput(text=self.compound_amounts[1][i]))
+                    self.c.ids.composition_amount.add_widget(PropInputTextInput(text=self.compound_amounts[0][i]))
+                    i += 1
+                self.PropLabelStreams[4].color = (0.3,0.3,0.3,1)
+                self.PropInput[4].readonly = True
+                self.PropInput[4].cursor_blink = True
+
+            i=0
             for Property in self.PropertyListInput:
-                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle', color=(0,0,0,1))
-                PropLabel.text_size = PropLabel.size
-                c.ids.first_tab.add_widget(PropLabel)
-                if self.check_stm == 0:
-                    self.PropInput.append(TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle',font_size=12, multiline=False))
-                    self.PropertyObj.append(self.PropInput[i])
-                    c.ids.first_tab.add_widget(self.PropInput[i])
-                else:
+                PropLabel = PropInputLabel(text=Property)
+                self.c.ids.first_tab.add_widget(PropLabel)
+                if self.check_stm != 0:
                     self.MainButtonInput.append(Select_Button(text='None', size_hint_y=None, height=25))
                     if self.input_streams[i + 1]:
                         self.MainButtonInput[len(self.MainButtonInput)-1].text = self.input_streams[i+1].name
@@ -167,21 +194,15 @@ class UnitOP(Button):
                     # self.MainButtonInput[i].bind(on_release=self.DropDownsInput[i].open)
                     self.MainButtonInput[i].bind(on_release=self.generate_dp_input)
                     self.DropDownsInput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonInput[instance.DrNumber], 'text', x))
-                    c.ids.first_tab.add_widget(self.MainButtonInput[i])
+                    self.c.ids.first_tab.add_widget(self.MainButtonInput[i])
                 i = i+1
+            self.c.ids.first_tab.add_widget(Label(text="", size_hint_y=None,  height=25))
+            self.c.ids.first_tab.add_widget(Label(text="", size_hint_y=None,height=25))
             i = 0
             for Property in self.PropertyListOutput:
-                PropLabel = Label(text=Property, size_hint_y=None, height=25, halign='left', valign='middle',
-                                  color=(0, 0, 0, 1))
-                PropLabel.text_size = PropLabel.size
-                self.PropInput.append(
-                    TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle', font_size=12,
-                              multiline=False))
-                self.PropertyObj.append(self.PropInput[i])
-                c.ids.first_tab.add_widget(PropLabel)
-                if self.check_stm == 0:
-                    c.ids.first_tab.add_widget(self.PropInput[i])
-                else:
+                PropLabel = PropInputLabel(text=Property)
+                self.c.ids.first_tab.add_widget(PropLabel)
+                if self.check_stm != 0:
                     self.MainButtonOutput.append(Select_Button(text='None', size_hint_y=None, height=25))
                     if self.output_streams[i + 1]:
                         self.MainButtonOutput[len(self.MainButtonOutput) - 1].text = self.output_streams[i + 1].name
@@ -196,9 +217,12 @@ class UnitOP(Button):
                     #     self.DropDownsOutput[i].add_widget(btn)
                     self.MainButtonOutput[i].bind(on_release=self.generate_dp_output)
                     self.DropDownsOutput[i].bind(on_select=lambda instance, x: setattr(self.MainButtonOutput[instance.DrNumber], 'text', x))
-                    c.ids.first_tab.add_widget(self.MainButtonOutput[i])
+                    self.c.ids.first_tab.add_widget(self.MainButtonOutput[i])
                 i = i + 1
-            c.ids.submit.bind(on_press=self.on_submit)
+            self.c.ids.submit.bind(on_press=self.on_submit)
+            if self.check_stm == 0:
+                self.c.ids.flash_spec.bind(on_press=self.show_flash_spec)
+                self.c.ids.compound_spec.bind(on_press=self.show_compound_spec)
             for operator in self.Operators:
                 if not operator.output_streams[1]:
                     self.updated_input_operators.append(operator)
@@ -215,7 +239,58 @@ class UnitOP(Button):
                         if operator.name == k.text:
                             self.updated_output_operators.append(operator)
 
-            c.open()
+            self.c.open()
+
+
+
+        def show_flash_spec(self,instance):
+            dr = DropDown()
+            dr.bind(on_select=self.select_flash_spec)
+            for i in self.flash_spec:
+                if i != instance.text:
+                    btn = butt(text=i, size_hint_y=None, height=25, background_normal='',
+                               background_color=(0.4, 0.4, 0.4, 1),font_size=12)
+                    btn.bind(on_release=lambda btn: dr.select(btn.text))
+                    dr.add_widget(btn)
+            dr.open(instance)
+
+        def select_flash_spec(self, instance, text):
+            self.c.ids.flash_spec.text = text
+            for i in self.PropInput:
+                i.readonly = False
+            for i in self.PropLabelStreams:
+                i.color = (0,0,0,1)
+            if(text == "T and P"):
+                self.PropLabelStreams[4].color = (0.3, 0.3, 0.3, 1)
+                self.PropInput[4].readonly = True
+            elif(text == "T and Vapor Fraction"):
+                self.PropLabelStreams[1].color = (0.3, 0.3, 0.3, 1)
+                self.PropInput[1].readonly = True
+            elif (text == "P and Vapor Fraction"):
+                self.PropLabelStreams[0].color = (0.3, 0.3, 0.3, 1)
+                self.PropInput[0].readonly = True
+
+        def show_compound_spec(self, instance):
+            dr = DropDown()
+            dr.bind(on_select=self.select_compound_spec)
+            for i in self.compound_spec:
+                btn = butt(text=i, size_hint_y=None, height=25, background_normal='',
+                           background_color=(0.4, 0.4, 0.4, 1), font_size=12)
+                btn.bind(on_release=lambda btn: dr.select(btn.text))
+                dr.add_widget(btn)
+            dr.open(instance)
+
+        def select_compound_spec(self, instance, text):
+            self.c.ids.compound_spec.text = text
+            self.c.ids.composition_amount.clear_widgets()
+            i=0
+            while i < len(self.compound_input_molar):
+                if text == "Molar Fractions":
+                    self.c.ids.composition_amount.add_widget(self.compound_input_molar[i])
+                else:
+                    self.c.ids.composition_amount.add_widget(self.compound_input_mass[i])
+                i += 1
+
 
         def generate_dp_input(self,instance):
 

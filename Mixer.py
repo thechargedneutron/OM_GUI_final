@@ -4,6 +4,7 @@ class Mixer(UnitOP.UnitOP):
     def __init__(self,**kwargs):
         super(Mixer, self).__init__(**kwargs)
         self.type = 1
+        self.background_down='Images/mixer_operator.png'
         self.stream_count = [6, 1]
         self.input_streams = {1: None, 2: None, 3: None, 4: None, 5: None, 6:None}
         self.output_streams = {1: None}
@@ -15,22 +16,35 @@ class Mixer(UnitOP.UnitOP):
         self.size2 = (140,150)
         self.size = (130,130)
         self.background_normal = 'Images/mixer_operator.png'
+        self.background_down = 'Images/mixer_operator.png'
         self.PropertyListInput = ['INPUT 1','INPUT 2','INPUT 3','INPUT 4','INPUT 5','INPUT 6']
         self.PropertyListOutput = ['OUTPUT']
+        self.upward_connector_input = []
+        self.downward_connector_input = []
+        self.upward_connector_output = []
+        self.downward_connector_output = []
         self.Connecting_Points_Input = []
         self.Connecting_Points_Output = []
         self.line_nos = []
         self.border= 0,0,0,0
         self.OM_Model = 'Mixer'
         self.PropertyVal = ['', '', '']
+
     def Update_Conn_Pnts(self):
         self.Connecting_Points_Input = [[self.x+40, self.y + 101], [self.x+40, self.y + 86], [self.x+40, self.y + 71], [self.x+40, self.y + 56],[self.x+40, self.y + 41], [self.x+40, self.y + 26]]
         self.Connecting_Points_Output = [[self.x + 100, self.y + 66]]
-
+        self.upward_connector_input = [self.x+20, self.y + 130]
+        self.downward_connector_input = [self.x+20, self.y -10]
+        self.upward_connector_output = [self.x + 120, self.y + 130]
+        self.downward_connector_output = [self.x + 120, self.y - 10]
 
     def on_submit(self, instance):
         self.Connecting_Points_Input = [[self.x+40, self.y + 101], [self.x+40, self.y + 86], [self.x+40, self.y + 71], [self.x+40, self.y + 56], [self.x+40, self.y + 41], [self.x+40, self.y + 26]]
         self.Connecting_Points_Output = [[self.x + 100, self.y + 66]]
+        self.upward_connector_input = [self.x + 20, self.y + 130]
+        self.downward_connector_input = [self.x + 20, self.y - 3]
+        self.upward_connector_output = [self.x + 120, self.y + 130]
+        self.downward_connector_output = [self.x + 120, self.y - 10]
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]

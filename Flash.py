@@ -13,6 +13,7 @@ class Flash(UnitOP.UnitOP):
         self.size2 = (140, 175)
         self.size = (130, 151.6)
         self.background_normal = 'Images/flash_operator.png'
+        self.background_down = 'Images/flash_operator.png'
         self.PropertyListInput = ['INPUT 1','INPUT 2']
         self.PropertyListOutput = ['OUTPUT 1', 'OUTPUT 2']
         self.Connecting_Points_Input = []
@@ -25,10 +26,19 @@ class Flash(UnitOP.UnitOP):
     def Update_Conn_Pnts(self):
         self.Connecting_Points_Input = [[self.x+40, self.y+110],[self.x+40,self.y+44]]
         self.Connecting_Points_Output = [ [self.x+90, self.y+110],[self.x+90, self.y+44]]
+        self.upward_connector_input = [self.x+20,self.y + 150]
+        self.downward_connector_input = [self.x+20,self.y]
+        self.upward_connector_output = [self.x+110, self.y + 150]
+        self.downward_connector_output = [self.x+110, self.y]
 
     def on_submit(self, instance):
         self.Connecting_Points_Input = [[self.x+40, self.y + 110], [self.x+40, self.y + 44]]
         self.Connecting_Points_Output = [[self.x + 90, self.y + 110], [self.x+90, self.y + 44]]
+        self.upward_connector_input = [self.x + 20, self.y + 150]
+        self.downward_connector_input = [self.x + 20,self.y]
+        self.upward_connector_output = [self.x + 110, self.y + 150]
+        self.downward_connector_output = [self.x + 110,self.y]
+
         self.name = self.name_ob.text
         self.text_label.text = self.name
         UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
@@ -42,18 +52,19 @@ class Flash(UnitOP.UnitOP):
                 self.output_streams[key].input_streams[1] = None
                 self.output_streams[key].input_lines[1] = None
                 self.output_streams[key] = None
-        val = 1;
+        val = 1
         for Property in self.MainButtonInput:
             if Property.text != 'None':
                 self.input_streams[val] = self.all_operators[self.drop_connections[Property.text]]
             val += 1
 
-        val = 1;
+        val = 1
         for Property in self.MainButtonOutput:
             if Property.text != 'None':
                 self.output_streams[val] = self.all_operators[self.drop_connections[Property.text]]
             val += 1
         self.connect = self.connect + 1
+
 
 
 

@@ -53,11 +53,14 @@ Optimization_options = ['Sensitivity Analysis','Multivariate Optimizer']
 Scripts_options = ['Script Manager']
 Results_options = ['Create Report']
 Plugins_options = ['CAPE-OPEN Plugins','Natural Gas Properties']
-Windows_options = ['Cascade','Group Horizontally','Group Vertically',]
+Windows_options = ['Set Canvas Size']
 View_options = ['Show Toolstrip','Console Output','calculation Queue','Watch panel','CAPE-OPEN Objects Reports','Flowsheet Toolstrip','Unit Systems Toolstrip',"Restore Docking Panels' Layout",'Close Opened Object Editors']
 Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','About OpenModellica']
 
 class MenuButton(Button):
+    pass
+
+class CompButton(Button):
     pass
 
 class Remove_Bubble(Bubble):
@@ -85,6 +88,8 @@ class LoadDialog(FloatLayout):
     load = ObjectProperty(None)
     cancel = ObjectProperty(None)
 
+class ResizePop(ModalView):
+    pass
 
 class SaveDialog(FloatLayout):
     save = ObjectProperty(None)
@@ -119,6 +124,8 @@ class OmWidget(FloatLayout):
     word_list = []
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
+
+
         fo = open("compounds.txt", "r+")
         self.error_popup = Error()
         self.error = self.error_popup.ids.error_message
@@ -136,6 +143,8 @@ class OmWidget(FloatLayout):
         self.grab_w = ''
         self.select_box = InstructionGroup()
         self.tp = DropDown()
+        self.resize_popup = ''
+        self.current_grab_unit = None
 
         self.word_list = fo.read().splitlines()
         self.addedcomp = []
@@ -212,7 +221,7 @@ class OmWidget(FloatLayout):
 
         self.windowsdropdown = DropDown(auto_width=False, width=300)
         for model in Windows_options:
-            btn = MenuButton(text=model, width=150)
+            btn = MenuButton(text=model, width=150, on_press=self.change_canvas_size_menu)
             btn.text_size = btn.size
             self.windowsdropdown.add_widget(btn)
 
@@ -227,6 +236,25 @@ class OmWidget(FloatLayout):
             btn = MenuButton(text=model, width=200)
             btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
+        print self.ids.mixer.pos;
+        print self.ids.mat_strm.pos;
+        print self.ids.flash.pos;
+        print self.ids.splitter.pos;
+        print self.ids.valve.pos;
+
+
+    def change_canvas_size_menu(self,*args):
+        self.resize_popup = ResizePop()
+        self.resize_popup.ids.canvas_width.text = str(self.ids.b1.size[0])
+        self.resize_popup.ids.canvas_height.text = str(self.ids.b1.size[1])
+        self.resize_popup.ids.submit_size.bind(on_press=self.change_canvas_size)
+        self.resize_popup.open()
+
+    def change_canvas_size(self,*args):
+        self.ids.b1.size = [float(self.resize_popup.ids.canvas_width.text),float(self.resize_popup.ids.canvas_height.text)]
+        self.resize_popup.dismiss()
+
+
 
     def dismiss_popup(self):
         self._popup.dismiss()
@@ -236,6 +264,7 @@ class OmWidget(FloatLayout):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
+
 
     def show_save(self,*args):
         content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
@@ -567,6 +596,13 @@ class OmWidget(FloatLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             k = True
+            if 'multitouch_sim' not in touch.profile and not self.current_grab_unit:
+                for i in self.Unit_Operations_Labels:
+                    if i.collide_point(*self.compute_relative_position(touch)):
+                        if touch.is_double_tap:
+                            i.child.multi_touch += 1
+                        else:
+                            self.current_grab_unit = i;
             if 'multitouch_sim' not in touch.profile:
                 for i in self.Unit_Operations_Labels:
                     i.canvas.before.clear()
@@ -575,22 +611,33 @@ class OmWidget(FloatLayout):
                     k = False
             if self.select_rect != '':
                 self.ids.b1.canvas.remove(self.select_rect)
-            if self.ids.mixer.collide_point(*touch.pos):
-                self.grab_w = StaticUO.SMixer()
-                self.add_widget(self.grab_w)
-                self.grab_w.center = touch.pos
-                touch.grab(self)
-            elif self.ids.mat_strm.collide_point(*touch.pos):
-                self.grab_w = StaticUO.SMatStrm()
-                self.add_widget(self.grab_w)
-                self.grab_w.center = touch.pos
-                touch.grab(self)
-            elif self.ids.flash.collide_point(*touch.pos):
-                self.grab_w = StaticUO.SFlash()
-                self.add_widget(self.grab_w)
-                self.grab_w.center = touch.pos
-                touch.grab(self)
-            elif self.ids.b1.collide_point(*self.compute_relative_position(touch)) and k and not self.ids.unit_shelf.collide_point(*touch.pos) :
+            if 'multitouch_sim' not in touch.profile and not touch.grab_current == self:
+                if self.ids.mixer.collide_point(*self.compute_relative_position3(touch)):
+                    self.grab_w = StaticUO.SMixer()
+                    self.add_widget(self.grab_w)
+                    self.grab_w.center = touch.pos
+                    touch.grab(self)
+                elif self.ids.mat_strm.collide_point(*self.compute_relative_position3(touch)):
+                    self.grab_w = StaticUO.SMatStrm()
+                    self.add_widget(self.grab_w)
+                    self.grab_w.center = touch.pos
+                    touch.grab(self)
+                elif self.ids.flash.collide_point(*self.compute_relative_position3(touch)):
+                    self.grab_w = StaticUO.SFlash()
+                    self.add_widget(self.grab_w)
+                    self.grab_w.center = touch.pos
+                    touch.grab(self)
+                elif self.ids.splitter.collide_point(*self.compute_relative_position3(touch)):
+                    self.grab_w = StaticUO.SSplitter()
+                    self.add_widget(self.grab_w)
+                    self.grab_w.center = touch.pos
+                    touch.grab(self)
+                elif self.ids.valve.collide_point(*self.compute_relative_position3(touch)):
+                    self.grab_w = StaticUO.SValve()
+                    self.add_widget(self.grab_w)
+                    self.grab_w.center = touch.pos
+                    touch.grab(self)
+            if self.ids.b1.collide_point(*self.compute_relative_position(touch)) and k and not self.ids.unit_shelf.collide_point(*self.compute_relative_position3(touch)):
                 touch.grab(self)
                 self.rect = True
                 self.rect_start = self.compute_relative_position(touch)
@@ -602,7 +649,7 @@ class OmWidget(FloatLayout):
             UnitOP.UnitOP.size_limit = self.ids.b1.size
             touch_pos = self.compute_relative_position(touch)
             for i in self.Unit_Operations_Labels:
-                if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*touch.pos):
+                if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*self.compute_relative_position3(touch)):
                     if 'multitouch_sim' in touch.profile:
                         self.unit_op = i
                         self.bubb = Remove_Bubble()
@@ -613,6 +660,31 @@ class OmWidget(FloatLayout):
         return super(OmWidget, self).on_touch_down(touch)
 
     def on_touch_move(self, touch, *args):
+        if self.current_grab_unit:
+            r_touch = self.compute_relative_position(touch);
+            offset_x_r = self.ids.scroll.size[0]+ (self.ids.b1.size[0]-self.ids.scroll.size[0])*self.ids.scroll.scroll_x - (self.current_grab_unit.child.size[0]/2)
+            offset_x_l = (self.ids.b1.size[0] - self.ids.scroll.size[0]) * self.ids.scroll.scroll_x + (self.current_grab_unit.child.size[0] / 2)
+            offset_y_t = self.ids.scroll.size[1]+ (self.ids.b1.size[1]-self.ids.scroll.size[1])*self.ids.scroll.scroll_y - (self.current_grab_unit.child.size[1]/2)
+            offset_y_b = (self.ids.b1.size[1] - self.ids.scroll.size[1]) * self.ids.scroll.scroll_y + (self.current_grab_unit.child.size[1] / 2)
+            new_pos = [0,0]
+            if r_touch[0] > offset_x_r:
+                new_pos[0] = offset_x_r
+            elif r_touch[0] < offset_x_l:
+                new_pos[0] = offset_x_l
+            else:
+                new_pos[0] = r_touch[0]
+
+            if r_touch[1] > offset_y_t:
+                pass
+            elif r_touch[1] < offset_y_b:
+                pass
+            else:
+                new_pos[1] = r_touch[1]
+
+
+                self.current_grab_unit.center = new_pos
+            if self.current_grab_unit.child.connected == True:
+                self.current_grab_unit.child.line_move = self.current_grab_unit.child.line_move + 1
         if touch.grab_current == self:
             if self.grab_w != '':
                 self.grab_w.center = touch.pos
@@ -634,8 +706,10 @@ class OmWidget(FloatLayout):
         return super(OmWidget, self).on_touch_move(touch, *args)
 
     def on_touch_up(self, touch, *args):
+        if self.current_grab_unit:
+            self.current_grab_unit = None
         for i in self.Unit_Operations_Labels:
-            if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*touch.pos):
+            if i.collide_point(*self.compute_relative_position(touch)) and not self.ids.unit_shelf.collide_point(*self.compute_relative_position3(touch)):
                 self.select_box = InstructionGroup()
                 self.select_box.add(Color(0.6, 0, 0, 1))
                 #0.3, 0.65, 1, 0.8
@@ -645,7 +719,7 @@ class OmWidget(FloatLayout):
                 break
         if touch.grab_current == self:
 
-            if self.rect and not self.ids.unit_shelf.collide_point(*touch.pos) :
+            if self.rect and not self.ids.unit_shelf.collide_point(*self.compute_relative_position3(touch)):
                 self.multiselect = False
                 touch_pos = self.compute_relative_position(touch)
                 if self.select_rect != '':
@@ -673,7 +747,7 @@ class OmWidget(FloatLayout):
                             up.canvas.before.add(self.select_box)
                     self.rect = False
             if self.grab_w != '':
-                if self.ids.b1.collide_point(*touch.pos) and not self.ids.unit_shelf.collide_point(*touch.pos):
+                if self.ids.scroll.collide_point(*touch.pos) and not self.ids.unit_shelf.collide_point(*self.compute_relative_position3(touch)):
                     self.add_unit_op(touch.pos,self.grab_w.UO(),1,"name")
             touch.ungrab(self)
             if self.grab_w != '':
@@ -690,6 +764,9 @@ class OmWidget(FloatLayout):
         return (touch[0] + (self.ids.b1.size[0] - self.ids.scroll.size[0]) * self.ids.scroll.scroll_x,
                 touch[1] + (self.ids.b1.size[1] - self.ids.scroll.size[1]) * self.ids.scroll.scroll_y)
 
+    def compute_relative_position3(self, touch):
+        return (touch.pos[0] - (self.ids.main.size[0] - 150),touch.pos[1] + (self.ids.unit_shelf.size[1] - self.ids.scroll_shelf.size[1]) * self.ids.scroll_shelf.scroll_y)
+         # return touch.pos
     def add_unit_op(self,touch,UO,c,name):
 
         a = UO;
@@ -704,7 +781,6 @@ class OmWidget(FloatLayout):
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
-
         label = Label(id='label', size_hint_y=None, size=(0, 20), font_size=14, color=(0, 0, 0, 1))
         label.text = a.name
         b.ids.layout.add_widget(label)
@@ -794,18 +870,55 @@ class OmWidget(FloatLayout):
                 val.conn_point_output = p
                 sourcepos = val.Connecting_Points_Output
                 destpos = instance.Connecting_Points_Input[p]
-                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1])
-                vertpoint = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, sourcepos[1],sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1])
-                horzpoint2 = (sourcepos[0] + (destpos[0]-sourcepos[0])/2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
-
+                print sourcepos
+                print destpos
                 line.add(Color(0.6, 0.4, 0.2, 1))
-                line.add(Line(points=horzpoint, width=1))
-                line.add(Line(points=vertpoint, width=1))
-                line.add(Line(points=horzpoint2, width=1))
+                if sourcepos[0] < destpos[0]:
+                    line1 = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                    line2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                    line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                elif sourcepos[1] >= destpos[1]:
+                    print "high"
+                    sourcepos_new = val.downward_connector_output
+                    destpos_new = instance.upward_connector_input
+                    line.add(Line(points=(sourcepos[0],sourcepos[1],sourcepos_new[0],sourcepos[1]),width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1],sourcepos_new[0],sourcepos_new[1]),width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]),width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]),width=1))
+
+                    if (sourcepos_new[1] < destpos_new[1]):
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0], destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],destpos_new[1])
+
+                elif sourcepos[1] < destpos[1]:
+                    print "low"
+                    sourcepos_new = val.upward_connector_output
+                    destpos_new = instance.downward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]),width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]),width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]),width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]),width=1))
+                    if (sourcepos_new[1] > destpos_new[1]):
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = ( sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],destpos_new[1])
+
+
+                line.add(Line(points=line1, width=1))
+                line.add(Line(points=line2, width=1))
+                line.add(Line(points=line3, width=1))
                 instance.input_lines[key] = line
                 val.output_lines[1] = line
-
                 self.ids.b1.canvas.add(line)
                 if 'equation\n' not in self.data:
                     self.data.append('equation\n')
@@ -821,15 +934,75 @@ class OmWidget(FloatLayout):
                 val.conn_point_input = p
                 sourcepos = instance.Connecting_Points_Output[p]
                 destpos = val.Connecting_Points_Input
-                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
-                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
-                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
-                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
                 line.add(Color(0.6, 0.4, 0.2, 1))
-                line.add(Line(points=horzpoint, width=1))
-                line.add(Line(points=vertpoint, width=1))
-                line.add(Line(points=horzpoint2, width=1))
+
+                if sourcepos[0] < destpos[0]:
+                    line1 = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                    line2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
+                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                    line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                elif sourcepos[1] >= destpos[1]:
+                    print "high"
+                    sourcepos_new = instance.downward_connector_output
+                    destpos_new = val.upward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+
+                    if (sourcepos_new[1] < destpos_new[1]):
+                        line1 = (
+                        sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                        sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                        sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                        destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                        sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                        destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        destpos_new[1])
+
+                elif sourcepos[1] < destpos[1]:
+                    print "low"
+                    sourcepos_new = instance.upward_connector_output
+                    destpos_new = val.downward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+                    if (sourcepos_new[1] > destpos_new[1]):
+                        line1 = (
+                        sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                        sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                        sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                        destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                        sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                        destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        destpos_new[1])
+
+
+
+
+                line.add(Line(points=line1, width=1))
+                line.add(Line(points=line2, width=1))
+                line.add(Line(points=line3, width=1))
                 instance.output_lines[key] = line
                 val.input_lines[1] = line
                 self.ids.b1.canvas.add(line)
@@ -846,22 +1019,91 @@ class OmWidget(FloatLayout):
             if instance.input_lines[key]:
                 self.ids.b1.canvas.remove(instance.input_lines[key])
                 instance.Update_Conn_Pnts()
+
                 if (instance.check_stm == 0):
                     instance.input_streams[1].Update_Conn_Pnts()
-                    sourcepos = instance.Connecting_Points_Input
-                    destpos = instance.input_streams[1].Connecting_Points_Output[instance.conn_point_input]
+                    sourcepos = instance.input_streams[1].Connecting_Points_Output[instance.conn_point_input]
+                    destpos = instance.Connecting_Points_Input
                 else:
                     instance.input_streams[key].Update_Conn_Pnts()
                     sourcepos = instance.input_streams[key].Connecting_Points_Output
                     destpos = instance.Connecting_Points_Input[key-1]
-                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
-                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
-                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 line = InstructionGroup()
                 line.add(Color(0.6, 0.4, 0.2, 1))
-                line.add(Line(points=horzpoint, width=1))
-                line.add(Line(points=vertpoint, width=1))
-                line.add(Line(points=horzpoint2, width=1))
+                if sourcepos[0] < destpos[0]:
+                    line1 = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                    line2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
+                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                    line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                elif sourcepos[1] >= destpos[1]:
+                    if (instance.check_stm == 0):
+                        instance.input_streams[1].Update_Conn_Pnts()
+                        sourcepos_new =  instance.input_streams[1].downward_connector_output
+                        destpos_new = instance.upward_connector_input
+                    else:
+                        instance.input_streams[key].Update_Conn_Pnts()
+                        sourcepos_new = instance.input_streams[key].downward_connector_output
+                        destpos_new = instance.upward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+
+                    if (sourcepos_new[1] < destpos_new[1]):
+                        line1 = (
+                        sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                        sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                        sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                        destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                        sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                        destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        destpos_new[1])
+
+                elif sourcepos[1] < destpos[1]:
+                    if (instance.check_stm == 0):
+                        instance.input_streams[1].Update_Conn_Pnts()
+                        sourcepos_new = instance.input_streams[1].upward_connector_output
+                        destpos_new = instance.downward_connector_input
+                    else:
+                        instance.input_streams[key].Update_Conn_Pnts()
+                        sourcepos_new = instance.input_streams[key].upward_connector_output
+                        destpos_new = instance.downward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+                    if (sourcepos_new[1] > destpos_new[1]):
+                        line1 = (
+                        sourcepos_new[0], sourcepos_new[1], sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                        sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                        sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                        destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                        sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                        destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                        destpos_new[1])
+
+
+                line.add(Line(points=line1, width=1))
+                line.add(Line(points=line2, width=1))
+                line.add(Line(points=line3, width=1))
                 if(instance.check_stm == 0):
                     instance.input_streams[1].output_lines[instance.conn_point_input + 1] = line
                     instance.input_lines[1] = line
@@ -879,17 +1121,84 @@ class OmWidget(FloatLayout):
                     destpos = instance.output_streams[1].Connecting_Points_Input[instance.conn_point_output]
                 else:
                     instance.output_streams[key].Update_Conn_Pnts()
-                    sourcepos = instance.output_streams[key].Connecting_Points_Input
-                    destpos = instance.Connecting_Points_Output[key - 1]
-                horzpoint = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
-                vertpoint = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
-                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
-                horzpoint2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                    sourcepos = instance.Connecting_Points_Output[key - 1]
+                    destpos = instance.output_streams[key].Connecting_Points_Input
                 line = InstructionGroup()
                 line.add(Color(0.6, 0.4, 0.2, 1))
-                line.add(Line(points=horzpoint, width=1))
-                line.add(Line(points=vertpoint, width=1))
-                line.add(Line(points=horzpoint2, width=1))
+
+                if sourcepos[0] < destpos[0]:
+                    line1 = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
+                    line2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],
+                             sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
+                    line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
+                elif sourcepos[1] >= destpos[1]:
+                    if (instance.check_stm == 0):
+                        sourcepos_new = instance.downward_connector_output
+                        destpos_new = instance.output_streams[1].upward_connector_input
+                    else:
+                        sourcepos_new = instance.downward_connector_output
+                        destpos_new =  instance.output_streams[key].upward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+
+                    if (sourcepos_new[1] < destpos_new[1]):
+                        line1 = (
+                            sourcepos_new[0], sourcepos_new[1],
+                            sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                            sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                            sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                            destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                            sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2,
+                            destpos_new[0],
+                            sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                            destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                            destpos_new[1])
+
+                elif sourcepos[1] < destpos[1]:
+                    if (instance.check_stm == 0):
+                        sourcepos_new =  instance.upward_connector_output
+                        destpos_new = instance.output_streams[1].downward_connector_input
+                    else:
+                        sourcepos_new =  instance.upward_connector_output
+                        destpos_new = instance.output_streams[key].downward_connector_input
+                    line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
+                    line.add(Line(points=(sourcepos_new[0], sourcepos[1], sourcepos_new[0], sourcepos_new[1]), width=1))
+                    line.add(Line(points=(destpos[0], destpos[1], destpos_new[0], destpos[1]), width=1))
+                    line.add(Line(points=(destpos_new[0], destpos[1], destpos_new[0], destpos_new[1]), width=1))
+                    if (sourcepos_new[1] > destpos_new[1]):
+                        line1 = (
+                            sourcepos_new[0], sourcepos_new[1],
+                            sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2,
+                            sourcepos_new[1])
+                        line2 = (sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, sourcepos_new[1],
+                                 sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1])
+                        line3 = (
+                            sourcepos_new[0] + (destpos_new[0] - sourcepos_new[0]) / 2, destpos_new[1], destpos_new[0],
+                            destpos_new[1])
+                    else:
+                        line1 = (sourcepos_new[0], sourcepos_new[1], sourcepos_new[0],
+                                 sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line2 = (
+                            sourcepos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2,
+                            destpos_new[0],
+                            sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2)
+                        line3 = (
+                            destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],
+                            destpos_new[1])
+
+                line.add(Line(points=line1, width=1))
+                line.add(Line(points=line2, width=1))
+                line.add(Line(points=line3, width=1))
                 if(instance.check_stm == 0):
                     instance.output_lines[1] = line
                     instance.output_streams[1].input_lines[instance.conn_point_output + 1] = line
@@ -904,11 +1213,12 @@ class OmWidget(FloatLayout):
         if not self.compo.ids.comp_input.text == "":
             for i in self.word_list:
                 if value in i:
-                    btn = Button(text=i, color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1))
+                    btn = CompButton(text=i, color=(0, 0, 0, 1), background_normal='',background_color=(0.7, 0.7, 0.7, 1))
                     btn.bind(on_release=lambda gbtn: dropdown.select(gbtn.text))
                     dropdown.add_widget(btn)
 
     def CompPop(self, instance):
+        self.comp_dropdown.max_height = 200
         self.comp_dropdown.clear_widgets()
         for c in self.addedcomp:
             btn = Button(text=c,color=(0, 0, 0, 1), size_hint_y=None, height=30, background_normal='',background_color=(0.7, 0.7, 0.7, 1), halign='left',padding=[0, 2])

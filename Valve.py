@@ -1,0 +1,69 @@
+import UnitOP
+
+class Valve(UnitOP.UnitOP):
+    def __init__(self,**kwargs):
+        super(Valve, self).__init__(**kwargs)
+        self.type = 4
+        self.stream_count = [1, 1]
+        self.input_streams = {1: None}
+        self.output_streams = {1: None}
+        self.input_lines = {1: None}
+        self.output_lines = {1: None}
+        self.size_hint = (None, None)
+        # self.size2 = (60, 115.75)
+        # self.size = (52, 87)
+        self.size2 = (110, 80)
+        self.size =(90, 54)
+        self.background_normal = 'Images/valve_operator.png'
+        self.background_down = 'Images/valve_operator.png'
+        self.PropertyListInput = ['INPUT 1']
+        self.PropertyListOutput = ['OUTPUT 1']
+        self.Connecting_Points_Input = []
+        self.Connecting_Points_Output = []
+        self.line_nos = []
+        self.border = 0, 0, 0, 0
+        self.OM_Model = 'Valve'
+    def Update_Conn_Pnts(self):
+        self.Connecting_Points_Input = [[self.x + 10, self.y + 28]]
+        self.Connecting_Points_Output = [[self.x + 80, self.y + 28]]
+        self.upward_connector_input = [self.x, self.y+50]
+        self.downward_connector_input = [self.x, self.y]
+        self.upward_connector_output = [self.x + 90, self.y + 50]
+        self.downward_connector_output = [self.x + 90, self.y]
+
+
+    def on_submit(self, instance):
+        self.Connecting_Points_Input = [[self.x + 10, self.y + 28]]
+        self.Connecting_Points_Output = [[self.x + 80, self.y + 28]]
+        self.name = self.name_ob.text
+        self.text_label.text = self.name
+        UnitOP.UnitOP.drop_connections[self.name] = UnitOP.UnitOP.drop_connections[self.bef_name]
+        val = 1;
+        for key in self.input_streams:
+            if self.input_streams[key]:
+                self.input_streams[key].output_streams[1] = None
+                self.input_streams[key].output_lines[1] = None
+                self.input_streams[key] = None
+        for key in self.output_streams:
+            if self.output_streams[key]:
+                self.output_streams[key].input_streams[1] = None
+                self.output_streams[key].input_lines[1] = None
+                self.output_streams[key] = None
+        for Property in self.MainButtonInput:
+            if Property.text != 'None':
+                self.input_streams[val] = self.all_operators[self.drop_connections[Property.text]]
+            val +=1
+
+        val = 1;
+        for Property in self.MainButtonOutput:
+            if Property.text != 'None':
+                self.output_streams[val] = self.all_operators[self.drop_connections[Property.text]]
+            val +=1
+
+        # if self.connected == False:
+        self.connect = self.connect + 1
+
+
+
+
+
