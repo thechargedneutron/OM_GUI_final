@@ -10,6 +10,16 @@
         orientation:'vertical'
         padding:4
         pos: self.parent.pos
+<PropCheckBox@CheckBox>
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos:self.center_x-8, self.center_y-8
+            size:16,16
+    size_hint_y:None
+    height:25
+
 <Select_Button>:
     size_hint_y:None
     size:100,25
@@ -353,6 +363,11 @@
                             PTextInput:
                                 id:name
                                 font_size:12
+                            PLabel:
+                                text:'Status'
+                            PLabel:
+                                id:status
+                                font_size:14
 
 
                     BoxLayout:
@@ -383,16 +398,6 @@
                                         Rectangle:
                                             pos:self.pos
                                             size:self.size
-                                    GridLayout:
-                                        height:25
-                                        size_hint_y:None
-                                        cols:2
-                                        PLabel:
-                                            text:"Flash Spec"
-                                        PButton:
-                                            text:"T and P"
-                                            id:flash_spec
-                                            font_size:11
                                     GridLayout:
                                         height:300
                                         cols:2
@@ -567,6 +572,7 @@
                                                         text:"Basis"
                                                         halign:'center'
                                                     PButton:
+                                                        id:comp_spec_prop
                                                         text:"Molar Fractions"
                                                 BoxLayout:
                                                     padding:10
@@ -636,12 +642,11 @@
                                                                             height:800
                                                                             StackLayout:
                                                                                 padding:8,0,0,0
-                                                                                size_hint_x:0.4
+                                                                                size_hint_x:0.5
+                                                                                id:compound_prop_label_mix
                                                                             StackLayout:
-                                                                                size_hint_x:0.3
-                                                                            StackLayout:
-                                                                                size_hint_x:0.3
-                                                                                canvas:
+                                                                                size_hint_x:0.5
+                                                                                id:compound_prop_input_mix
 
 
 
@@ -706,12 +711,11 @@
                                                                             height:800
                                                                             StackLayout:
                                                                                 padding:8,0,0,0
-                                                                                size_hint_x:0.4
+                                                                                size_hint_x:0.5
+                                                                                id:compound_prop_label_vap
                                                                             StackLayout:
-                                                                                size_hint_x:0.3
-                                                                            StackLayout:
-                                                                                size_hint_x:0.3
-                                                                                canvas:
+                                                                                size_hint_x:0.5
+                                                                                id:compound_prop_input_vap
 
 
                                         TabbedPanelItem:
@@ -745,7 +749,8 @@
                                                         text:"Property"
                                                         halign:'center'
                                                     PButton:
-                                                        text:"Fugacity Coefficient"
+                                                        id:comp_prop
+                                                        text:"Molar Specific Heat"
                                                 BoxLayout:
                                                     padding:10
                                                     TabbedPanel:
@@ -814,13 +819,11 @@
                                                                             height:800
                                                                             StackLayout:
                                                                                 padding:8,0,0,0
-                                                                                size_hint_x:0.4
+                                                                                size_hint_x:0.5
+                                                                                id:comp_prop_label
                                                                             StackLayout:
-                                                                                size_hint_x:0.3
-                                                                            StackLayout:
-                                                                                size_hint_x:0.3
-                                                                                canvas:
-
+                                                                                size_hint_x:0.5
+                                                                                id:comp_prop_input
 
                             TabbedPanelItem:
                                 text: 'Phase Properties'
@@ -936,13 +939,16 @@
                                                                 size_hint_y:None
                                                                 height:800
                                                                 StackLayout:
+                                                                    id:PhaseLabelMix
                                                                     padding:8,0,0,0
                                                                     size_hint_x:0.4
                                                                 StackLayout:
+                                                                    id:PhaseInputMix
                                                                     size_hint_x:0.3
                                                                 StackLayout:
                                                                     size_hint_x:0.3
-                                                                    canvas:
+                                                                    id:PhaseUnitMix
+
 
 
                                         TabbedPanelItem:
@@ -1034,13 +1040,15 @@
                                                                 size_hint_y:None
                                                                 height:800
                                                                 StackLayout:
+                                                                    id:PhaseLabelVap
                                                                     padding:8,0,0,0
                                                                     size_hint_x:0.4
                                                                 StackLayout:
+                                                                    id:PhaseInputVap
                                                                     size_hint_x:0.3
                                                                 StackLayout:
                                                                     size_hint_x:0.3
-                                                                    canvas:
+                                                                    id:PhaseUnitVap
 
                     Button:
                         id:submit

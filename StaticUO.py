@@ -1,3 +1,6 @@
+"""
+    THIS ARE THE BUTTONS PRESENT ON THE UNIT OPERATIONS SHELF
+"""
 from kivy.uix.button import Button
 from kivy.properties import NumericProperty
 from UnitOP import UnitOP
@@ -9,6 +12,9 @@ from Valve import Valve
 
 
 class SMixer(Button):
+    """
+        Mixer button for the unit operations shelf
+    """
 
     included = NumericProperty(0)
     UO = Mixer
@@ -23,7 +29,9 @@ class SMixer(Button):
 
 
 class SMatStrm(Button):
-
+    """
+        Material stream button for the unit operations shelf
+    """
     included = NumericProperty(0)
     UO = Stream
 
@@ -38,6 +46,9 @@ class SMatStrm(Button):
 
 
 class SFlash(Button):
+    """
+        Flash button for the unit operations shelf
+    """
     included = NumericProperty(0)
     UO = Flash
 
@@ -51,6 +62,9 @@ class SFlash(Button):
 
 
 class SSplitter(Button):
+    """
+        Splitter button for the unit operations shelf
+    """
     included = NumericProperty(0)
     UO = Splitter
 
@@ -63,6 +77,9 @@ class SSplitter(Button):
         self.background_down = 'Images/splitter_new.png'
 
 class SValve(Button):
+    """
+        Valve Button for the unit operations shelf
+    """
     included = NumericProperty(0)
     UO = Valve
 

@@ -57,6 +57,9 @@ Windows_options = ['Set Canvas Size']
 View_options = ['Show Toolstrip','Console Output','calculation Queue','Watch panel','CAPE-OPEN Objects Reports','Flowsheet Toolstrip','Unit Systems Toolstrip',"Restore Docking Panels' Layout",'Close Opened Object Editors']
 Help_options = ['Show Help','Documention','Openmodellica on the web','Donate!','About OpenModellica']
 
+
+# Custom Widgets ------------------------------------------------------ #
+
 class MenuButton(Button):
     pass
 
@@ -66,7 +69,7 @@ class CompButton(Button):
 class Remove_Bubble(Bubble):
     pass
 
-class SPopUp(Popup):
+class SPopUp(ModalView):
     pass
 
 class SSPopUp(ModalView):
@@ -112,7 +115,15 @@ class MyTextInput(TextInput):
             self.drop_down.open(self)
         return super(MyTextInput, self).on_touch_up(touch)
 
+
+# ------------------------------------------------------------------- #
+
+
+
 class OmWidget(FloatLayout):
+    """
+        Main widget class containing the root widget.
+    """
     lines = {}
     Unit_Operations = []
     Unit_Operations_Labels = []
@@ -125,10 +136,14 @@ class OmWidget(FloatLayout):
     def __init__(self,**kwargs):
         super(OmWidget,self).__init__(**kwargs)
 
-
+        # Lists all the compounds
         fo = open("compounds.txt", "r+")
-        self.error_popup = Error()
-        self.error = self.error_popup.ids.error_message
+        self.word_list = fo.read().splitlines()
+
+        # Custom error pop-up
+
+
+
         self.compo = ""
         self.plot = None
         self.utility_pop_up = ''
@@ -145,8 +160,6 @@ class OmWidget(FloatLayout):
         self.tp = DropDown()
         self.resize_popup = ''
         self.current_grab_unit = None
-
-        self.word_list = fo.read().splitlines()
         self.addedcomp = []
         self.comp_dropdown = DropDown()
         self.dropdown = DropDown()
@@ -157,6 +170,9 @@ class OmWidget(FloatLayout):
         UnitOP.UnitOP.size_limit = self.ids.b1.size
         self.ids.hand_toggle.background_color = 0.5, 0.5, 0.5, 1
         self.ids.cursor_toggle.background_color = 1, 1, 1, 1
+
+        # Adds all the buttons to the file menu ----------------------------------------------------#
+
         self.filedropdown = DropDown(auto_width=False, width=300)
         # for model in File_options:
         #     btn = MenuButton(text=model, width=300)
@@ -165,8 +181,6 @@ class OmWidget(FloatLayout):
         btn = MenuButton(text="Open", width=300, on_press=self.show_load)
         btn.text_size = btn.size
         self.filedropdown.add_widget(btn)
-
-
         btn2 = MenuButton(text="Save as",width=300, on_press=self.show_save)
         btn2.text_size = btn2.size
         self.filedropdown.add_widget(btn2)
@@ -236,14 +250,12 @@ class OmWidget(FloatLayout):
             btn = MenuButton(text=model, width=200)
             btn.text_size = btn.size
             self.helpdropdown.add_widget(btn)
-        print self.ids.mixer.pos;
-        print self.ids.mat_strm.pos;
-        print self.ids.flash.pos;
-        print self.ids.splitter.pos;
-        print self.ids.valve.pos;
-
+        # ------------------------------------------------------------------------------------------#
 
     def change_canvas_size_menu(self,*args):
+        """
+            Popup for changing canvas size
+        """
         self.resize_popup = ResizePop()
         self.resize_popup.ids.canvas_width.text = str(self.ids.b1.size[0])
         self.resize_popup.ids.canvas_height.text = str(self.ids.b1.size[1])
@@ -251,11 +263,13 @@ class OmWidget(FloatLayout):
         self.resize_popup.open()
 
     def change_canvas_size(self,*args):
+        """
+            Method to change canvas size
+        """
         self.ids.b1.size = [float(self.resize_popup.ids.canvas_width.text),float(self.resize_popup.ids.canvas_height.text)]
         self.resize_popup.dismiss()
 
-
-
+    # Save/Load functions ------------------------------------------------------------------------#
     def dismiss_popup(self):
         self._popup.dismiss()
 
@@ -264,7 +278,6 @@ class OmWidget(FloatLayout):
         self._popup = Popup(title="Load file", content=content,
                             size_hint=(0.9, 0.9))
         self._popup.open()
-
 
     def show_save(self,*args):
         content = SaveDialog(save=self.save, cancel=self.dismiss_popup)
@@ -300,6 +313,10 @@ class OmWidget(FloatLayout):
                 self.add_unit_op(pos, StaticUO.SMixer.UO(), 0, up[11])
             elif up[1] == '2':
                 self.add_unit_op(pos, StaticUO.SFlash.UO(), 0, up[8])
+            elif up[1] == '3':
+                self.add_unit_op(pos, StaticUO.SSplitter.UO(), 0, up[8])
+            elif up[1] == '4':
+                self.add_unit_op(pos, StaticUO.SValve.UO(), 0, up[6])
 
         for i in saved_unit_op:
             up = i.split("^")
@@ -337,6 +354,40 @@ class OmWidget(FloatLayout):
                 self.Unit_Operations_Labels[up[0]].child.Update_Conn_Pnts()
                 self.Unit_Operations_Labels[up[0]].child.connect += 1
 
+            elif up[1] == '3':
+                for i in range(4, 5):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = None
+                for i in range(5, 8):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].output_streams[i - 4] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].output_streams[i - 4] = None
+
+                self.Unit_Operations_Labels[up[0]].child.Update_Conn_Pnts()
+                self.Unit_Operations_Labels[up[0]].child.connect += 1
+
+            elif up[1] == '4':
+                for i in range(4, 5):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].input_streams[i - 3] = None
+                for i in range(5, 6):
+                    up[0] = int(up[0])
+                    if up[i] != '-1':
+                        self.Unit_Operations[up[0]].output_streams[i - 4] = self.Unit_Operations[int(up[i])]
+                    else:
+                        self.Unit_Operations[up[0]].output_streams[i - 4] = None
+
+                self.Unit_Operations_Labels[up[0]].child.Update_Conn_Pnts()
+                self.Unit_Operations_Labels[up[0]].child.connect += 1
+
         self.dismiss_popup()
 
     def save(self, path, filename):
@@ -366,8 +417,9 @@ class OmWidget(FloatLayout):
 
         self.dismiss_popup()
 
+    # ----------------------------------------------------------------------------------------------#
 
-
+    # Binary Envelope Feature ----------------------------------------------------------------------#
 
     def add_popup(self,*args):
         interval_down = DropDown()
@@ -459,11 +511,9 @@ class OmWidget(FloatLayout):
         self.binary_pop_up.open()
         self.binary_pop_up.ids.calculate.bind(on_release=self.PropPack)
 
+    # ----------------------------------------------------------------------------------------------------------#
 
-    # def binary_envelope(self,*args):
-    #     self.utility_pop_up.dismiss()
-    #     self.binary_pop_up = BinaryEnvelope()
-    #     self.binary_pop_up.open()
+    # (Move/Select) Multiple canvas options --------------------------------------------------------------------#
 
     def select_hand(self):
         self.ids.hand_toggle.background_color = 1, 1, 1, 1
@@ -479,28 +529,110 @@ class OmWidget(FloatLayout):
         self.ids.scroll.do_scroll_y = False
         self.rect_enable = True
 
+    # ----------------------------------------------------------------------------------------------------------#
+
+
+
+
     def compile(self, instance):
-        #self.data = []
-        self.data.append('equation\n')
-        for unit in self.Unit_Operations:
-            if unit.OM_Model == 'Mat_Stm':
-                count = 0
-                for Prop in unit.PropertyVal:
-                    if Prop != '':
-                        self.data.append(unit.name + '.' + unit.PropertyList[count] + '=' + str(Prop) + ';\n')
-                    count = count + 1
+        comp_count = 0
+        self.data = []
+        self.data.append("model Flowsheet\n")
+        for c in self.addedcomp:
+            self.data.append("parameter Simulator.Files.Chemsep_Database." + c + " compound" + str(comp_count) + "; \n")
+            comp_count += 1
+        count = 0
+        for k in self.Unit_Operations:
+            if k.check_stm == 0:
+                if k.popup_check == 1:
+                    i=0
+                    new_comp_count = 0
+                    while i <comp_count:
+                        if k.comp_enable[i] == 1:
+                            new_comp_count += 1
+                        i+=1
+
+                    # 1(NOC = 3, comp = {meth, eth, wat},P = 202650,T = 373)
+                    self.data.append("Simulator.Streams.Material_Stream Mat_Stm" + str(count) +"(NOC = " + str(new_comp_count))
+                    self.data.append(",comp = {")
+                    i=0
+                    filter = []
+                    while i < comp_count:
+                        if k.comp_enable[i] == 1:
+                            filter.append("compound" + str(i))
+                        i = i+1
+                    i=0
+                    while i < len(filter):
+                        self.data.append(filter[i])
+                        if i != len(filter)-1:
+                            self.data.append(",")
+                        i += 1
+                    self.data.append("}")
+                    if k.prop_enable[0] == 1:
+                        self.data.append(",P = ")
+                        self.data.append(str(k.PropertyVal[1]))
+                    if k.prop_enable[1] == 1:
+                        self.data.append(",T = ")
+                        self.data.append(str(k.PropertyVal[0]))
+                    if k.prop_enable[4] == 1:
+                        self.data.append(",vapPhasMolFrac = ")
+                        self.data.append(str(k.PropertyVal[4]))
+                    self.data.append(");\n")
+                    count += 1
+        self.data.append("equation\n")
+        i = 0
+        for k in self.Unit_Operations:
+            if k.check_stm == 0:
+                if k.popup_check == 1:
+                    if k.current_comp_spec ==0:
+                        self.data.append("Mat_Stm" + str(i) + ".compMolFrac[1,:] = {")
+                        count = 0
+                        filter = []
+                        while count < comp_count:
+                            if k.comp_enable[count] == 1:
+                                filter.append(str(k.compound_amounts_molar_frac_mix[count]))
+                            count += 1
+                        count = 0
+                        while count < len(filter):
+                            self.data.append(filter[count])
+                            if count != len(filter)-1:
+                                self.data.append(",")
+                            count += 1
+                        self.data.append('};\n')
+                    else:
+                        self.data.append("Mat_Stm" + str(i) + ".compMasFrac[1,:] = {")
+                        count = 0
+                        filter = []
+                        while count < comp_count:
+                            if k.comp_enable[count] == 1:
+                                filter.append(str(k.compound_amounts_mass_frac_mix[count]))
+                            count += 1
+                        count = 0
+                        while count < comp_count:
+                            self.data.append(filter[count])
+                            if count != len(filter) - 1:
+                                self.data.append(",")
+                            count += 1
+                        self.data.append('};\n')
+                    if k.prop_enable[2] == 1:
+                        self.data.append("Mat_Stm" + str(i) + ".totMasFlo[1] = " + str(k.PropertyVal[2]) + ";\n")
+                    if k.prop_enable[3] == 1:
+                        self.data.append("Mat_Stm" + str(i) + ".totMolFlo[1] = " + str(k.PropertyVal[3]) + ";\n")
+                    i += 1
+        with open('Flowsheet.mo', 'w') as txtfile:
+            for d in self.data:
+                txtfile.write(d)
+            txtfile.write('end Flowsheet;\n')
 
 
     def simulate(self,instance):
 
         self.SSP.dismiss()
-        with open('Flowsheet.mo', 'w') as txtfile:
-            for d in self.data:
-                txtfile.write(d)
-            txtfile.write('end Flowsheet;\n')
         SimStatus = SPopUp()
         SimStatus.bind(on_open=self.SimProgress)
         SimStatus.open()
+        SimStatus.ids.sim_status.text = "Simulating...."
+        SimStatus.ids.dismiss_progress.bind(on_press=SimStatus.dismiss)
 
     def select(self, *args):
         try:
@@ -513,32 +645,85 @@ class OmWidget(FloatLayout):
 
 
         omc = OMCSession()
-        omc.sendExpression("loadFile(\"test.mo\")")
-        # instance.ids.ProgBar.value = 75
-        # instance.ids.status.text = 'Compiling'
+        omc.sendExpression("loadModel(Modelica)")
+        omc.sendExpression("loadFile(\"Simulator.mo\")")
         omc.sendExpression("loadFile(\"Flowsheet.mo\")")
-        # instance.ids.ProgBar.value = 85
-        # instance.ids.status.text = 'Simulating'
-        chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0)")
+        chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0,numberOfIntervals=1)")
+        stm_count = 0
+        check = 1
+        for i in self.Unit_Operations:
+            if i.check_stm == 0:
+                try:
+                    count = 0
+                    for prop in i.PhasePropertyMix:
+                        resultval = str(omc.sendExpression("val(Mat_Stm" + str(stm_count) + "." + i.PhasePropertyMixDict[prop] + ", 0.5)"))
+                        i.PhaseMixVal[count] = resultval
+                        count += 1
+                    count = 0
+                    for prop in i.PhasePropertyVap:
+                        resultval = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + "." + i.PhasePropertyVapDict[prop] + ", 0.5)"))
+                        i.PhaseVapVal[count] = resultval
+                        count += 1
+                    count = 0
+                    comp_count = 0
+                    for comp in self.addedcomp:
+                        if i.comp_enable[comp_count] == 1:
+                            i.compound_amounts_molar_frac_mix[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolFrac[1," + str(count+1) + "]" + ", 0.5)"))
+                            i.compound_amounts_molar_frac_vap[comp_count]= str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolFrac[3," + str(count + 1) + "]" + ", 0.5)"))
 
+                            i.compound_amounts_mass_frac_mix[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMasFrac[1," + str(count + 1) + "]" + ", 0.5)"))
+                            i.compound_amounts_mass_frac_vap[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMasFrac[3," + str(count + 1) + "]" + ", 0.5)"))
 
-        # print chek
-        for unit in self.Unit_Operations:
+                            i.compound_amounts_molar_flow_mix[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolFlo[1," + str(count + 1) + "]" + ", 0.5)"))
+                            i.compound_amounts_molar_flow_vap[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolFlo[3," + str(count + 1) + "]" + ", 0.5)"))
 
-            if 'Mat_Stm' in unit.name:
-                print 'yes'
-                unit.PropertyVal = []
-                for prop in unit.PropertyList:
-                    resultstr = unit.name + '.' + prop
-                    print resultstr
-                    resultval = str(omc.sendExpression("val("+resultstr+", 0.5)"))
-                    print resultval
-                    unit.PropertyVal.append(resultval)
-        # instance.ids.ProgBar.value = 100
-        # instance.ids.status.text = 'Completed Successfully'
+                            i.compound_amounts_mass_flow_mix[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMasFlo[1," + str(count + 1) + "]" + ", 0.5)"))
+                            i.compound_amounts_mass_flow_vap[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMasFlo[3," + str(count + 1) + "]" + ", 0.5)"))
 
+                            i.comp_prop_sph_value[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolSpHeat[3," + str(count + 1) + "]" + ", 0.5)"))
+                            i.comp_prop_meh_value[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolEnth[3," + str(count + 1) + "]" + ", 0.5)"))
+                            i.comp_prop_met_value[comp_count] = str(omc.sendExpression(
+                                "val(Mat_Stm" + str(stm_count) + ".compMolEntr[3," + str(count + 1) + "]" + ", 0.5)"))
+                            count += 1
+                        else:
+                            i.compound_amounts_molar_frac_mix[comp_count] = '0'
+                            i.compound_amounts_molar_frac_vap[comp_count] = '0'
 
-        instance.dismiss()
+                            i.compound_amounts_mass_frac_mix[comp_count] = '0'
+                            i.compound_amounts_mass_frac_vap[comp_count] = '0'
+
+                            i.compound_amounts_molar_flow_mix[comp_count] = '0'
+                            i.compound_amounts_molar_flow_vap[comp_count] = '0'
+
+                            i.compound_amounts_mass_flow_mix[comp_count] = '0'
+                            i.compound_amounts_mass_flow_vap[comp_count] = '0'
+
+                            i.comp_prop_sph_value[comp_count] = '0'
+                            i.comp_prop_meh_value[comp_count] = '0'
+                            i.comp_prop_met_value[comp_count] = '0'
+                        comp_count +=1
+                    i.status = 1
+                except:
+                    instance.ids.sim_status.text = "Error in simulation!"
+                    instance.ids.ProgBar.value = 0
+                    check = 0
+
+            stm_count += 1
+        if check != 0:
+            instance.ids.ProgBar.value = 100
+            instance.ids.sim_status.text = 'Completed Successfully'
+
 
     def SimulationSettings(self, instance):
         self.SSP = SSPopUp()
@@ -777,7 +962,6 @@ class OmWidget(FloatLayout):
         if(c==0):
             a.name = name
         a.pos_hint = {'center_x': 0.5}
-        self.data.append('test.' + a.OM_Model + ' ' + a.OM_Model + str(self.op_count) + ';\n')
         b.size = a.size2
         b.ids.layout.add_widget(a)
         b.child = a
@@ -871,15 +1055,14 @@ class OmWidget(FloatLayout):
                 sourcepos = val.Connecting_Points_Output
                 destpos = instance.Connecting_Points_Input[p]
                 line = InstructionGroup()
-                print sourcepos
-                print destpos
+
                 line.add(Color(0.6, 0.4, 0.2, 1))
                 if sourcepos[0] < destpos[0]:
                     line1 = (sourcepos[0], sourcepos[1], sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1])
                     line2 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, sourcepos[1],sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
                     line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 elif sourcepos[1] >= destpos[1]:
-                    print "high"
+
                     sourcepos_new = val.downward_connector_output
                     destpos_new = instance.upward_connector_input
                     line.add(Line(points=(sourcepos[0],sourcepos[1],sourcepos_new[0],sourcepos[1]),width=1))
@@ -897,7 +1080,7 @@ class OmWidget(FloatLayout):
                         line3 = (destpos_new[0], sourcepos_new[1] + (-sourcepos_new[1] + destpos_new[1]) / 2, destpos_new[0],destpos_new[1])
 
                 elif sourcepos[1] < destpos[1]:
-                    print "low"
+
                     sourcepos_new = val.upward_connector_output
                     destpos_new = instance.downward_connector_input
                     line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]),width=1))
@@ -920,9 +1103,6 @@ class OmWidget(FloatLayout):
                 instance.input_lines[key] = line
                 val.output_lines[1] = line
                 self.ids.b1.canvas.add(line)
-                if 'equation\n' not in self.data:
-                    self.data.append('equation\n')
-                self.data.append('connect (' + instance.name + '.port' + str(p) + ', ' + val.name + '.conn);\n')
             p = p + 1
         p=0
         for key in instance.output_streams:
@@ -943,7 +1123,7 @@ class OmWidget(FloatLayout):
                              sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1])
                     line3 = (sourcepos[0] + (destpos[0] - sourcepos[0]) / 2, destpos[1], destpos[0], destpos[1])
                 elif sourcepos[1] >= destpos[1]:
-                    print "high"
+
                     sourcepos_new = instance.downward_connector_output
                     destpos_new = val.upward_connector_input
                     line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
@@ -971,7 +1151,7 @@ class OmWidget(FloatLayout):
                         destpos_new[1])
 
                 elif sourcepos[1] < destpos[1]:
-                    print "low"
+
                     sourcepos_new = instance.upward_connector_output
                     destpos_new = val.downward_connector_input
                     line.add(Line(points=(sourcepos[0], sourcepos[1], sourcepos_new[0], sourcepos[1]), width=1))
@@ -1006,9 +1186,6 @@ class OmWidget(FloatLayout):
                 instance.output_lines[key] = line
                 val.input_lines[1] = line
                 self.ids.b1.canvas.add(line)
-                if 'equation\n' not in self.data:
-                    self.data.append('equation\n')
-                self.data.append('connect (' + instance.name + '.port' + str(p) + ', ' + val.name + '.conn);\n')
             p = p + 1
 
 

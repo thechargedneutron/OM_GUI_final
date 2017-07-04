@@ -1,29 +1,47 @@
+"""
+    THIS IS THE FLASH UNIT OPERATION CLASS CHILD OF A UNITOP CLASS.
+"""
 import UnitOP
 
+
 class Flash(UnitOP.UnitOP):
+
+
     def __init__(self,**kwargs):
+        """
+            Initializes all the variables
+        """
         super(Flash, self).__init__(**kwargs)
-        self.type = 2
-        self.stream_count = [2, 2]
-        self.input_lines = {1: None, 2: None}
-        self.output_lines = {1: None, 2: None}
-        self.input_streams = {1: None, 2: None}
-        self.output_streams = {1: None, 2: None}
+        self.type = 2  # Flash type 2
+        self.stream_count = [2, 2]  # Number of input and output streams
+        self.input_lines = {1: None, 2: None}  # Input stream objects
+        self.output_lines = {1: None, 2: None}  # Output stream objects
+        self.input_streams = {1: None, 2: None}  # Input line objects
+        self.output_streams = {1: None, 2: None}  # output line objects
+        self.size2 = (140, 175)  # Size of wrapper
+        self.border = 0, 0, 0, 0
+
+        # Properties of button
         self.size_hint = (None, None)
-        self.size2 = (140, 175)
         self.size = (130, 151.6)
         self.background_normal = 'Images/flash_operator.png'
         self.background_down = 'Images/flash_operator.png'
-        self.PropertyListInput = ['INPUT 1','INPUT 2']
-        self.PropertyListOutput = ['OUTPUT 1', 'OUTPUT 2']
-        self.Connecting_Points_Input = []
-        self.Connecting_Points_Output = []
-        self.line_nos = []
-        self.OM_Model = 'Flash'
-        self.PropertyVal = ['', '', '', '']
-        self.border = 0,0,0,0
+
+        self.PropertyListInput = ['INPUT 1', 'INPUT 2']  # Input property list
+        self.PropertyListOutput = ['OUTPUT 1', 'OUTPUT 2']  # Output property list
+        self.Connecting_Points_Input = []  # Input connecting lines
+        self.Connecting_Points_Output = []  # Output connecting lines
+        self.upward_connector_input = []  # Upward input connecting line
+        self.downward_connector_input = []  # Downward input connecting line
+        self.upward_connector_output = []  # Upward output connecting line
+        self.downward_connector_output = []  # Downward output connecting line
+        self.OM_Model = 'Flash'  # Model name
+
 
     def Update_Conn_Pnts(self):
+        """
+            Update connection points with present position of unit operation.
+        """
         self.Connecting_Points_Input = [[self.x+40, self.y+110],[self.x+40,self.y+44]]
         self.Connecting_Points_Output = [ [self.x+90, self.y+110],[self.x+90, self.y+44]]
         self.upward_connector_input = [self.x+20,self.y + 150]
@@ -31,7 +49,11 @@ class Flash(UnitOP.UnitOP):
         self.upward_connector_output = [self.x+110, self.y + 150]
         self.downward_connector_output = [self.x+110, self.y]
 
+
     def on_submit(self, instance):
+        """
+            Triggered when properties popup is submitted.
+        """
         self.Connecting_Points_Input = [[self.x+40, self.y + 110], [self.x+40, self.y + 44]]
         self.Connecting_Points_Output = [[self.x + 90, self.y + 110], [self.x+90, self.y + 44]]
         self.upward_connector_input = [self.x + 20, self.y + 150]
@@ -63,7 +85,7 @@ class Flash(UnitOP.UnitOP):
             if Property.text != 'None':
                 self.output_streams[val] = self.all_operators[self.drop_connections[Property.text]]
             val += 1
-        self.connect = self.connect + 1
+        self.connect += 1
 
 
 

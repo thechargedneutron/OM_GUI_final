@@ -752,6 +752,53 @@
         Rectangle:
             pos:self.center_x-8, self.center_y-8
             size:16,16
+<SPopUp>:
+    size_hint:(0.5,0.25)
+    auto_dismiss: False
+    pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+    GridLayout:
+        size_hint:1,1
+        cols:1
+        BoxLayout:
+            size_hint_y:None
+            height:25
+            padding:5
+            canvas:
+                Color:
+                    rgba: 0,0,0,1
+                Line:
+                    rectangle:self.pos[0],self.pos[1],self.size[0],self.size[1]
+                Color:
+                    rgba: 0.6, 0, 0, 1
+                Rectangle:
+                    pos:self.pos
+                    size:self.size
+            ULabel:
+                text:"Simulation Progress"
+                halign:"center"
+                color:1,1,1,1
+        FloatLayout:
+            ProgressBar:
+                id:ProgBar
+                size_hint: 0.8,0.6
+                pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+                value: 50
+                max: 100
+            Label:
+                id:sim_status
+                color:1,1,1,1
+                text: 'Loading...'
+                size_hint: 1,0.6
+                pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            Button:
+                id:dismiss_progress
+                text:"close"
+                pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+                size_hint_y:None
+                height:30
+                size_hint_x:None
+                width:100
+
 <SSPopUp>:
     id:popup
     size_hint:(0.6,0.7)
