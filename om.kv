@@ -533,8 +533,8 @@
                         size_hint_y:1
                         Graph:
                             id:graph
-                            xlabel:'X'
-                            ylabel:'Y'
+                            xlabel:'No. of moles'
+                            ylabel:'T'
                             x_ticks_major:0.1
                             y_ticks_major:20
                             y_grid_label:True
@@ -892,22 +892,28 @@
                                         height:25
                                     STextInput:
                                         id:start_time
+                                        text:"0.0"
                                         size_hint_y:None
                                         height:25
+                                        readonly:True
                                         font_size:12
                                         multiline:False
                                     SLabel:
                                         text: "Stop Time: "
                                     STextInput:
                                         id:stop_time
+                                        text:"1.0"
+                                        readonly:True
                                         size_hint_y:None
                                         font_size:12
                                         multiline:False
                                     SButton:
                                         id: interval_type
-                                        text:"Select"
+                                        text:"Number of intervals"
                                     STextInput:
                                         id:interval
+                                        text:"1"
+                                        readonly:True
                                         size_hint_y:None
                                         font_size:12
                                         multiline:False
@@ -935,14 +941,14 @@
                                         text: "Method"
                                     SButton:
                                         id: method
-                                        text:"Select"
+                                        text:"dassl"
                                     SLabel:
                                         text: "Tolerance"
                                     STextInput:
                                         id:tolerance
+                                        text:"1e-06"
                                         size_hint_y:None
-
-
+                                        readonly:True
                                         font_size:12
                                         multiline:False
                                     SLabel:

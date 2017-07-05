@@ -54,7 +54,7 @@ class Stream(UnitOP.UnitOP):
             'Temperature': 'T',
             'Liq Mole Fraction': 'liqPhasMolFrac',
             'Liq Mass Fraction': 'liqPhasMasFrac',
-            'Total Molar Flow': 'tolMolFlo[1]',
+            'Total Molar Flow': 'totMolFlo[1]',
             'Total Mass Flow': 'totMasFlo[1]',
             'Av. Molecular Weight': 'MW[1]',
             'Molar Specific Heat': 'phasMolSpHeat[1]',
@@ -62,15 +62,15 @@ class Stream(UnitOP.UnitOP):
             'Molar Entropy': 'phasMolEntr[1]'
 
         }
-        self.PhasePropertyMixUnit = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-        self.PhasePropertyVapUnit = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        self.PhasePropertyMixUnit = ['(Pa)', '(K)', '', '', '(mol/s)', '(kg/s)', '(kg/kmol)', '(kJ/kg)', '(kJ/kmol)', '(kJ/[kmol.K])']
+        self.PhasePropertyVapUnit = ['(Pa)', '(K)', '', '', '(mol/s)', '(kg/s)', '(kg/kmol)', '(kJ/kg)', '(kJ/kmol)', '(kJ/[kmol.K])']
         self.PhasePropertyVapDict = {
             # 'Volumetric Flow Rate'
             'Pressure': 'P',
             'Temperature': 'T',
             'Vap Mole Fraction': 'vapPhasMolFrac',
             'Vap Mass Fraction': 'vapPhasMasFrac',
-            'Total Molar Flow': 'tolMolFlo[3]',
+            'Total Molar Flow': 'totMolFlo[3]',
             'Total Mass Flow': 'totMasFlo[3]',
             'Av. Molecular Weight': 'MW[3]',
             'Molar Specific Heat': 'phasMolSpHeat[3]',
@@ -78,7 +78,7 @@ class Stream(UnitOP.UnitOP):
             'Molar Entropy': 'phasMolEntr[3]'
 
         }
-        self.input_prop_unit = ["K","Pa","Unit1","Unit2","Unit3"]
+        self.input_prop_unit = ["(K)","(Pa)","(kg/s)","(mol/s)","(spec)"]
         self.PropertyList = ['Temperature', 'Pressure', 'Mass Flow', 'Molar Flow', 'Vapour Mole Fraction']  # Property list
         self.compound_spec = ['Molar Fractions', 'Mass Fractions']  # Compound specification list
         self.compound_spec_prop= ['Molar Fractions', 'Mass Fractions','Molar Flow', 'Mass Flow']
@@ -91,7 +91,7 @@ class Stream(UnitOP.UnitOP):
         self.upward_connector_output = []  # Upward output connecting point
         self.downward_connector_output = []  # Downward output connecting point
         self.OM_Model = 'Mat_Stm'  # Model Name
-        self.PropertyVal = ['373', '202650', '100','100','0']  # Initial property value
+        self.PropertyVal = ['373', '101325', '100', '100', '0']  # Initial property value
         self.check_stm = 0  # used to check if a unit-operation is a material stream.
         self.status = 0
         self.popup_check = 0
@@ -148,22 +148,7 @@ class Stream(UnitOP.UnitOP):
             for i in self.compound_input_mass:
                 self.compound_amounts_mass_frac_mix[count] = i.text
                 count += 1
-            if self.current_comp_spec == 0:
-                count = 0
-                for i in self.compound_amounts_molar_frac_mix:
-                    if i == '0':
-                        self.comp_enable[count] = 0
-                    else:
-                        self.comp_enable[count] = 1
-                    count += 1
-            else:
-                count = 0
-                for i in self.compound_amounts_mass_frac_mix:
-                    if i == '0':
-                        self.comp_enable[count] = 0
-                    else:
-                        self.comp_enable[count] = 1
-                    count += 1
+
 
         self.PropertyVal = []
         self.name = self.name_ob.text

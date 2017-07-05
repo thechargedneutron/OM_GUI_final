@@ -232,7 +232,7 @@ class UnitOP(Button):
                     box.add_widget(checkbox)
                     box.add_widget(self.PropLabelStreams[i])
                     self.c.ids.first_tab.add_widget(box)
-                    units = PropInputLabel(text=self.input_prop_unit[i], size_hint_x=0.2, color=(0,0,0,1),font_size =11)
+                    units = PropInputLabel(text=self.input_prop_unit[i], size_hint_x=0.25, color=(0,0,0,1),font_size =11)
                     box2 = BoxLayout(size_hint_y=None, height=25, spacing=5)
                     self.PropInput.append(TextInput(text=str(self.PropertyVal[i]), size_hint_y=None, height=25, valign='middle',font_size=12, multiline=False))
                     self.PropertyObj.append(self.PropInput[i])
@@ -297,7 +297,7 @@ class UnitOP(Button):
                     label.add_widget(PropInputLabel(text=i))
                     self.PhaseMixInput.append(PropInputTextInput(text=self.PhaseMixVal[k], readonly=True))
                     text_input.add_widget(self.PhaseMixInput[k])
-                    unit.add_widget(PropInputLabel(text=self.PhasePropertyMixUnit[k], padding=(8,0)))
+                    unit.add_widget(PropInputLabel(text=self.PhasePropertyMixUnit[k], padding=(8,0),font_size = 11))
                     k += 1
 
                 label = self.c.ids.PhaseLabelVap
@@ -309,7 +309,7 @@ class UnitOP(Button):
                     label.add_widget(PropInputLabel(text=i))
                     self.PhaseVapInput.append(PropInputTextInput(text=self.PhaseVapVal[k], readonly=True))
                     text_input.add_widget(self.PhaseVapInput[k])
-                    unit.add_widget(PropInputLabel(text=self.PhasePropertyVapUnit[k], padding=(8,0)))
+                    unit.add_widget(PropInputLabel(text=self.PhasePropertyVapUnit[k], padding=(8,0),font_size = 11))
                     k += 1
 
 

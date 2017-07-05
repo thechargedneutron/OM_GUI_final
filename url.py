@@ -141,7 +141,8 @@ class OmWidget(FloatLayout):
         self.word_list = fo.read().splitlines()
 
         # Custom error pop-up
-
+        self.error_popup = Error()
+        self.error = self.error_popup.ids.error_message
 
 
         self.compo = ""
@@ -546,25 +547,13 @@ class OmWidget(FloatLayout):
             if k.check_stm == 0:
                 if k.popup_check == 1:
                     i=0
-                    new_comp_count = 0
-                    while i <comp_count:
-                        if k.comp_enable[i] == 1:
-                            new_comp_count += 1
-                        i+=1
-
                     # 1(NOC = 3, comp = {meth, eth, wat},P = 202650,T = 373)
-                    self.data.append("Simulator.Streams.Material_Stream Mat_Stm" + str(count) +"(NOC = " + str(new_comp_count))
+                    self.data.append("Simulator.Streams.Material_Stream Mat_Stm" + str(count) +"(NOC = " + str(comp_count))
                     self.data.append(",comp = {")
                     i=0
-                    filter = []
                     while i < comp_count:
-                        if k.comp_enable[i] == 1:
-                            filter.append("compound" + str(i))
-                        i = i+1
-                    i=0
-                    while i < len(filter):
-                        self.data.append(filter[i])
-                        if i != len(filter)-1:
+                        self.data.append("compound"+str(i))
+                        if i != comp_count-1:
                             self.data.append(",")
                         i += 1
                     self.data.append("}")
@@ -587,30 +576,18 @@ class OmWidget(FloatLayout):
                     if k.current_comp_spec ==0:
                         self.data.append("Mat_Stm" + str(i) + ".compMolFrac[1,:] = {")
                         count = 0
-                        filter = []
                         while count < comp_count:
-                            if k.comp_enable[count] == 1:
-                                filter.append(str(k.compound_amounts_molar_frac_mix[count]))
-                            count += 1
-                        count = 0
-                        while count < len(filter):
-                            self.data.append(filter[count])
-                            if count != len(filter)-1:
+                            self.data.append(str(k.compound_amounts_molar_frac_mix[count]))
+                            if count != comp_count-1:
                                 self.data.append(",")
                             count += 1
                         self.data.append('};\n')
                     else:
                         self.data.append("Mat_Stm" + str(i) + ".compMasFrac[1,:] = {")
                         count = 0
-                        filter = []
                         while count < comp_count:
-                            if k.comp_enable[count] == 1:
-                                filter.append(str(k.compound_amounts_mass_frac_mix[count]))
-                            count += 1
-                        count = 0
-                        while count < comp_count:
-                            self.data.append(filter[count])
-                            if count != len(filter) - 1:
+                            self.data.append(str(k.compound_amounts_mass_frac_mix[count]))
+                            if count != comp_count - 1:
                                 self.data.append(",")
                             count += 1
                         self.data.append('};\n')
@@ -649,6 +626,7 @@ class OmWidget(FloatLayout):
         omc.sendExpression("loadFile(\"Simulator.mo\")")
         omc.sendExpression("loadFile(\"Flowsheet.mo\")")
         chek = omc.sendExpression("simulate(Flowsheet, stopTime=1.0,numberOfIntervals=1)")
+        # print chek
         stm_count = 0
         check = 1
         for i in self.Unit_Operations:
@@ -666,53 +644,34 @@ class OmWidget(FloatLayout):
                         i.PhaseVapVal[count] = resultval
                         count += 1
                     count = 0
-                    comp_count = 0
                     for comp in self.addedcomp:
-                        if i.comp_enable[comp_count] == 1:
-                            i.compound_amounts_molar_frac_mix[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolFrac[1," + str(count+1) + "]" + ", 0.5)"))
-                            i.compound_amounts_molar_frac_vap[comp_count]= str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolFrac[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_molar_frac_mix[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolFrac[1," + str(count+1) + "]" + ", 0.5)"))
+                        i.compound_amounts_molar_frac_vap[count]= str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolFrac[3," + str(count + 1) + "]" + ", 0.5)"))
 
-                            i.compound_amounts_mass_frac_mix[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMasFrac[1," + str(count + 1) + "]" + ", 0.5)"))
-                            i.compound_amounts_mass_frac_vap[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMasFrac[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_mass_frac_mix[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMasFrac[1," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_mass_frac_vap[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMasFrac[3," + str(count + 1) + "]" + ", 0.5)"))
 
-                            i.compound_amounts_molar_flow_mix[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolFlo[1," + str(count + 1) + "]" + ", 0.5)"))
-                            i.compound_amounts_molar_flow_vap[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolFlo[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_molar_flow_mix[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolFlo[1," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_molar_flow_vap[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolFlo[3," + str(count + 1) + "]" + ", 0.5)"))
 
-                            i.compound_amounts_mass_flow_mix[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMasFlo[1," + str(count + 1) + "]" + ", 0.5)"))
-                            i.compound_amounts_mass_flow_vap[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMasFlo[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_mass_flow_mix[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMasFlo[1," + str(count + 1) + "]" + ", 0.5)"))
+                        i.compound_amounts_mass_flow_vap[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMasFlo[3," + str(count + 1) + "]" + ", 0.5)"))
 
-                            i.comp_prop_sph_value[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolSpHeat[3," + str(count + 1) + "]" + ", 0.5)"))
-                            i.comp_prop_meh_value[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolEnth[3," + str(count + 1) + "]" + ", 0.5)"))
-                            i.comp_prop_met_value[comp_count] = str(omc.sendExpression(
-                                "val(Mat_Stm" + str(stm_count) + ".compMolEntr[3," + str(count + 1) + "]" + ", 0.5)"))
-                            count += 1
-                        else:
-                            i.compound_amounts_molar_frac_mix[comp_count] = '0'
-                            i.compound_amounts_molar_frac_vap[comp_count] = '0'
-
-                            i.compound_amounts_mass_frac_mix[comp_count] = '0'
-                            i.compound_amounts_mass_frac_vap[comp_count] = '0'
-
-                            i.compound_amounts_molar_flow_mix[comp_count] = '0'
-                            i.compound_amounts_molar_flow_vap[comp_count] = '0'
-
-                            i.compound_amounts_mass_flow_mix[comp_count] = '0'
-                            i.compound_amounts_mass_flow_vap[comp_count] = '0'
-
-                            i.comp_prop_sph_value[comp_count] = '0'
-                            i.comp_prop_meh_value[comp_count] = '0'
-                            i.comp_prop_met_value[comp_count] = '0'
-                        comp_count +=1
+                        i.comp_prop_sph_value[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolSpHeat[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.comp_prop_meh_value[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolEnth[3," + str(count + 1) + "]" + ", 0.5)"))
+                        i.comp_prop_met_value[count] = str(omc.sendExpression(
+                            "val(Mat_Stm" + str(stm_count) + ".compMolEntr[3," + str(count + 1) + "]" + ", 0.5)"))
+                        count += 1
                     i.status = 1
                 except:
                     instance.ids.sim_status.text = "Error in simulation!"
