@@ -40,7 +40,7 @@ import random
 import StaticUO
 from OMPython import OMCSession
 import UnitOP
-from Error import Error
+from error import Error
 
 Thermodynamic_models = ['Peng-Robinson','SRK','NRTL','UNIQUAC']
 # File_options = ['New Steady-state Simulation','Open','Save','Save As','Close Active Simulation','Exit Openmodellica']
@@ -568,6 +568,16 @@ class OmWidget(FloatLayout):
                         self.data.append(str(k.PropertyVal[4]))
                     self.data.append(");\n")
                     count += 1
+            if k.check_stm == 1 and k.type == 2:
+                self.data.append("Simulator.Unit_Operations.Flash Flash" + str(count) +"(NOC = " + str(comp_count))
+                self.data.append(",comp = {")
+                i=0
+                while i < comp_count:
+                    self.data.append("compound"+str(i))
+                    if i != comp_count-1:
+                        self.data.append(",")
+                    i += 1
+                self.data.append("} \n")
         self.data.append("equation\n")
         i = 0
         for k in self.Unit_Operations:

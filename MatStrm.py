@@ -3,7 +3,7 @@
 """
 
 import UnitOP
-from Error import Error
+from error import Error
 
 class Stream(UnitOP.UnitOP):
 
