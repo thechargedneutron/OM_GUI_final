@@ -128,6 +128,7 @@ class OmWidget(FloatLayout):
     Unit_Operations = []
     Unit_Operations_Labels = []
     data = []
+    connect_data = []
     loadfile = ObjectProperty(None)
     savefile = ObjectProperty(None)
     text_input = ObjectProperty(None)
@@ -548,7 +549,7 @@ class OmWidget(FloatLayout):
                 if k.popup_check == 1:
                     i=0
                     # 1(NOC = 3, comp = {meth, eth, wat},P = 202650,T = 373)
-                    self.data.append("Simulator.Streams.Material_Stream Mat_Stm" + str(count) +"(NOC = " + str(comp_count))
+                    self.data.append("Simulator.Streams.Material_Stream " + str(k.name) +"(NOC = " + str(comp_count))
                     self.data.append(",comp = {")
                     i=0
                     while i < comp_count:
@@ -569,7 +570,7 @@ class OmWidget(FloatLayout):
                     self.data.append(");\n")
                     count += 1
             if k.check_stm == 1 and k.type == 2:
-                self.data.append("Simulator.Unit_Operations.Flash Flash" + str(count) +"(NOC = " + str(comp_count))
+                self.data.append("Simulator.Unit_Operations.Flash " + str(k.name) +"(NOC = " + str(comp_count))
                 self.data.append(",comp = {")
                 i=0
                 while i < comp_count:
@@ -608,6 +609,8 @@ class OmWidget(FloatLayout):
                     i += 1
         with open('Flowsheet.mo', 'w') as txtfile:
             for d in self.data:
+                txtfile.write(d)
+            for d in self.connect_data:
                 txtfile.write(d)
             txtfile.write('end Flowsheet;\n')
 
@@ -1002,6 +1005,7 @@ class OmWidget(FloatLayout):
         UnitOP.UnitOP.all_operators.remove(self.unit_op.child)
         if self.unit_op.child in UnitOP.UnitOP.Operators:
             UnitOP.UnitOP.Operators.remove(self.unit_op.child)
+
     def on_connect(self, instance, value):
         p = 0
         instance.connected = True
@@ -1016,6 +1020,12 @@ class OmWidget(FloatLayout):
         for key in instance.input_streams:
             if instance.input_streams[key]:
                 val = instance.input_streams[key]
+                print val.check_stm
+                print val.name
+                print instance.name
+                print instance.check_stm
+                print instance.name_ob
+                self.connect_data.append("connect("+str(instance.name)+".inlet, "+str(val.name)+".inlet); \n")
                 val.output_streams[1] = instance
                 val.connected = True
                 val.Update_Conn_Pnts()
@@ -1077,6 +1087,7 @@ class OmWidget(FloatLayout):
         for key in instance.output_streams:
             if instance.output_streams[key]:
                 val = instance.output_streams[key]
+                self.connect_data.append("connect("+str(instance.name)+".outlet, "+str(val.name)+".outlet); \n")
                 val.input_streams[1] = instance
                 val.connected = True
                 val.Update_Conn_Pnts()
